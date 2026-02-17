@@ -105,6 +105,43 @@ const C = {
   text: "#e2e8f0", textMuted: "#718096", textDim: "#4a5568", textGhost: "#2d3748",
 };
 
+const EMPTY_PROFILE_STATS = {
+  practice_sessions: 0,
+  practice_rounds: 0,
+  practice_hits: 0,
+  practice_misses: 0,
+  practice_penalties: 0,
+  practice_best_time: null,
+  practice_best_streak: 0,
+  duel_matches: 0,
+  duel_wins: 0,
+  duel_losses: 0,
+  duel_draws: 0,
+  duel_score_for: 0,
+  duel_score_against: 0,
+  duel_best_score: 0,
+};
+
+const PROFILE_SELECT = "user_id,practice_sessions,practice_rounds,practice_hits,practice_misses,practice_penalties,practice_best_time,practice_best_streak,duel_matches,duel_wins,duel_losses,duel_draws,duel_score_for,duel_score_against,duel_best_score";
+const normalizeProfileStats = (raw = {}) => ({
+  ...EMPTY_PROFILE_STATS,
+  ...raw,
+  practice_sessions: Number(raw?.practice_sessions || 0),
+  practice_rounds: Number(raw?.practice_rounds || 0),
+  practice_hits: Number(raw?.practice_hits || 0),
+  practice_misses: Number(raw?.practice_misses || 0),
+  practice_penalties: Number(raw?.practice_penalties || 0),
+  practice_best_time: raw?.practice_best_time ?? null,
+  practice_best_streak: Number(raw?.practice_best_streak || 0),
+  duel_matches: Number(raw?.duel_matches || 0),
+  duel_wins: Number(raw?.duel_wins || 0),
+  duel_losses: Number(raw?.duel_losses || 0),
+  duel_draws: Number(raw?.duel_draws || 0),
+  duel_score_for: Number(raw?.duel_score_for || 0),
+  duel_score_against: Number(raw?.duel_score_against || 0),
+  duel_best_score: Number(raw?.duel_best_score || 0),
+});
+
 /* ═══════════════════════════════════════════
    SHARED UI COMPONENTS
 ═══════════════════════════════════════════ */
@@ -303,6 +340,7 @@ function useGameEngine(startDiff=1,seed=null){
   const spawnRef=useRef([]);const fbRef=useRef(null);const nextRef=useRef(null);
   const roundNumRef=useRef(0);const holsterPhaseRef=useRef("idle");const noiseRef=useRef(null);
   const pausedRef=useRef(false);const timerStartRef=useRef(null);const timerRunningRef=useRef(false);const revealedRef=useRef(false);const pauseStartedRef=useRef(null);
+  const pausedSpawnQueueRef=useRef([]);
   const prevMultTier=useRef(0);const seedRef=useRef(seed);seedRef.current=seed;
   useEffect(()=>{roundNumRef.current=roundNum;},[roundNum]);
   useEffect(()=>{holsterPhaseRef.current=holsterPhase;},[holsterPhase]);
@@ -320,16 +358,18 @@ function useGameEngine(startDiff=1,seed=null){
   const shake=useCallback(()=>{setScreenShake(true);setTimeout(()=>setScreenShake(false),350);},[]);
   const showFB=useCallback((type,rt=null)=>{setFeedback({id:Date.now(),type,rt});clearTimeout(fbRef.current);fbRef.current=setTimeout(()=>setFeedback(null),1200);},[]);
   const startNoiseFeed=useCallback(interval=>{clearInterval(noiseRef.current);noiseRef.current=setInterval(()=>{if(pausedRef.current)return;const n=genNoiseToken();setLiveFeed(p=>{const nx=[n,...p];return nx.length>40?nx.slice(0,40):nx;});setSpawned(p=>new Set([...p,n.id]));},interval);},[]);
-  const launchRound=useCallback(()=>{clearAll();setIsPaused(false);pausedRef.current=false;pauseStartedRef.current=null;const num=roundNumRef.current,data=genRound(num+Math.max(0,startDiff-1)*2,seedRef.current);setRoundData(data);setSpawned(new Set());setRevealed(false);setClickedId(null);setShowCorrect(false);setTxState("spawning");setTweetVis(false);setPairsVis(false);setTimerRunning(false);setTimerStart(null);setHolsterPhase("live");setLiveFeed([]);setTimeout(()=>setTweetVis(true),100);setTimeout(()=>{setPairsVis(true);let si=0;const sn=()=>{if(pausedRef.current){const t=setTimeout(sn,80);spawnRef.current.push(t);return;}if(si>=data.pairs.length){startNoiseFeed(data.noiseInterval);return;}const c=data.pairs[si];setLiveFeed(p=>[c,...p]);setSpawned(p=>new Set([...p,c.id]));si++;const t=setTimeout(sn,data.spawnDelay);spawnRef.current.push(t);};sn();const dl=CFG.antiSpamMin+Math.random()*(CFG.antiSpamMax-CFG.antiSpamMin);setTimeout(()=>{setTxState("waiting");setTimeout(()=>{setTxState("active");setTimerRunning(true);setTimerStart(Date.now());},80);},dl);},400);},[clearAll,startNoiseFeed,startDiff]);
+  const launchRound=useCallback(()=>{clearAll();setIsPaused(false);pausedRef.current=false;pauseStartedRef.current=null;pausedSpawnQueueRef.current=[];const num=roundNumRef.current,data=genRound(num+Math.max(0,startDiff-1)*2,seedRef.current);setRoundData(data);setSpawned(new Set());setRevealed(false);setClickedId(null);setShowCorrect(false);setTxState("spawning");setTweetVis(false);setPairsVis(false);setTimerRunning(false);setTimerStart(null);setHolsterPhase("live");setLiveFeed([]);setTimeout(()=>setTweetVis(true),100);setTimeout(()=>{setPairsVis(true);let si=0;const sn=()=>{if(si>=data.pairs.length){startNoiseFeed(data.noiseInterval);return;}const c=data.pairs[si];si++;if(pausedRef.current){pausedSpawnQueueRef.current.push(c);}else{setLiveFeed(p=>[c,...p]);setSpawned(p=>new Set([...p,c.id]));}const t=setTimeout(sn,data.spawnDelay);spawnRef.current.push(t);};sn();const dl=CFG.antiSpamMin+Math.random()*(CFG.antiSpamMax-CFG.antiSpamMin);setTimeout(()=>{setTxState("waiting");setTimeout(()=>{setTxState("active");setTimerRunning(true);setTimerStart(Date.now());},80);},dl);},400);},[clearAll,startNoiseFeed,startDiff]);
   const cancelArm=useCallback(()=>{cancelAnimationFrame(armRafRef.current);clearTimeout(armTimeoutRef.current);armStartRef.current=null;setArmProgress(0);if(holsterPhaseRef.current==="arming")setHolsterPhase("idle");},[]);
   const startArming=useCallback(()=>{if(holsterPhaseRef.current!=="idle")return;setHolsterPhase("arming");SFX.arm();armStartRef.current=Date.now();const tick=()=>{if(!armStartRef.current)return;const el=Date.now()-armStartRef.current,prog=Math.min(el/CFG.holsterArm,1);setArmProgress(prog);if(prog<1){armRafRef.current=requestAnimationFrame(tick);}else{setHolsterPhase("armed");SFX.armed();armTimeoutRef.current=setTimeout(()=>launchRound(),200);}};armRafRef.current=requestAnimationFrame(tick);},[launchRound]);
-  const handleHolsterEnter=useCallback(()=>{if(holsterPhaseRef.current==="live"&&!revealedRef.current&&!pausedRef.current){setIsPaused(true);pausedRef.current=true;pauseStartedRef.current=Date.now();if(timerRunningRef.current)setTimerRunning(false);return;}if(holsterPhaseRef.current==="idle")startArming();},[startArming]);
-  const handleHolsterLeave=useCallback(()=>{if(pausedRef.current){const pausedFor=pauseStartedRef.current?Date.now()-pauseStartedRef.current:0;pausedRef.current=false;pauseStartedRef.current=null;setIsPaused(false);if(txState==="active"&&timerStartRef.current!==null&&!revealedRef.current){setTimerStart(prev=>prev===null?prev:prev+pausedFor);setTimerRunning(true);}return;}if(holsterPhaseRef.current==="arming")cancelArm();},[cancelArm,txState]);
-  const finishRound=useCallback(ok=>{clearInterval(noiseRef.current);setIsPaused(false);pausedRef.current=false;pauseStartedRef.current=null;if(!ok)setShowCorrect(true);setHolsterPhase("cooldown");setTimeout(()=>{setRoundNum(p=>p+1);setHolsterPhase("idle");setArmProgress(0);setShowCorrect(false);},ok?1000:2000);},[]);
+  const handleHolsterEnter=useCallback(()=>{if(holsterPhaseRef.current==="idle")startArming();},[startArming]);
+  const handleHolsterLeave=useCallback(()=>{if(holsterPhaseRef.current==="arming")cancelArm();},[cancelArm]);
+  const handlePauseEnter=useCallback(()=>{if(holsterPhaseRef.current!=="live"||revealedRef.current||pausedRef.current)return;setIsPaused(true);pausedRef.current=true;pauseStartedRef.current=Date.now();if(timerRunningRef.current)setTimerRunning(false);},[]);
+  const handlePauseLeave=useCallback(()=>{if(!pausedRef.current)return;const pausedFor=pauseStartedRef.current?Date.now()-pauseStartedRef.current:0;pausedRef.current=false;pauseStartedRef.current=null;setIsPaused(false);if(pausedSpawnQueueRef.current.length){const queued=pausedSpawnQueueRef.current;pausedSpawnQueueRef.current=[];setLiveFeed(p=>[...queued.slice().reverse(),...p]);setSpawned(p=>new Set([...p,...queued.map(c=>c.id)]));}if(txState==="active"&&timerStartRef.current!==null&&!revealedRef.current){setTimerStart(prev=>prev===null?prev:prev+pausedFor);setTimerRunning(true);}},[txState]);
+  const finishRound=useCallback(ok=>{clearInterval(noiseRef.current);setIsPaused(false);pausedRef.current=false;pauseStartedRef.current=null;pausedSpawnQueueRef.current=[];if(!ok)setShowCorrect(true);setHolsterPhase("cooldown");setTimeout(()=>{setRoundNum(p=>p+1);setHolsterPhase("idle");setArmProgress(0);setShowCorrect(false);},ok?1000:2000);},[]);
   const handleBuy=useCallback((coin,e)=>{if(revealed||isPaused)return;SFX.click();if(txState==="waiting"||txState==="spawning"){clearAll();setTxState("penalty");setRevealed(true);setTimerRunning(false);setClickedId(coin.id);showFB("penalty");flash("red");shake();SFX.penalty();setStats(p=>({...p,streak:0,penalties:p.penalties+1}));setAttemptHistory(p=>[...p,{id:Date.now(),type:"penalty",rt:null,round:roundNumRef.current+1}]);finishRound(false);return;}if(txState!=="active")return;const rt=Date.now()-timerStart;setTimerRunning(false);setRevealed(true);setClickedId(coin.id);clearAll();if(coin.isCorrect){setTxState("hit");showFB("hit",rt);flash("green");SFX.hit();setStats(p=>{const ns=p.streak+1;return{...p,score:p.score+1,streak:ns,bestStreak:Math.max(p.bestStreak,ns),bestTime:p.bestTime===null?rt:Math.min(p.bestTime,rt),lastTime:rt,hits:p.hits+1,times:[...p.times,rt]};});setAttemptHistory(p=>[...p,{id:Date.now(),type:"hit",rt,round:roundNumRef.current+1}]);finishRound(true);}else{setTxState("missed");showFB("wrong",rt);flash("red");shake();SFX.miss();setStats(p=>({...p,streak:0,misses:p.misses+1,lastTime:rt}));setAttemptHistory(p=>[...p,{id:Date.now(),type:"wrong",rt,round:roundNumRef.current+1}]);finishRound(false);}},[txState,revealed,isPaused,timerStart,clearAll,showFB,flash,shake,finishRound]);
-  const reset=useCallback(()=>{clearAll();cancelAnimationFrame(armRafRef.current);clearTimeout(armTimeoutRef.current);clearInterval(noiseRef.current);setStats({score:0,streak:0,bestStreak:0,bestTime:null,lastTime:null,hits:0,misses:0,penalties:0,times:[]});setRoundNum(0);roundNumRef.current=0;setRoundData(null);setSpawned(new Set());setTxState("idle");setRevealed(false);setClickedId(null);setFeedback(null);setScreenFlash(null);setScreenShake(false);setComboBurst(null);setTweetVis(false);setPairsVis(false);setTimerRunning(false);setTimerStart(null);setLiveFeed([]);setAttemptHistory([]);setHolsterPhase("idle");setArmProgress(0);setShowCorrect(false);setIsPaused(false);pausedRef.current=false;pauseStartedRef.current=null;},[clearAll]);
+  const reset=useCallback(()=>{clearAll();cancelAnimationFrame(armRafRef.current);clearTimeout(armTimeoutRef.current);clearInterval(noiseRef.current);setStats({score:0,streak:0,bestStreak:0,bestTime:null,lastTime:null,hits:0,misses:0,penalties:0,times:[]});setRoundNum(0);roundNumRef.current=0;setRoundData(null);setSpawned(new Set());setTxState("idle");setRevealed(false);setClickedId(null);setFeedback(null);setScreenFlash(null);setScreenShake(false);setComboBurst(null);setTweetVis(false);setPairsVis(false);setTimerRunning(false);setTimerStart(null);setLiveFeed([]);setAttemptHistory([]);setHolsterPhase("idle");setArmProgress(0);setShowCorrect(false);setIsPaused(false);pausedRef.current=false;pauseStartedRef.current=null;pausedSpawnQueueRef.current=[];},[clearAll]);
   useEffect(()=>()=>{clearAll();cancelAnimationFrame(armRafRef.current);clearTimeout(armTimeoutRef.current);},[clearAll]);
-  return{stats,roundData,spawned,txState,revealed,clickedId,feedback,screenFlash,screenShake,comboBurst,showCorrect,isPaused,tweetVis,pairsVis,timerRunning,timerStart,liveFeed,attemptHistory,holsterPhase,armProgress,mult,multLabel,multColor,pnl,difficulty,roundNum,handleHolsterEnter,handleHolsterLeave,handleBuy,reset};
+  return{stats,roundData,spawned,txState,revealed,clickedId,feedback,screenFlash,screenShake,comboBurst,showCorrect,isPaused,tweetVis,pairsVis,timerRunning,timerStart,liveFeed,attemptHistory,holsterPhase,armProgress,mult,multLabel,multColor,pnl,difficulty,roundNum,handleHolsterEnter,handleHolsterLeave,handlePauseEnter,handlePauseLeave,handleBuy,reset};
 }
 
 /* ═══════════════════════════════════════════
@@ -360,7 +400,7 @@ function GameView({engine,onExit,rightPanel}){
           <div style={{flex:1,overflowY:"auto"}}>{g.tweetVis&&g.roundData?<><XTweet data={g.roundData.tweet} isSignal animDelay={0}/>{g.roundData.fillers.map((ft,i)=><XTweet key={i} data={ft} isSignal={false} animDelay={300+i*350}/>)}</>:<div className="empty-msg">Arm the holster to<br/>start a round</div>}</div>
         </div>
         {/* COL2 */}
-        <div style={{flex:1,minWidth:300,borderRight:`1px solid ${C.border}`,display:"flex",flexDirection:"column",background:C.bg,flexShrink:0}}>
+        <div style={{flex:1,minWidth:300,borderRight:`1px solid ${C.border}`,display:"flex",flexDirection:"column",background:C.bg,flexShrink:0}} onMouseEnter={g.handlePauseEnter} onMouseLeave={g.handlePauseLeave}>
           {/* Trenches header */}
           <div className="col-header" style={{padding:"8px 12px"}}>
             <span style={{fontWeight:900,fontSize:14,color:C.text}}>Trenches</span>
@@ -379,8 +419,8 @@ function GameView({engine,onExit,rightPanel}){
           <div style={{flex:1,overflowY:"auto",position:"relative"}}>{g.pairsVis&&g.liveFeed.length>0?g.liveFeed.map(coin=><TokenRow key={coin.id} coin={coin} spawned={g.spawned.has(coin.id)} txState={g.txState} revealed={g.revealed} clickedId={g.clickedId} onBuy={g.handleBuy} showCorrect={g.showCorrect}/>):<div className="empty-msg">Tokens appear here<br/>once round is armed</div>}{g.feedback&&<div className="feedback-wrap"><div className={`feedback-pill ${g.feedback.type==="hit"?"fb-hit":"fb-miss"}`}>{g.feedback.type==="hit"?`SNIPED ${(g.feedback.rt/1000).toFixed(2)}s ✅`:g.feedback.type==="penalty"?"TOO EARLY ⛔":g.feedback.rt?`WRONG ${(g.feedback.rt/1000).toFixed(2)}s ❌`:"WRONG ❌"}</div></div>}</div>
         </div>
         {/* COL3 */}
-        <div style={{flex:1,display:"flex",flexDirection:"column",background:C.bg,position:"relative"}} onMouseEnter={g.handleHolsterEnter} onMouseLeave={g.handleHolsterLeave}>
-          <div style={{display:"flex",alignItems:"center",justifyContent:"center",padding:"14px 16px 12px",gap:14,flexShrink:0,borderBottom:`1px solid ${C.border}`,cursor:"crosshair",background:g.isPaused?`radial-gradient(ellipse at center,rgba(236,201,75,0.06) 0%,transparent 70%)`:g.holsterPhase==="armed"?`radial-gradient(ellipse at center,rgba(72,187,120,0.06) 0%,transparent 70%)`:g.holsterPhase==="arming"?`radial-gradient(ellipse at center,rgba(236,201,75,0.04) 0%,transparent 70%)`:"none",position:"relative",overflow:"hidden"}}>
+        <div style={{flex:1,display:"flex",flexDirection:"column",background:C.bg,position:"relative"}}>
+          <div style={{display:"flex",alignItems:"center",justifyContent:"center",padding:"14px 16px 12px",gap:14,flexShrink:0,borderBottom:`1px solid ${C.border}`,cursor:"crosshair",background:g.isPaused?`radial-gradient(ellipse at center,rgba(236,201,75,0.06) 0%,transparent 70%)`:g.holsterPhase==="armed"?`radial-gradient(ellipse at center,rgba(72,187,120,0.06) 0%,transparent 70%)`:g.holsterPhase==="arming"?`radial-gradient(ellipse at center,rgba(236,201,75,0.04) 0%,transparent 70%)`:"none",position:"relative",overflow:"hidden"}} onMouseEnter={g.handleHolsterEnter} onMouseLeave={g.handleHolsterLeave}>
             {g.holsterPhase==="armed"&&<div style={{position:"absolute",inset:0,background:`linear-gradient(0deg,transparent 49.5%,rgba(72,187,120,0.03) 50%,transparent 50.5%)`,backgroundSize:"100% 4px",pointerEvents:"none",animation:"fadeIn 0.3s ease"}}/>}
             <div style={{width:46,height:46,position:"relative",flexShrink:0,opacity:g.holsterPhase==="arming"||g.holsterPhase==="armed"?1:g.holsterPhase==="live"?.3:.12,transition:"opacity 0.4s"}}><svg width={46} height={46} style={{position:"absolute",top:0,left:0}}><circle cx={23} cy={23} r={19} fill="none" stroke={g.holsterPhase==="armed"?C.green:g.holsterPhase==="arming"?C.yellow:C.border} strokeWidth={1.5} strokeDasharray={g.holsterPhase==="arming"?`${g.armProgress*119.4} 119.4`:"119.4 0"} strokeLinecap="round" style={{transition:"stroke 0.2s",transform:"rotate(-90deg)",transformOrigin:"center",filter:g.holsterPhase==="armed"?`drop-shadow(0 0 6px ${C.green}50)`:"none"}}/></svg><div style={{position:"absolute",top:"50%",left:7,right:7,height:1,background:g.holsterPhase==="armed"?C.green:g.holsterPhase==="arming"?`${C.yellow}60`:C.border}}/><div style={{position:"absolute",left:"50%",top:7,bottom:7,width:1,background:g.holsterPhase==="armed"?C.green:g.holsterPhase==="arming"?`${C.yellow}60`:C.border}}/><div style={{position:"absolute",top:"50%",left:"50%",transform:"translate(-50%,-50%)",width:g.holsterPhase==="armed"?7:4,height:g.holsterPhase==="armed"?7:4,borderRadius:"50%",background:g.holsterPhase==="armed"?C.green:g.holsterPhase==="arming"?C.yellow:C.border,boxShadow:g.holsterPhase==="armed"?`0 0 12px ${C.green}60`:"none",transition:"all 0.2s",animation:g.holsterPhase==="armed"?"holsterPulse 1s ease-in-out infinite":"none"}}/></div>
             <div style={{textAlign:"left"}}><div style={{fontSize:10,fontWeight:700,letterSpacing:2.5,color:g.isPaused?C.yellow:g.holsterPhase==="armed"?C.green:g.holsterPhase==="arming"?C.yellow:g.holsterPhase==="cooldown"?C.red:g.holsterPhase==="live"?`${C.green}70`:C.textGhost,textTransform:"uppercase",transition:"color 0.25s",textShadow:g.holsterPhase==="armed"&&!g.isPaused?`0 0 10px ${C.green}30`:"none"}}>{g.isPaused?"PAUSED":g.holsterPhase==="armed"?"ARMED — GO":g.holsterPhase==="arming"?`ARMING ${Math.round(g.armProgress*100)}%`:g.holsterPhase==="cooldown"?"COOLDOWN":g.holsterPhase==="live"?"ROUND LIVE":"HOVER TO ARM"}</div>{g.isPaused?<div style={{fontSize:8.5,color:C.textDim,marginTop:3}}>Leave holster zone to resume</div>:g.holsterPhase==="idle"&&<div style={{fontSize:8.5,color:C.textGhost,marginTop:3}}>Rest mouse here for 0.8s</div>}</div>
@@ -395,11 +435,21 @@ function GameView({engine,onExit,rightPanel}){
 /* ═══════════════════════════════════════════
    PRACTICE MODE
 ═══════════════════════════════════════════ */
-function PracticeMode({startDiff=1}){
+function PracticeMode({startDiff=1,onSessionComplete}){
   const[screen,setScreen]=useState("menu"); // menu | playing | summary
   const engine=useGameEngine(startDiff);
+  const summarySavedRef=useRef(false);
   const start=()=>{engine.reset();setScreen("playing");};
   const practiceSteps=[["🎯","Hold HOLSTER 0.8s to arm",C.text],["📰","Read signal tweet first",C.text],["⚡","Tap TX NOW on match",C.green],["⚠","Traps use partial matches",C.yellow],["⛔","Clicking during WAIT = penalty",C.red],["📈","Streaks boost PnL to x3",C.orange]];
+  useEffect(()=>{
+    if(screen==="menu"){summarySavedRef.current=false;return;}
+    if(screen!=="summary"||summarySavedRef.current)return;
+    const rounds=engine.stats.hits+engine.stats.misses+engine.stats.penalties;
+    if(rounds>0){
+      summarySavedRef.current=true;
+      onSessionComplete?.(engine.stats);
+    }
+  },[screen,engine.stats,onSessionComplete]);
   if(screen==="summary")return <SessionSummary stats={engine.stats} history={engine.attemptHistory} onBack={()=>{engine.reset();setScreen("menu");}}/>;
   if(screen==="menu")return(
     <div className="menu-bg practice-menu-bg"><div className="grid-bg"/>
@@ -436,12 +486,13 @@ function PracticeMode({startDiff=1}){
 /* ═══════════════════════════════════════════
    1v1 MODE
 ═══════════════════════════════════════════ */
-function OneVOneMode(){
+function OneVOneMode({onMatchComplete}){
   const[phase,setPhase]=useState("lobby");const[gameCode,setGameCode]=useState("");const[joinCode,setJoinCode]=useState("");const[isHost,setIsHost]=useState(false);const[playerName,setPlayerName]=useState("");const[opponentName,setOpponentName]=useState("");const[opponentStats,setOpponentStats]=useState(null);const[matchResult,setMatchResult]=useState(null);
   const[bestOf,setBestOf]=useState(10);const[gameSeed,setGameSeed]=useState(null);const[isPublicLobby,setIsPublicLobby]=useState(true);const[publicLobbies,setPublicLobbies]=useState([]);const[loadingLobbies,setLoadingLobbies]=useState(false);
   const[countdown,setCountdown]=useState(null);
   const countdownRef=useRef(null);
   const supabaseWarnedRef=useRef(false);const lobbyPollRef=useRef(null);
+  const resultSavedRef=useRef(false);
   const engine=useGameEngine(1,gameSeed);const pollRef=useRef(null);
   const[playerId]=useState(()=>`player-${Date.now()}-${Math.random().toString(36).slice(2,6)}`);
 
@@ -534,8 +585,8 @@ function OneVOneMode(){
     if(error){console.error("supabase fetch public lobbies failed",error);return;}
     setPublicLobbies((data||[]).filter(l=>l.host_id!==playerId));
   },[ensureSupabase,playerId]);
-  const createGame=async()=>{const code=genCode();const name=playerName||"Player 1";const seed=Date.now();await storageSet(`game:${code}`,{code,host:{id:playerId,name},guest:null,status:"waiting",seed,bestOf,isPublic:isPublicLobby});setGameCode(code);setIsHost(true);setGameSeed(seed);setPhase("waiting");startPolling(code);};
-  const joinGame=async(explicitCode=null)=>{const code=(explicitCode||joinCode).toUpperCase().trim();if(code.length!==6)return;const game=await storageGet(`game:${code}`);if(!game||game.status!=="waiting"){alert("Game not found or already started.");return;}if(game.host?.id===playerId){alert("You can't join your own lobby.");return;}const name=playerName||"Player 2";game.guest={id:playerId,name};game.status="ready";await storageSet(`game:${code}`,game);setJoinCode(code);setGameCode(code);setIsHost(false);setOpponentName(game.host.name);setGameSeed(game.seed);setBestOf(game.bestOf||10);setIsPublicLobby(!!game.isPublic);setPhase("waiting");startPolling(code);};
+  const createGame=async()=>{const code=genCode();const name=playerName||"Player 1";const seed=Date.now();await storageSet(`game:${code}`,{code,host:{id:playerId,name},guest:null,status:"waiting",seed,bestOf,isPublic:isPublicLobby});resultSavedRef.current=false;setGameCode(code);setIsHost(true);setGameSeed(seed);setPhase("waiting");startPolling(code);};
+  const joinGame=async(explicitCode=null)=>{const code=(explicitCode||joinCode).toUpperCase().trim();if(code.length!==6)return;const game=await storageGet(`game:${code}`);if(!game||game.status!=="waiting"){alert("Game not found or already started.");return;}if(game.host?.id===playerId){alert("You can't join your own lobby.");return;}const name=playerName||"Player 2";game.guest={id:playerId,name};game.status="ready";await storageSet(`game:${code}`,game);resultSavedRef.current=false;setJoinCode(code);setGameCode(code);setIsHost(false);setOpponentName(game.host.name);setGameSeed(game.seed);setBestOf(game.bestOf||10);setIsPublicLobby(!!game.isPublic);setPhase("waiting");startPolling(code);};
   const joinPublicLobby=async(code)=>{await joinGame(code);};
   const startPolling=(code)=>{clearInterval(pollRef.current);pollRef.current=setInterval(async()=>{const game=await storageGet(`game:${code}`);if(!game)return;if(isHost&&game.guest)setOpponentName(game.guest.name);if(!isHost&&game.host)setOpponentName(game.host.name);if(game.seed)setGameSeed(game.seed);if(game.status==="countdown"&&!countdownRef.current){runCountdown();}if(game.status==="playing"&&phase!=="playing"&&!countdownRef.current){setPhase("playing");engine.reset();}const oppKey=isHost?`game:${code}:guest-stats`:`game:${code}:host-stats`;const os=await storageGet(oppKey);if(os)setOpponentStats(os);if(game.status==="finished"){setMatchResult({myScore:engine.stats.score,oppScore:os?os.score:0,win:engine.stats.score>(os?os.score:0)});setPhase("results");clearInterval(pollRef.current);}},800);};
 
@@ -545,10 +596,15 @@ function OneVOneMode(){
 
   useEffect(()=>{if(phase!=="playing"||!gameCode)return;const iv=setInterval(async()=>{const key=isHost?`game:${gameCode}:host-stats`:`game:${gameCode}:guest-stats`;await storageSet(key,{score:engine.stats.score,streak:engine.stats.streak,bestTime:engine.stats.bestTime,hits:engine.stats.hits,misses:engine.stats.misses,lastTime:engine.stats.lastTime,roundNum:engine.roundNum});},500);return()=>clearInterval(iv);},[phase,gameCode,isHost,engine.stats,engine.roundNum]);
   const endMatch=async()=>{const game=await storageGet(`game:${gameCode}`);if(game){game.status="finished";await storageSet(`game:${gameCode}`,game);}setPhase("results");clearInterval(pollRef.current);const oppKey=isHost?`game:${gameCode}:guest-stats`:`game:${gameCode}:host-stats`;const os=await storageGet(oppKey);setMatchResult({myScore:engine.stats.score,oppScore:os?os.score:0,win:engine.stats.score>(os?os.score:0)});};
-  const backToLobby=()=>{clearInterval(pollRef.current);engine.reset();setPhase("lobby");setGameCode("");setJoinCode("");setOpponentName("");setOpponentStats(null);setMatchResult(null);setCountdown(null);countdownRef.current=null;setGameSeed(null);};
+  const backToLobby=()=>{clearInterval(pollRef.current);engine.reset();resultSavedRef.current=false;setPhase("lobby");setGameCode("");setJoinCode("");setOpponentName("");setOpponentStats(null);setMatchResult(null);setCountdown(null);countdownRef.current=null;setGameSeed(null);};
   useEffect(()=>{if(phase!=="lobby"){clearInterval(lobbyPollRef.current);return;}fetchPublicLobbies();lobbyPollRef.current=setInterval(fetchPublicLobbies,2500);return()=>clearInterval(lobbyPollRef.current);},[phase,fetchPublicLobbies]);
   useEffect(()=>()=>clearInterval(pollRef.current),[]);
   useEffect(()=>()=>clearInterval(lobbyPollRef.current),[]);
+  useEffect(()=>{
+    if(phase!=="results"||!matchResult||resultSavedRef.current)return;
+    resultSavedRef.current=true;
+    onMatchComplete?.(matchResult);
+  },[phase,matchResult,onMatchComplete]);
 
   // Countdown overlay
   if(countdown!==null)return(
@@ -596,6 +652,50 @@ function OneVOneMode(){
 /* ═══════════════════════════════════════════
    APP
 ═══════════════════════════════════════════ */
+function ProfileTab({session,stats,loading,msg,onRefresh}){
+  const rounds=stats.practice_rounds;
+  const practiceAcc=rounds>0?Math.round((stats.practice_hits/rounds)*100):0;
+  const duelWinRate=stats.duel_matches>0?Math.round((stats.duel_wins/stats.duel_matches)*100):0;
+  const avgDuelFor=stats.duel_matches>0?(stats.duel_score_for/stats.duel_matches).toFixed(1):"0.0";
+  const username=session?.user?.user_metadata?.username||session?.user?.email?.split("@")[0]||"signed in";
+
+  return(
+    <div className="menu-bg practice-menu-bg">
+      <div className="grid-bg"/>
+      <div className="menu-glow-orb green"/>
+      <div className="menu-inner" style={{maxWidth:700,textAlign:"left"}}>
+        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:14}}>
+          <div>
+            <div style={{fontSize:9,color:C.textDim,letterSpacing:3,marginBottom:6}}>PLAYER PROFILE</div>
+            <h2 style={{fontSize:28,fontWeight:900,color:C.text,letterSpacing:-1}}>{username}</h2>
+          </div>
+          <button onClick={onRefresh} className="btn-ghost" style={{fontSize:9,padding:"6px 10px"}}>REFRESH</button>
+        </div>
+        {msg&&<div className="glass-card" style={{marginBottom:12,padding:"10px 12px",color:C.red,fontSize:10}}>{msg}</div>}
+        {loading?<div className="glass-card" style={{fontSize:11,color:C.textDim}}>Loading stats...</div>:<>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:12}}>
+            <div className="glass-card" style={{padding:"14px 16px"}}>
+              <div style={{fontSize:8,color:C.green,letterSpacing:2.2,marginBottom:10,fontWeight:800}}>PRACTICE</div>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
+                {[["Sessions",stats.practice_sessions],["Rounds",stats.practice_rounds],["Accuracy",`${practiceAcc}%`],["Best RT",stats.practice_best_time!==null?`${(stats.practice_best_time/1000).toFixed(3)}s`:"—"],["Best Streak",stats.practice_best_streak],["Miss+Early",stats.practice_misses+stats.practice_penalties]].map(([l,v])=>(<div key={l} style={{padding:"6px 8px",borderRadius:8,background:C.bgCard,border:`1px solid ${C.border}`}}><div style={{fontSize:7,color:C.textDim,letterSpacing:1.4,marginBottom:2}}>{l}</div><div style={{fontSize:13,fontWeight:800,color:C.text}}>{v}</div></div>))}
+              </div>
+            </div>
+            <div className="glass-card" style={{padding:"14px 16px"}}>
+              <div style={{fontSize:8,color:C.orange,letterSpacing:2.2,marginBottom:10,fontWeight:800}}>1V1</div>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
+                {[["Matches",stats.duel_matches],["Wins",stats.duel_wins],["Losses",stats.duel_losses],["Draws",stats.duel_draws],["Win Rate",`${duelWinRate}%`],["Avg Score",avgDuelFor],["Best Score",stats.duel_best_score],["Score Diff",stats.duel_score_for-stats.duel_score_against]].map(([l,v])=>(<div key={l} style={{padding:"6px 8px",borderRadius:8,background:C.bgCard,border:`1px solid ${C.border}`}}><div style={{fontSize:7,color:C.textDim,letterSpacing:1.4,marginBottom:2}}>{l}</div><div style={{fontSize:13,fontWeight:800,color:C.text}}>{v}</div></div>))}
+              </div>
+            </div>
+          </div>
+          <div className="glass-card" style={{padding:"12px 14px",fontSize:10,color:C.textDim,lineHeight:1.65}}>
+            Stats are saved to your account and update after each completed Practice session and each finished 1v1 match.
+          </div>
+        </>}
+      </div>
+    </div>
+  );
+}
+
 function AuthScreen(){
   const[mode,setMode]=useState("login");
   const[username,setUsername]=useState("");
@@ -673,16 +773,94 @@ export default function App(){
   const[startDiff,setStartDiff]=useState(1);
   const[session,setSession]=useState(null);
   const[authReady,setAuthReady]=useState(false);
+  const[profileStats,setProfileStats]=useState(EMPTY_PROFILE_STATS);
+  const[profileLoading,setProfileLoading]=useState(false);
+  const[profileMsg,setProfileMsg]=useState("");
 
   useEffect(()=>{
     let active=true;
     if(!supabase){setAuthReady(true);return;}
-    supabase.auth.getSession().then(({data})=>{if(active){setSession(data?.session||null);setAuthReady(true);}});
+    supabase.auth.getSession().then(({data})=>{
+      if(active){
+        const nextSession=data?.session||null;
+        setSession(nextSession);
+        if(!nextSession)setProfileStats(EMPTY_PROFILE_STATS);
+        setAuthReady(true);
+      }
+    });
     const { data: authListener } = supabase.auth.onAuthStateChange((_event, nextSession) => {
       setSession(nextSession||null);
+      if(!nextSession)setProfileStats(EMPTY_PROFILE_STATS);
     });
     return()=>{active=false;authListener?.subscription?.unsubscribe();};
   },[]);
+
+  const loadProfileStats=useCallback(async()=>{
+    if(!supabase||!session?.user?.id)return;
+    setProfileLoading(true);
+    setProfileMsg("");
+    const { data, error } = await supabase
+      .from("player_profiles")
+      .select(PROFILE_SELECT)
+      .eq("user_id", session.user.id)
+      .maybeSingle();
+    setProfileLoading(false);
+    if(error){setProfileMsg("Could not load profile stats.");return;}
+    setProfileStats(normalizeProfileStats(data||{}));
+  },[session]);
+
+  useEffect(()=>{
+    if(session?.user?.id)loadProfileStats();
+  },[session,loadProfileStats]);
+
+  const updateProfileStats=useCallback(async(updater)=>{
+    if(!supabase||!session?.user?.id)return;
+    setProfileMsg("");
+    const userId=session.user.id;
+    const { data: current, error: fetchError } = await supabase
+      .from("player_profiles")
+      .select(PROFILE_SELECT)
+      .eq("user_id", userId)
+      .maybeSingle();
+    if(fetchError){setProfileMsg("Could not save profile stats.");return;}
+    const next=normalizeProfileStats(updater(normalizeProfileStats(current||{})));
+    const payload={user_id:userId,...next};
+    const { error: writeError } = await supabase
+      .from("player_profiles")
+      .upsert(payload,{onConflict:"user_id"});
+    if(writeError){setProfileMsg("Could not save profile stats.");return;}
+    setProfileStats(next);
+  },[session]);
+
+  const recordPracticeSession=useCallback(async(practiceStats)=>{
+    const rounds=practiceStats.hits+practiceStats.misses+practiceStats.penalties;
+    if(rounds<=0)return;
+    await updateProfileStats((prev)=>({
+      ...prev,
+      practice_sessions:prev.practice_sessions+1,
+      practice_rounds:prev.practice_rounds+rounds,
+      practice_hits:prev.practice_hits+practiceStats.hits,
+      practice_misses:prev.practice_misses+practiceStats.misses,
+      practice_penalties:prev.practice_penalties+practiceStats.penalties,
+      practice_best_time:practiceStats.bestTime===null?prev.practice_best_time:prev.practice_best_time===null?practiceStats.bestTime:Math.min(prev.practice_best_time,practiceStats.bestTime),
+      practice_best_streak:Math.max(prev.practice_best_streak,practiceStats.bestStreak||0),
+    }));
+  },[updateProfileStats]);
+
+  const recordDuelMatch=useCallback(async(result)=>{
+    const isDraw=result.myScore===result.oppScore;
+    const isWin=result.myScore>result.oppScore;
+    await updateProfileStats((prev)=>({
+      ...prev,
+      duel_matches:prev.duel_matches+1,
+      duel_wins:prev.duel_wins+(isWin?1:0),
+      duel_losses:prev.duel_losses+(!isWin&&!isDraw?1:0),
+      duel_draws:prev.duel_draws+(isDraw?1:0),
+      duel_score_for:prev.duel_score_for+result.myScore,
+      duel_score_against:prev.duel_score_against+result.oppScore,
+      duel_best_score:Math.max(prev.duel_best_score,result.myScore),
+    }));
+  },[updateProfileStats]);
 
   const logOut=async()=>{if(supabase)await supabase.auth.signOut();};
 
@@ -694,7 +872,7 @@ export default function App(){
       {/* TAB BAR */}
       <div className="tab-bar">
         <div className="tab-logo"><span style={{color:C.green,fontSize:13}}>⚡</span><span>TRENCHES</span></div>
-        {[["practice","Practice",C.green],["1v1","1v1",C.orange]].map(([key,label,accent])=>{
+        {[["practice","Practice",C.green],["1v1","1v1",C.orange],["profile","Profile",C.blue]].map(([key,label,accent])=>{
           const active=tab===key;
           return(<button key={key} onClick={()=>setTab(key)} className={`tab-btn ${active?"tab-active":""}`} style={{"--accent":accent}}>{active&&<span className="tab-dot" style={{background:accent,boxShadow:`0 0 8px ${accent}50`}}/>}{label}</button>);
         })}
@@ -708,7 +886,9 @@ export default function App(){
         <button onClick={logOut} className="btn-ghost" style={{marginRight:10,fontSize:9,padding:"6px 10px"}}>LOGOUT</button>
         <span style={{fontSize:8,color:C.textGhost,letterSpacing:2.5}}>v3.0</span>
       </div>
-      <div style={{flex:1,overflow:"hidden"}}>{tab==="practice"?<PracticeMode startDiff={startDiff}/>:<OneVOneMode/>}</div>
+      <div style={{flex:1,overflow:"hidden"}}>
+        {tab==="practice"?<PracticeMode startDiff={startDiff} onSessionComplete={recordPracticeSession}/>:tab==="1v1"?<OneVOneMode onMatchComplete={recordDuelMatch}/>:<ProfileTab session={session} stats={profileStats} loading={profileLoading} msg={profileMsg} onRefresh={loadProfileStats}/>}
+      </div>
       <style>{CSS}</style>
     </div>
   );
@@ -766,7 +946,7 @@ const CSS=`
   .menu-glow-orb.orange{background:${C.orange};}
 
   .practice-menu-bg{justify-content:flex-start;padding-top:54px;}
-  .practice-shell{position:relative;z-index:1;width:min(760px,100%);display:flex;flex-direction:column;align-items:center;gap:14px;}
+  .practice-shell{position:relative;z-index:1;width:min(980px,100%);display:flex;flex-direction:column;align-items:center;gap:14px;}
   .practice-hero{text-align:center;display:flex;flex-direction:column;align-items:center;}
   .practice-kicker{font-size:9px;letter-spacing:3px;color:${C.textDim};text-transform:uppercase;margin-bottom:8px;}
   .practice-icon{font-size:50px;line-height:1;filter:drop-shadow(0 0 28px rgba(72,187,120,0.28));animation:float 3s ease-in-out infinite;margin-bottom:8px;}
@@ -775,13 +955,13 @@ const CSS=`
   .practice-pills{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;}
   .practice-pill{font-size:9px;letter-spacing:1.1px;color:${C.textMuted};padding:6px 10px;border-radius:999px;border:1px solid ${C.border};background:linear-gradient(145deg,${C.bgCard},${C.bgAlt});}
   .practice-pill b{color:${C.greenBright};font-weight:800;}
-  .practice-card{width:min(560px,100%);text-align:left;border-radius:16px;border:1px solid ${C.borderLight};background:linear-gradient(145deg,rgba(20,28,42,0.96),rgba(14,20,31,0.95));box-shadow:0 10px 40px rgba(0,0,0,0.32),inset 0 1px 0 rgba(255,255,255,0.03);padding:15px 16px;}
-  .practice-card-title{font-size:9px;color:${C.green};font-weight:800;letter-spacing:3px;text-transform:uppercase;margin-bottom:12px;}
-  .practice-steps{display:grid;grid-template-columns:1fr 1fr;column-gap:18px;row-gap:8px;}
-  .practice-step{display:flex;align-items:flex-start;gap:8px;font-size:11.5px;line-height:1.35;color:${C.textMuted};opacity:0;animation:slideUp 0.35s ease forwards;}
+  .practice-card{width:min(640px,100%);text-align:left;border-radius:16px;border:1px solid ${C.borderLight};background:linear-gradient(145deg,rgba(20,28,42,0.96),rgba(14,20,31,0.95));box-shadow:0 10px 40px rgba(0,0,0,0.32),inset 0 1px 0 rgba(255,255,255,0.03);padding:34px 30px;}
+  .practice-card-title{font-size:11px;color:${C.green};font-weight:800;letter-spacing:3.2px;text-transform:uppercase;margin-bottom:16px;}
+  .practice-steps{display:grid;grid-template-columns:1fr;row-gap:14px;}
+  .practice-step{display:flex;align-items:flex-start;gap:9px;font-size:15px;line-height:1.45;color:${C.textMuted};opacity:0;animation:slideUp 0.35s ease forwards;}
   .practice-step span:first-child{flex-shrink:0;transform:translateY(1px);}
-  .practice-card-foot{margin-top:10px;padding-top:8px;border-top:1px solid ${C.border};font-size:8px;letter-spacing:1.2px;color:${C.textGhost};text-transform:uppercase;}
-  .practice-start-btn{width:min(420px,100%);font-size:16px;padding:13px 18px;letter-spacing:1.6px;}
+  .practice-card-foot{margin-top:18px;padding-top:14px;border-top:1px solid ${C.border};font-size:10px;letter-spacing:1.3px;color:${C.textGhost};text-transform:uppercase;}
+  .btn-primary.practice-start-btn{width:min(240px,100%);font-size:13px;padding:10px 12px;letter-spacing:1.2px;}
 
   .auth-page{padding:24px 18px;overflow-y:auto;}
   .auth-shell{position:relative;z-index:1;width:min(940px,100%);display:grid;grid-template-columns:1.1fr 0.9fr;gap:18px;align-items:stretch;}
@@ -879,10 +1059,10 @@ const CSS=`
     .practice-menu-bg{padding-top:36px;}
     .practice-title{font-size:42px;}
     .practice-subtitle{letter-spacing:5px;font-size:9.5px;}
-    .practice-card{padding:16px 14px;border-radius:14px;}
+    .practice-card{width:min(640px,100%);padding:24px 18px;border-radius:14px;}
     .practice-steps{grid-template-columns:1fr;}
-    .practice-step{font-size:11px;}
-    .practice-start-btn{font-size:15px;padding:14px 16px;}
+    .practice-step{font-size:13px;}
+    .btn-primary.practice-start-btn{width:min(220px,100%);font-size:12px;padding:9px 12px;}
   }
 
   ::-webkit-scrollbar{width:4px}
