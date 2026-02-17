@@ -399,19 +399,37 @@ function PracticeMode({startDiff=1}){
   const[screen,setScreen]=useState("menu"); // menu | playing | summary
   const engine=useGameEngine(startDiff);
   const start=()=>{engine.reset();setScreen("playing");};
+  const practiceSteps=[["🎯","Hold HOLSTER 0.8s to arm",C.text],["📰","Read signal tweet first",C.text],["⚡","Tap TX NOW on match",C.green],["⚠","Traps use partial matches",C.yellow],["⛔","Clicking during WAIT = penalty",C.red],["📈","Streaks boost PnL to x3",C.orange]];
   if(screen==="summary")return <SessionSummary stats={engine.stats} history={engine.attemptHistory} onBack={()=>{engine.reset();setScreen("menu");}}/>;
   if(screen==="menu")return(
-    <div className="menu-bg"><div className="grid-bg"/><div className="menu-inner">
+    <div className="menu-bg practice-menu-bg"><div className="grid-bg"/>
       <div className="menu-glow-orb green"/>
-      <div style={{fontSize:52,marginBottom:10,filter:"drop-shadow(0 0 30px rgba(72,187,120,0.25))",animation:"float 3s ease-in-out infinite"}}>⚡</div>
-      <h1 className="title-text" style={{background:`linear-gradient(135deg,${C.green},${C.greenBright},${C.cyan})`}}>TRENCHES</h1>
-      <div style={{fontSize:10.5,color:C.textDim,letterSpacing:8,marginBottom:36,fontWeight:500}}>REACTION TRAINER</div>
-      <div className="glass-card" style={{textAlign:"left",marginBottom:22}}>
-        <div style={{fontSize:8.5,color:C.green,fontWeight:700,letterSpacing:3,marginBottom:14}}>HOW TO PLAY</div>
-        {[["🎯","Hover the HOLSTER zone for 0.8s to arm",C.text],["📰","Signal tweet reveals the narrative",C.text],["⚡","Hit TX NOW on the matching token",C.green],["⚠","Traps: right name wrong emoji or vice versa",C.yellow],["⛔","Don't click during WAIT",C.red],["📈","Streaks boost PnL: x1 → x1.5 → x2 → x3",C.orange],["⏱","Timer counts UP — speed is everything",C.cyan]].map(([n,t,c],i)=>(<p key={i} style={{margin:"0 0 7px",fontSize:12.5,lineHeight:1.6,color:C.textMuted,opacity:0,animation:`slideUp 0.4s ease ${100+i*60}ms forwards`}}><span style={{color:c,marginRight:5}}>{n}</span>{t}</p>))}
+      <div className="practice-shell">
+        <div className="practice-hero">
+          <div className="practice-kicker">Precision Mode</div>
+          <div className="practice-icon">⚡</div>
+          <h1 className="title-text practice-title" style={{color:C.greenBright}}>TRENCHES</h1>
+          <div className="practice-subtitle">Reaction Trainer</div>
+          <div className="practice-pills">
+            <span className="practice-pill">Start Level <b>Lv{startDiff}</b></span>
+            <span className="practice-pill">Streak Multiplier <b>x3 Max</b></span>
+          </div>
+        </div>
+        <div className="practice-card">
+          <div className="practice-card-title">How To Play</div>
+          <div className="practice-steps">
+            {practiceSteps.map(([n,t,c],i)=>(
+              <div key={i} className="practice-step" style={{animationDelay:`${100+i*60}ms`}}>
+                <span style={{color:c}}>{n}</span>
+                <span>{t}</span>
+              </div>
+            ))}
+          </div>
+          <div className="practice-card-foot">Speed beats hesitation.</div>
+        </div>
+        <button onClick={start} className="btn-primary btn-green practice-start-btn">⚡ Start Training</button>
       </div>
-      <button onClick={start} className="btn-primary btn-green">⚡ Start Training</button>
-    </div></div>);
+    </div>);
   return <GameView engine={engine} onExit={()=>setScreen("summary")}/>;
 }
 
@@ -420,10 +438,10 @@ function PracticeMode({startDiff=1}){
 ═══════════════════════════════════════════ */
 function OneVOneMode(){
   const[phase,setPhase]=useState("lobby");const[gameCode,setGameCode]=useState("");const[joinCode,setJoinCode]=useState("");const[isHost,setIsHost]=useState(false);const[playerName,setPlayerName]=useState("");const[opponentName,setOpponentName]=useState("");const[opponentStats,setOpponentStats]=useState(null);const[matchResult,setMatchResult]=useState(null);
-  const[bestOf,setBestOf]=useState(10);const[gameSeed,setGameSeed]=useState(null);
+  const[bestOf,setBestOf]=useState(10);const[gameSeed,setGameSeed]=useState(null);const[isPublicLobby,setIsPublicLobby]=useState(true);const[publicLobbies,setPublicLobbies]=useState([]);const[loadingLobbies,setLoadingLobbies]=useState(false);
   const[countdown,setCountdown]=useState(null);
   const countdownRef=useRef(null);
-  const supabaseWarnedRef=useRef(false);
+  const supabaseWarnedRef=useRef(false);const lobbyPollRef=useRef(null);
   const engine=useGameEngine(1,gameSeed);const pollRef=useRef(null);
   const[playerId]=useState(()=>`player-${Date.now()}-${Math.random().toString(36).slice(2,6)}`);
 
@@ -456,6 +474,7 @@ function OneVOneMode(){
         status:v?.status||"waiting",
         seed:v?.seed||null,
         best_of:v?.bestOf||10,
+        is_public:v?.isPublic??false,
       };
       const{error}=await supabase.from("duel_games").upsert(payload,{onConflict:"code"});
       if(error)console.error("supabase storageSet game failed",error);
@@ -490,6 +509,7 @@ function OneVOneMode(){
         status:data.status,
         seed:data.seed,
         bestOf:data.best_of,
+        isPublic:data.is_public??false,
       };
     }
     const{data,error}=await supabase.from("duel_game_stats").select("*").eq("game_code",parsed.code).eq("player_role",parsed.role).maybeSingle();
@@ -506,8 +526,17 @@ function OneVOneMode(){
     };
   }
 
-  const createGame=async()=>{const code=genCode();const name=playerName||"Player 1";const seed=Date.now();await storageSet(`game:${code}`,{code,host:{id:playerId,name},guest:null,status:"waiting",seed,bestOf});setGameCode(code);setIsHost(true);setGameSeed(seed);setPhase("waiting");startPolling(code);};
-  const joinGame=async()=>{const code=joinCode.toUpperCase().trim();if(code.length!==6)return;const game=await storageGet(`game:${code}`);if(!game||game.status!=="waiting"){alert("Game not found or already started.");return;}const name=playerName||"Player 2";game.guest={id:playerId,name};game.status="ready";await storageSet(`game:${code}`,game);setGameCode(code);setIsHost(false);setOpponentName(game.host.name);setGameSeed(game.seed);setBestOf(game.bestOf||10);setPhase("waiting");startPolling(code);};
+  const fetchPublicLobbies=useCallback(async()=>{
+    if(!ensureSupabase())return;
+    setLoadingLobbies(true);
+    const{data,error}=await supabase.from("duel_games").select("code,host_id,host_name,best_of,created_at").eq("status","waiting").eq("is_public",true).is("guest_id",null).order("created_at",{ascending:false}).limit(20);
+    setLoadingLobbies(false);
+    if(error){console.error("supabase fetch public lobbies failed",error);return;}
+    setPublicLobbies((data||[]).filter(l=>l.host_id!==playerId));
+  },[ensureSupabase,playerId]);
+  const createGame=async()=>{const code=genCode();const name=playerName||"Player 1";const seed=Date.now();await storageSet(`game:${code}`,{code,host:{id:playerId,name},guest:null,status:"waiting",seed,bestOf,isPublic:isPublicLobby});setGameCode(code);setIsHost(true);setGameSeed(seed);setPhase("waiting");startPolling(code);};
+  const joinGame=async(explicitCode=null)=>{const code=(explicitCode||joinCode).toUpperCase().trim();if(code.length!==6)return;const game=await storageGet(`game:${code}`);if(!game||game.status!=="waiting"){alert("Game not found or already started.");return;}if(game.host?.id===playerId){alert("You can't join your own lobby.");return;}const name=playerName||"Player 2";game.guest={id:playerId,name};game.status="ready";await storageSet(`game:${code}`,game);setJoinCode(code);setGameCode(code);setIsHost(false);setOpponentName(game.host.name);setGameSeed(game.seed);setBestOf(game.bestOf||10);setIsPublicLobby(!!game.isPublic);setPhase("waiting");startPolling(code);};
+  const joinPublicLobby=async(code)=>{await joinGame(code);};
   const startPolling=(code)=>{clearInterval(pollRef.current);pollRef.current=setInterval(async()=>{const game=await storageGet(`game:${code}`);if(!game)return;if(isHost&&game.guest)setOpponentName(game.guest.name);if(!isHost&&game.host)setOpponentName(game.host.name);if(game.seed)setGameSeed(game.seed);if(game.status==="countdown"&&!countdownRef.current){runCountdown();}if(game.status==="playing"&&phase!=="playing"&&!countdownRef.current){setPhase("playing");engine.reset();}const oppKey=isHost?`game:${code}:guest-stats`:`game:${code}:host-stats`;const os=await storageGet(oppKey);if(os)setOpponentStats(os);if(game.status==="finished"){setMatchResult({myScore:engine.stats.score,oppScore:os?os.score:0,win:engine.stats.score>(os?os.score:0)});setPhase("results");clearInterval(pollRef.current);}},800);};
 
   const runCountdown=()=>{if(countdownRef.current)return;countdownRef.current=true;let n=3;setCountdown(n);SFX.countdown(n);const iv=setInterval(()=>{n--;setCountdown(n);SFX.countdown(n);if(n<=0){clearInterval(iv);setTimeout(()=>{setCountdown(null);countdownRef.current=null;setPhase("playing");engine.reset();},400);}},1000);};
@@ -517,7 +546,9 @@ function OneVOneMode(){
   useEffect(()=>{if(phase!=="playing"||!gameCode)return;const iv=setInterval(async()=>{const key=isHost?`game:${gameCode}:host-stats`:`game:${gameCode}:guest-stats`;await storageSet(key,{score:engine.stats.score,streak:engine.stats.streak,bestTime:engine.stats.bestTime,hits:engine.stats.hits,misses:engine.stats.misses,lastTime:engine.stats.lastTime,roundNum:engine.roundNum});},500);return()=>clearInterval(iv);},[phase,gameCode,isHost,engine.stats,engine.roundNum]);
   const endMatch=async()=>{const game=await storageGet(`game:${gameCode}`);if(game){game.status="finished";await storageSet(`game:${gameCode}`,game);}setPhase("results");clearInterval(pollRef.current);const oppKey=isHost?`game:${gameCode}:guest-stats`:`game:${gameCode}:host-stats`;const os=await storageGet(oppKey);setMatchResult({myScore:engine.stats.score,oppScore:os?os.score:0,win:engine.stats.score>(os?os.score:0)});};
   const backToLobby=()=>{clearInterval(pollRef.current);engine.reset();setPhase("lobby");setGameCode("");setJoinCode("");setOpponentName("");setOpponentStats(null);setMatchResult(null);setCountdown(null);countdownRef.current=null;setGameSeed(null);};
+  useEffect(()=>{if(phase!=="lobby"){clearInterval(lobbyPollRef.current);return;}fetchPublicLobbies();lobbyPollRef.current=setInterval(fetchPublicLobbies,2500);return()=>clearInterval(lobbyPollRef.current);},[phase,fetchPublicLobbies]);
   useEffect(()=>()=>clearInterval(pollRef.current),[]);
+  useEffect(()=>()=>clearInterval(lobbyPollRef.current),[]);
 
   // Countdown overlay
   if(countdown!==null)return(
@@ -526,23 +557,23 @@ function OneVOneMode(){
     </div></div>);
 
   if(phase==="lobby")return(
-    <div className="menu-bg"><div className="grid-bg"/><div className="menu-inner" style={{maxWidth:440}}>
+    <div className="menu-bg"><div className="grid-bg"/><div className="menu-inner" style={{maxWidth:560}}>
       <div className="menu-glow-orb orange"/>
       <div style={{fontSize:42,marginBottom:8,animation:"float 3s ease-in-out infinite"}}>⚔️</div>
-      <h1 className="title-text" style={{background:`linear-gradient(135deg,${C.orange},${C.red})`}}>1v1 DUEL</h1>
+      <h1 className="title-text" style={{color:C.orange}}>1v1 DUEL</h1>
       <div style={{fontSize:10.5,color:C.textDim,letterSpacing:7,marginBottom:24,fontWeight:500}}>COMPETE HEAD TO HEAD</div>
       <div style={{marginBottom:16,opacity:0,animation:"slideUp 0.4s ease 100ms forwards"}}><div style={{fontSize:8,color:C.textDim,letterSpacing:2.5,marginBottom:6,textAlign:"left"}}>YOUR NAME</div><input value={playerName} onChange={e=>setPlayerName(e.target.value)} placeholder="Enter name..." className="input-field"/></div>
-      {/* Best of selector */}
       <div style={{marginBottom:16,opacity:0,animation:"slideUp 0.4s ease 150ms forwards"}}><div style={{fontSize:8,color:C.textDim,letterSpacing:2.5,marginBottom:6,textAlign:"left"}}>FORMAT</div><div style={{display:"flex",gap:6}}>{[5,10,20].map(n=>{const ac=bestOf===n;return(<button key={n} onClick={()=>setBestOf(n)} style={{flex:1,padding:"8px 0",borderRadius:8,border:`1px solid ${ac?C.orange:C.border}`,background:ac?`${C.orange}12`:C.bgCard,color:ac?C.orange:C.textDim,fontSize:11,fontWeight:ac?800:600,fontFamily:"var(--mono)",cursor:"pointer"}}>Best of {n}</button>);})}</div></div>
-      <div className="glass-card" style={{marginBottom:14,opacity:0,animation:"slideUp 0.4s ease 200ms forwards"}}><div style={{fontSize:8.5,color:C.orange,fontWeight:700,letterSpacing:2.5,marginBottom:10}}>CREATE GAME</div><p style={{fontSize:11,color:C.textMuted,marginBottom:14,lineHeight:1.6}}>Create a room and share the code with your opponent.</p><button onClick={createGame} className="btn-primary btn-orange">Create Room</button></div>
-      <div className="glass-card" style={{opacity:0,animation:"slideUp 0.4s ease 300ms forwards"}}><div style={{fontSize:8.5,color:C.blue,fontWeight:700,letterSpacing:2.5,marginBottom:10}}>JOIN GAME</div><div style={{display:"flex",gap:10}}><input value={joinCode} onChange={e=>setJoinCode(e.target.value.toUpperCase())} placeholder="CODE" maxLength={6} className="input-field" style={{textAlign:"center",fontSize:18,fontWeight:900,letterSpacing:5}}/><button onClick={joinGame} className="btn-primary btn-blue" style={{width:"auto",padding:"10px 22px",fontSize:12}}>JOIN</button></div></div>
+      <div className="glass-card" style={{marginBottom:14,opacity:0,animation:"slideUp 0.4s ease 200ms forwards"}}><div style={{fontSize:8.5,color:C.orange,fontWeight:700,letterSpacing:2.5,marginBottom:10}}>CREATE GAME</div><p style={{fontSize:11,color:C.textMuted,marginBottom:10,lineHeight:1.6}}>Create a room and share the code with your opponent.</p><label style={{display:"flex",alignItems:"center",gap:8,fontSize:10,color:C.textMuted,marginBottom:12,cursor:"pointer"}}><input type="checkbox" checked={isPublicLobby} onChange={e=>setIsPublicLobby(e.target.checked)} style={{accentColor:C.green}}/><span>Public lobby (appears in live list)</span></label><button onClick={createGame} className="btn-primary btn-orange">Create Room</button></div>
+      <div className="glass-card" style={{marginBottom:14,opacity:0,animation:"slideUp 0.4s ease 300ms forwards"}}><div style={{fontSize:8.5,color:C.blue,fontWeight:700,letterSpacing:2.5,marginBottom:10}}>JOIN BY CODE</div><div style={{display:"flex",gap:10}}><input value={joinCode} onChange={e=>setJoinCode(e.target.value.toUpperCase())} placeholder="CODE" maxLength={6} className="input-field" style={{textAlign:"center",fontSize:18,fontWeight:900,letterSpacing:5}}/><button onClick={joinGame} className="btn-primary btn-blue" style={{width:"auto",padding:"10px 22px",fontSize:12}}>JOIN</button></div></div>
+      <div className="glass-card" style={{opacity:0,animation:"slideUp 0.4s ease 360ms forwards"}}><div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:10}}><div style={{fontSize:8.5,color:C.green,fontWeight:700,letterSpacing:2.5}}>PUBLIC LOBBIES</div><button onClick={fetchPublicLobbies} className="btn-ghost" style={{fontSize:8,padding:"4px 8px"}}>Refresh</button></div>{loadingLobbies&&publicLobbies.length===0?<div style={{fontSize:10,color:C.textGhost}}>Loading lobbies...</div>:publicLobbies.length===0?<div style={{fontSize:10,color:C.textGhost}}>No public lobbies right now.</div>:<div style={{display:"flex",flexDirection:"column",gap:8,maxHeight:220,overflowY:"auto"}}>{publicLobbies.map((l)=>(<div key={l.code} style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:10,padding:"8px 10px",border:`1px solid ${C.border}`,borderRadius:8,background:C.bgCard}}><div style={{minWidth:0}}><div style={{fontSize:11,color:C.text,fontWeight:700,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{l.host_name||"Host"}</div><div style={{fontSize:9,color:C.textDim,marginTop:2}}>Code {l.code} • Best of {l.best_of}</div></div><button onClick={()=>joinPublicLobby(l.code)} className="btn-primary btn-blue" style={{width:"auto",padding:"7px 12px",fontSize:10,letterSpacing:1}}>Join</button></div>))}</div>}</div>
     </div></div>);
 
   if(phase==="waiting")return(
     <div className="menu-bg"><div className="grid-bg"/><div className="menu-inner" style={{maxWidth:420}}>
       <div style={{fontSize:32,marginBottom:12}}>⚔️</div>
       <h2 style={{fontSize:24,fontWeight:900,color:C.text,marginBottom:24,letterSpacing:-0.5}}>WAITING ROOM</h2>
-      <div className="glass-card" style={{marginBottom:22,textAlign:"center"}}><div style={{fontSize:8,color:C.textDim,letterSpacing:3,marginBottom:10}}>GAME CODE</div><div style={{fontSize:40,fontWeight:900,letterSpacing:10,color:C.orange,textShadow:`0 0 25px ${C.orange}30`,fontFamily:"var(--mono)"}}>{gameCode}</div><div style={{fontSize:9,color:C.textDim,marginTop:10}}>Share this code with your opponent</div><div style={{fontSize:9,color:C.orange,marginTop:6,fontWeight:700}}>Best of {bestOf}</div></div>
+      <div className="glass-card" style={{marginBottom:22,textAlign:"center"}}><div style={{fontSize:8,color:C.textDim,letterSpacing:3,marginBottom:10}}>GAME CODE</div><div style={{fontSize:40,fontWeight:900,letterSpacing:10,color:C.orange,textShadow:`0 0 25px ${C.orange}30`,fontFamily:"var(--mono)"}}>{gameCode}</div><div style={{fontSize:9,color:C.textDim,marginTop:10}}>Share this code with your opponent</div><div style={{fontSize:9,color:C.orange,marginTop:6,fontWeight:700}}>Best of {bestOf} • {isPublicLobby?"Public":"Private"}</div></div>
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14,marginBottom:22}}><div className="glass-card" style={{textAlign:"center",borderColor:`${C.green}18`}}><div style={{fontSize:8,color:C.green,letterSpacing:2.5,marginBottom:8}}>YOU</div><div style={{fontSize:15,fontWeight:800,color:C.text}}>{playerName||"Player"}</div><div style={{fontSize:9,color:C.green,marginTop:5}}>✓ READY</div></div><div className="glass-card" style={{textAlign:"center",borderColor:opponentName?`${C.orange}18`:C.border}}><div style={{fontSize:8,color:C.orange,letterSpacing:2.5,marginBottom:8}}>OPPONENT</div>{opponentName?<><div style={{fontSize:15,fontWeight:800,color:C.text}}>{opponentName}</div><div style={{fontSize:9,color:C.green,marginTop:5}}>✓ CONNECTED</div></>:<><div style={{fontSize:15,color:C.textDim,marginTop:4}}>...</div><div style={{fontSize:9,color:C.textDim,marginTop:5,animation:"pulse 2s ease-in-out infinite"}}>Waiting</div></>}</div></div>
       {isHost&&opponentName&&<button onClick={startMatch} className="btn-primary btn-orange" style={{marginBottom:12}}>⚔️ START DUEL</button>}
       <button onClick={backToLobby} className="btn-primary" style={{background:"transparent",color:C.textDim,border:`1px solid ${C.border}`,boxShadow:"none",fontSize:11}}>Leave</button>
@@ -604,7 +635,7 @@ function AuthScreen(){
       <div className="auth-shell">
         <div className="auth-brand-card">
           <div className="auth-lock">🔐</div>
-          <h1 className="title-text auth-title" style={{background:`linear-gradient(135deg,${C.green},${C.cyan})`}}>TRENCHES ID</h1>
+          <h1 className="title-text auth-title" style={{color:C.greenBright}}>TRENCHES ID</h1>
           <div className="auth-subtitle">Secure access for Practice and 1v1 mode.</div>
           <div className="auth-points">
             <div className="auth-point"><span>⚡</span>Fast sign-in with username + password</div>
@@ -623,7 +654,7 @@ function AuthScreen(){
           </div>
           <div style={{fontSize:8,color:C.textDim,letterSpacing:2.5,marginBottom:6}}>USERNAME</div>
           <input value={username} onChange={e=>setUsername(e.target.value)} placeholder="yourname" className="input-field auth-input" style={{marginBottom:8}}/>
-          <div className="auth-email-hint">{toInternalEmail(username)||"yourname@trenchestrainer.app"}</div>
+          <div className="auth-email-hint">{username.trim()?toInternalEmail(username):""}</div>
           <div style={{fontSize:8,color:C.textDim,letterSpacing:2.5,marginTop:12,marginBottom:6}}>PASSWORD</div>
           <input value={password} onChange={e=>setPassword(e.target.value)} onKeyDown={e=>{if(e.key==="Enter"&&!busy)submit();}} type="password" placeholder="••••••••" className="input-field auth-input" style={{marginBottom:10}}/>
           <div style={{fontSize:9,color:C.textGhost,marginBottom:12}}>Use letters, numbers, and underscore in username.</div>
@@ -734,6 +765,24 @@ const CSS=`
   .menu-glow-orb.green{background:${C.green};}
   .menu-glow-orb.orange{background:${C.orange};}
 
+  .practice-menu-bg{justify-content:flex-start;padding-top:54px;}
+  .practice-shell{position:relative;z-index:1;width:min(760px,100%);display:flex;flex-direction:column;align-items:center;gap:14px;}
+  .practice-hero{text-align:center;display:flex;flex-direction:column;align-items:center;}
+  .practice-kicker{font-size:9px;letter-spacing:3px;color:${C.textDim};text-transform:uppercase;margin-bottom:8px;}
+  .practice-icon{font-size:50px;line-height:1;filter:drop-shadow(0 0 28px rgba(72,187,120,0.28));animation:float 3s ease-in-out infinite;margin-bottom:8px;}
+  .practice-title{margin-bottom:5px;}
+  .practice-subtitle{font-size:10px;color:${C.textDim};letter-spacing:8px;text-transform:uppercase;margin-bottom:12px;font-weight:600;}
+  .practice-pills{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;}
+  .practice-pill{font-size:9px;letter-spacing:1.1px;color:${C.textMuted};padding:6px 10px;border-radius:999px;border:1px solid ${C.border};background:linear-gradient(145deg,${C.bgCard},${C.bgAlt});}
+  .practice-pill b{color:${C.greenBright};font-weight:800;}
+  .practice-card{width:min(560px,100%);text-align:left;border-radius:16px;border:1px solid ${C.borderLight};background:linear-gradient(145deg,rgba(20,28,42,0.96),rgba(14,20,31,0.95));box-shadow:0 10px 40px rgba(0,0,0,0.32),inset 0 1px 0 rgba(255,255,255,0.03);padding:15px 16px;}
+  .practice-card-title{font-size:9px;color:${C.green};font-weight:800;letter-spacing:3px;text-transform:uppercase;margin-bottom:12px;}
+  .practice-steps{display:grid;grid-template-columns:1fr 1fr;column-gap:18px;row-gap:8px;}
+  .practice-step{display:flex;align-items:flex-start;gap:8px;font-size:11.5px;line-height:1.35;color:${C.textMuted};opacity:0;animation:slideUp 0.35s ease forwards;}
+  .practice-step span:first-child{flex-shrink:0;transform:translateY(1px);}
+  .practice-card-foot{margin-top:10px;padding-top:8px;border-top:1px solid ${C.border};font-size:8px;letter-spacing:1.2px;color:${C.textGhost};text-transform:uppercase;}
+  .practice-start-btn{width:min(420px,100%);font-size:16px;padding:13px 18px;letter-spacing:1.6px;}
+
   .auth-page{padding:24px 18px;overflow-y:auto;}
   .auth-shell{position:relative;z-index:1;width:min(940px,100%);display:grid;grid-template-columns:1.1fr 0.9fr;gap:18px;align-items:stretch;}
   .auth-brand-card,.auth-form-card{background:linear-gradient(145deg,${C.bgCard} 0%,${C.bgAlt} 100%);border:1px solid ${C.border};border-radius:16px;box-shadow:0 6px 30px rgba(0,0,0,0.22),inset 0 1px 0 rgba(255,255,255,0.02);}
@@ -754,7 +803,7 @@ const CSS=`
   .auth-msg{font-size:10px;line-height:1.6;margin-bottom:12px;padding:8px 10px;border-radius:10px;border:1px solid transparent;}
 
   .title-text{font-size:48px;font-weight:900;letter-spacing:-3px;margin:0 0 4px;
-    -webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1.1;
+    color:${C.text};line-height:1.1;
     filter:drop-shadow(0 2px 20px rgba(0,0,0,0.3));}
 
   .glass-card{background:linear-gradient(145deg,${C.bgCard} 0%,${C.bgAlt} 100%);
@@ -825,6 +874,15 @@ const CSS=`
     .auth-subtitle{font-size:11px;}
     .auth-point{font-size:10.5px;padding:8px 10px;}
     .auth-form-card{padding:18px;}
+  }
+  @media (max-width:700px){
+    .practice-menu-bg{padding-top:36px;}
+    .practice-title{font-size:42px;}
+    .practice-subtitle{letter-spacing:5px;font-size:9.5px;}
+    .practice-card{padding:16px 14px;border-radius:14px;}
+    .practice-steps{grid-template-columns:1fr;}
+    .practice-step{font-size:11px;}
+    .practice-start-btn{font-size:15px;padding:14px 16px;}
   }
 
   ::-webkit-scrollbar{width:4px}
