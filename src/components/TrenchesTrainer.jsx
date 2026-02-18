@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { supabase } from "../lib/supabaseClient";
 
 /* ═══════════════════════════════════════════
@@ -97,12 +98,12 @@ const genCode=()=>{const c="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";let s="";for(let i
 
 /* ── Color Palette ── */
 const C = {
-  bg: "#0b0e14", bgAlt: "#0f131b", bgCard: "#111620", bgElevated: "#161c28",
-  border: "#1a2138", borderLight: "#222d45",
-  green: "#48bb78", greenBright: "#68d391", greenDim: "#2f855a",
-  orange: "#ed8936", orangeBright: "#f6ad55", red: "#f56565",
-  yellow: "#ecc94b", cyan: "#4fd1c5", blue: "#63b3ed",
-  text: "#e2e8f0", textMuted: "#718096", textDim: "#4a5568", textGhost: "#2d3748",
+  bg: "#060911", bgAlt: "#0c1120", bgCard: "#111827", bgElevated: "#1a2234",
+  border: "#1e2d47", borderLight: "#2a3f5f",
+  green: "#4ade80", greenBright: "#86efac", greenDim: "#166534",
+  orange: "#fb923c", orangeBright: "#fdba74", red: "#f87171",
+  yellow: "#fbbf24", cyan: "#22d3ee", blue: "#60a5fa",
+  text: "#f1f5f9", textMuted: "#94a3b8", textDim: "#475569", textGhost: "#1e293b",
 };
 
 const EMPTY_PROFILE_STATS = {
@@ -147,7 +148,7 @@ const normalizeProfileStats = (raw = {}) => ({
 ═══════════════════════════════════════════ */
 function HudStat({label,value,color,large}){return(<div style={{display:"flex",flexDirection:"column",alignItems:"center",padding:"0 8px",gap:2}}><span style={{fontSize:7,fontWeight:500,color:C.textDim,letterSpacing:2.5,textTransform:"uppercase"}}>{label}</span><span style={{fontSize:large?20:13,fontWeight:800,color:color||C.text,fontFamily:"var(--mono)",textShadow:large?`0 0 14px ${color}25`:"none",transition:"all 0.2s"}}>{value}</span></div>);}
 
-function ElapsedTimer({startTime,running}){const[el,setEl]=useState(0);const raf=useRef(null);useEffect(()=>{if(!running||!startTime){setEl(0);return;}const tick=()=>{setEl(Date.now()-startTime);raf.current=requestAnimationFrame(tick);};raf.current=requestAnimationFrame(tick);return()=>cancelAnimationFrame(raf.current);},[running,startTime]);const s=el/1000;const col=s<1?C.green:s<2?C.greenBright:s<3?C.yellow:s<5?C.orange:C.red;return(<div style={{display:"flex",alignItems:"center",gap:7}}><div style={{position:"relative",width:40,height:40,flexShrink:0}}><svg width={40} height={40} style={{transform:"rotate(-90deg)"}}><circle cx={20} cy={20} r={17} fill="none" stroke={C.border} strokeWidth={2}/><circle cx={20} cy={20} r={17} fill="none" stroke={col} strokeWidth={2} strokeDasharray={`${Math.min(s/10,1)*106.8} 106.8`} strokeLinecap="round" style={{transition:"stroke 0.3s",filter:`drop-shadow(0 0 4px ${col}40)`}}/></svg><div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:800,color:col,fontFamily:"var(--mono)"}}>{s.toFixed(1)}</div></div><div><div style={{fontSize:7,color:C.textDim,letterSpacing:2}}>ELAPSED</div><div style={{fontSize:12,fontWeight:800,color:col,fontFamily:"var(--mono)",transition:"color 0.3s"}}>{s.toFixed(2)}s</div></div></div>);}
+function ElapsedTimer({startTime,running}){const[el,setEl]=useState(0);const raf=useRef(null);useEffect(()=>{if(!startTime){setEl(0);return;}if(!running){setEl(Date.now()-startTime);return;}const tick=()=>{setEl(Date.now()-startTime);raf.current=requestAnimationFrame(tick);};raf.current=requestAnimationFrame(tick);return()=>cancelAnimationFrame(raf.current);},[running,startTime]);const s=el/1000;const col=s<1?C.green:s<2?C.greenBright:s<3?C.yellow:s<5?C.orange:C.red;return(<div style={{display:"flex",alignItems:"center",gap:7}}><div style={{position:"relative",width:40,height:40,flexShrink:0}}><svg width={40} height={40} style={{transform:"rotate(-90deg)"}}><circle cx={20} cy={20} r={17} fill="none" stroke={C.border} strokeWidth={2}/><circle cx={20} cy={20} r={17} fill="none" stroke={col} strokeWidth={2} strokeDasharray={`${Math.min(s/10,1)*106.8} 106.8`} strokeLinecap="round" style={{transition:"stroke 0.3s",filter:`drop-shadow(0 0 4px ${col}40)`}}/></svg><div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:800,color:col,fontFamily:"var(--mono)"}}>{s.toFixed(1)}</div></div><div><div style={{fontSize:7,color:C.textDim,letterSpacing:2}}>ELAPSED</div><div style={{fontSize:12,fontWeight:800,color:col,fontFamily:"var(--mono)",transition:"color 0.3s"}}>{s.toFixed(2)}s</div></div></div>);}
 
 /* avatar color from name string */
 const avatarGrad=(name)=>{let h=0;for(let i=0;i<name.length;i++)h=name.charCodeAt(i)+((h<<5)-h);const hue=Math.abs(h)%360;return`linear-gradient(135deg,hsl(${hue},55%,45%),hsl(${(hue+40)%360},50%,35%))`;};
@@ -440,7 +441,7 @@ function PracticeMode({startDiff=1,onSessionComplete}){
   const engine=useGameEngine(startDiff);
   const summarySavedRef=useRef(false);
   const start=()=>{engine.reset();setScreen("playing");};
-  const practiceSteps=[["🎯","Hold HOLSTER 0.8s to arm",C.text],["📰","Read signal tweet first",C.text],["⚡","Tap TX NOW on match",C.green],["⚠","Traps use partial matches",C.yellow],["⛔","Clicking during WAIT = penalty",C.red],["📈","Streaks boost PnL to x3",C.orange]];
+  const practiceSteps=[["01","Hold HOLSTER 0.8s to arm",C.text],["02","Read signal tweet first",C.text],["03","Tap TX NOW on match",C.green],["04","Traps use partial matches",C.yellow],["05","Clicking during WAIT = penalty",C.red],["06","Streaks boost PnL to x3",C.orange]];
   useEffect(()=>{
     if(screen==="menu"){summarySavedRef.current=false;return;}
     if(screen!=="summary"||summarySavedRef.current)return;
@@ -457,7 +458,7 @@ function PracticeMode({startDiff=1,onSessionComplete}){
       <div className="practice-shell">
         <div className="practice-hero">
           <div className="practice-kicker">Precision Mode</div>
-          <div className="practice-icon">⚡</div>
+          <div className="practice-icon">TT</div>
           <h1 className="title-text practice-title" style={{color:C.greenBright}}>TRENCHES</h1>
           <div className="practice-subtitle">Reaction Trainer</div>
           <div className="practice-pills">
@@ -477,7 +478,7 @@ function PracticeMode({startDiff=1,onSessionComplete}){
           </div>
           <div className="practice-card-foot">Speed beats hesitation.</div>
         </div>
-        <button onClick={start} className="btn-primary btn-green practice-start-btn">⚡ Start Training</button>
+        <button onClick={start} className="btn-primary btn-green practice-start-btn">Start Training</button>
       </div>
     </div>);
   return <GameView engine={engine} onExit={()=>setScreen("summary")}/>;
@@ -615,36 +616,51 @@ function OneVOneMode({onMatchComplete}){
   if(phase==="lobby")return(
     <div className="menu-bg"><div className="grid-bg"/><div className="menu-inner" style={{maxWidth:560}}>
       <div className="menu-glow-orb orange"/>
-      <div style={{fontSize:42,marginBottom:8,animation:"float 3s ease-in-out infinite"}}>⚔️</div>
+      <div style={{fontSize:42,marginBottom:8,animation:"float 3s ease-in-out infinite"}}>DUEL</div>
       <h1 className="title-text" style={{color:C.orange}}>1v1 DUEL</h1>
       <div style={{fontSize:10.5,color:C.textDim,letterSpacing:7,marginBottom:24,fontWeight:500}}>COMPETE HEAD TO HEAD</div>
       <div style={{marginBottom:16,opacity:0,animation:"slideUp 0.4s ease 100ms forwards"}}><div style={{fontSize:8,color:C.textDim,letterSpacing:2.5,marginBottom:6,textAlign:"left"}}>YOUR NAME</div><input value={playerName} onChange={e=>setPlayerName(e.target.value)} placeholder="Enter name..." className="input-field"/></div>
       <div style={{marginBottom:16,opacity:0,animation:"slideUp 0.4s ease 150ms forwards"}}><div style={{fontSize:8,color:C.textDim,letterSpacing:2.5,marginBottom:6,textAlign:"left"}}>FORMAT</div><div style={{display:"flex",gap:6}}>{[5,10,20].map(n=>{const ac=bestOf===n;return(<button key={n} onClick={()=>setBestOf(n)} style={{flex:1,padding:"8px 0",borderRadius:8,border:`1px solid ${ac?C.orange:C.border}`,background:ac?`${C.orange}12`:C.bgCard,color:ac?C.orange:C.textDim,fontSize:11,fontWeight:ac?800:600,fontFamily:"var(--mono)",cursor:"pointer"}}>Best of {n}</button>);})}</div></div>
       <div className="glass-card" style={{marginBottom:14,opacity:0,animation:"slideUp 0.4s ease 200ms forwards"}}><div style={{fontSize:8.5,color:C.orange,fontWeight:700,letterSpacing:2.5,marginBottom:10}}>CREATE GAME</div><p style={{fontSize:11,color:C.textMuted,marginBottom:10,lineHeight:1.6}}>Create a room and share the code with your opponent.</p><label style={{display:"flex",alignItems:"center",gap:8,fontSize:10,color:C.textMuted,marginBottom:12,cursor:"pointer"}}><input type="checkbox" checked={isPublicLobby} onChange={e=>setIsPublicLobby(e.target.checked)} style={{accentColor:C.green}}/><span>Public lobby (appears in live list)</span></label><button onClick={createGame} className="btn-primary btn-orange">Create Room</button></div>
-      <div className="glass-card" style={{marginBottom:14,opacity:0,animation:"slideUp 0.4s ease 300ms forwards"}}><div style={{fontSize:8.5,color:C.blue,fontWeight:700,letterSpacing:2.5,marginBottom:10}}>JOIN BY CODE</div><div style={{display:"flex",gap:10}}><input value={joinCode} onChange={e=>setJoinCode(e.target.value.toUpperCase())} placeholder="CODE" maxLength={6} className="input-field" style={{textAlign:"center",fontSize:18,fontWeight:900,letterSpacing:5}}/><button onClick={joinGame} className="btn-primary btn-blue" style={{width:"auto",padding:"10px 22px",fontSize:12}}>JOIN</button></div></div>
+      <div className="glass-card" style={{marginBottom:14,opacity:0,animation:"slideUp 0.4s ease 300ms forwards"}}>
+        <div style={{fontSize:8.5,color:C.blue,fontWeight:700,letterSpacing:2.5,marginBottom:10}}>JOIN BY CODE</div>
+        <div style={{display:"flex",gap:10,alignItems:"stretch"}}>
+          <input
+            value={joinCode}
+            onChange={e=>setJoinCode(e.target.value.toUpperCase())}
+            placeholder="CODE"
+            maxLength={6}
+            className="input-field"
+            style={{flex:1,textAlign:"center",fontSize:22,fontWeight:900,letterSpacing:6,height:52,lineHeight:1,padding:"0 14px"}}
+          />
+          <button onClick={joinGame} className="btn-primary btn-blue" style={{width:108,height:52,padding:0,fontSize:13,display:"inline-flex",alignItems:"center",justifyContent:"center",lineHeight:1}}>
+            JOIN
+          </button>
+        </div>
+      </div>
       <div className="glass-card" style={{opacity:0,animation:"slideUp 0.4s ease 360ms forwards"}}><div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:10}}><div style={{fontSize:8.5,color:C.green,fontWeight:700,letterSpacing:2.5}}>PUBLIC LOBBIES</div><button onClick={fetchPublicLobbies} className="btn-ghost" style={{fontSize:8,padding:"4px 8px"}}>Refresh</button></div>{loadingLobbies&&publicLobbies.length===0?<div style={{fontSize:10,color:C.textGhost}}>Loading lobbies...</div>:publicLobbies.length===0?<div style={{fontSize:10,color:C.textGhost}}>No public lobbies right now.</div>:<div style={{display:"flex",flexDirection:"column",gap:8,maxHeight:220,overflowY:"auto"}}>{publicLobbies.map((l)=>(<div key={l.code} style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:10,padding:"8px 10px",border:`1px solid ${C.border}`,borderRadius:8,background:C.bgCard}}><div style={{minWidth:0}}><div style={{fontSize:11,color:C.text,fontWeight:700,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{l.host_name||"Host"}</div><div style={{fontSize:9,color:C.textDim,marginTop:2}}>Code {l.code} • Best of {l.best_of}</div></div><button onClick={()=>joinPublicLobby(l.code)} className="btn-primary btn-blue" style={{width:"auto",padding:"7px 12px",fontSize:10,letterSpacing:1}}>Join</button></div>))}</div>}</div>
     </div></div>);
 
   if(phase==="waiting")return(
     <div className="menu-bg"><div className="grid-bg"/><div className="menu-inner" style={{maxWidth:420}}>
-      <div style={{fontSize:32,marginBottom:12}}>⚔️</div>
+      <div style={{fontSize:32,marginBottom:12}}>DUEL</div>
       <h2 style={{fontSize:24,fontWeight:900,color:C.text,marginBottom:24,letterSpacing:-0.5}}>WAITING ROOM</h2>
       <div className="glass-card" style={{marginBottom:22,textAlign:"center"}}><div style={{fontSize:8,color:C.textDim,letterSpacing:3,marginBottom:10}}>GAME CODE</div><div style={{fontSize:40,fontWeight:900,letterSpacing:10,color:C.orange,textShadow:`0 0 25px ${C.orange}30`,fontFamily:"var(--mono)"}}>{gameCode}</div><div style={{fontSize:9,color:C.textDim,marginTop:10}}>Share this code with your opponent</div><div style={{fontSize:9,color:C.orange,marginTop:6,fontWeight:700}}>Best of {bestOf} • {isPublicLobby?"Public":"Private"}</div></div>
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14,marginBottom:22}}><div className="glass-card" style={{textAlign:"center",borderColor:`${C.green}18`}}><div style={{fontSize:8,color:C.green,letterSpacing:2.5,marginBottom:8}}>YOU</div><div style={{fontSize:15,fontWeight:800,color:C.text}}>{playerName||"Player"}</div><div style={{fontSize:9,color:C.green,marginTop:5}}>✓ READY</div></div><div className="glass-card" style={{textAlign:"center",borderColor:opponentName?`${C.orange}18`:C.border}}><div style={{fontSize:8,color:C.orange,letterSpacing:2.5,marginBottom:8}}>OPPONENT</div>{opponentName?<><div style={{fontSize:15,fontWeight:800,color:C.text}}>{opponentName}</div><div style={{fontSize:9,color:C.green,marginTop:5}}>✓ CONNECTED</div></>:<><div style={{fontSize:15,color:C.textDim,marginTop:4}}>...</div><div style={{fontSize:9,color:C.textDim,marginTop:5,animation:"pulse 2s ease-in-out infinite"}}>Waiting</div></>}</div></div>
-      {isHost&&opponentName&&<button onClick={startMatch} className="btn-primary btn-orange" style={{marginBottom:12}}>⚔️ START DUEL</button>}
+      {isHost&&opponentName&&<button onClick={startMatch} className="btn-primary btn-orange" style={{marginBottom:12}}>START DUEL</button>}
       <button onClick={backToLobby} className="btn-primary" style={{background:"transparent",color:C.textDim,border:`1px solid ${C.border}`,boxShadow:"none",fontSize:11}}>Leave</button>
     </div></div>);
 
   if(phase==="results"&&matchResult)return(
     <div className="menu-bg"><div className="grid-bg"/><div className="menu-inner" style={{maxWidth:440}}>
-      <div style={{fontSize:56,marginBottom:12,animation:"float 2s ease-in-out infinite"}}>{matchResult.win?"🏆":"💀"}</div>
+      <div style={{fontSize:56,marginBottom:12,animation:"float 2s ease-in-out infinite"}}>{matchResult.win?"WIN":"LOSS"}</div>
       <h2 style={{fontSize:32,fontWeight:900,color:matchResult.win?C.green:C.red,marginBottom:8,letterSpacing:-1}}>{matchResult.win?"VICTORY":"DEFEAT"}</h2>
       <div style={{fontSize:10.5,color:C.textDim,letterSpacing:4,marginBottom:28}}>{matchResult.myScore===matchResult.oppScore?"TIE GAME":matchResult.win?"YOU OUT-SNIPED THEM":"THEY WERE FASTER"}</div>
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:18,marginBottom:28}}><div className="glass-card" style={{textAlign:"center",borderColor:`${C.green}20`}}><div style={{fontSize:8,color:C.green,letterSpacing:2.5,marginBottom:8}}>YOU</div><div style={{fontSize:38,fontWeight:900,color:C.green,textShadow:`0 0 20px ${C.green}25`}}>{matchResult.myScore}</div><div style={{fontSize:9.5,color:C.textDim,marginTop:5}}>hits</div></div><div className="glass-card" style={{textAlign:"center",borderColor:`${C.orange}20`}}><div style={{fontSize:8,color:C.orange,letterSpacing:2.5,marginBottom:8}}>OPPONENT</div><div style={{fontSize:38,fontWeight:900,color:C.orange,textShadow:`0 0 20px ${C.orange}25`}}>{matchResult.oppScore}</div><div style={{fontSize:9.5,color:C.textDim,marginTop:5}}>hits</div></div></div>
       <button onClick={backToLobby} className="btn-primary btn-green">Back to Lobby</button>
     </div></div>);
 
-  const oppPanel=(<div style={{display:"flex",flexDirection:"column",height:"100%",overflow:"hidden"}}><div style={{padding:"14px 16px",borderBottom:`1px solid ${C.border}`,flexShrink:0}}><div style={{fontSize:8.5,color:C.orange,letterSpacing:2.5,marginBottom:10,fontWeight:700}}>⚔️ OPPONENT — {opponentName||"..."}</div>{opponentStats?(<div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>{[["SCORE",`${opponentStats.score}`,opponentStats.score>engine.stats.score?C.red:C.textDim],["STREAK",`${opponentStats.streak||"—"}`,opponentStats.streak>=4?C.yellow:C.textDim],["BEST",opponentStats.bestTime?`${(opponentStats.bestTime/1000).toFixed(2)}s`:"—",C.orange],["LAST",opponentStats.lastTime?`${(opponentStats.lastTime/1000).toFixed(2)}s`:"—",C.blue]].map(([l,v,c])=>(<div key={l} style={{padding:"6px 9px",borderRadius:6,background:C.bgCard,border:`1px solid ${C.border}`}}><div style={{fontSize:7,color:C.textDim,letterSpacing:2,marginBottom:2}}>{l}</div><div style={{fontSize:13,fontWeight:800,color:c,fontFamily:"var(--mono)"}}>{v}</div></div>))}</div>):(<div style={{fontSize:10,color:C.textGhost,animation:"pulse 2s ease-in-out infinite"}}>Syncing...</div>)}</div><div style={{height:1,background:C.border,flexShrink:0}}/><PerfPanel stats={engine.stats} history={engine.attemptHistory}/></div>);
+  const oppPanel=(<div style={{display:"flex",flexDirection:"column",height:"100%",overflow:"hidden"}}><div style={{padding:"14px 16px",borderBottom:`1px solid ${C.border}`,flexShrink:0}}><div style={{fontSize:8.5,color:C.orange,letterSpacing:2.5,marginBottom:10,fontWeight:700}}>OPPONENT — {opponentName||"..."}</div>{opponentStats?(<div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>{[["SCORE",`${opponentStats.score}`,opponentStats.score>engine.stats.score?C.red:C.textDim],["STREAK",`${opponentStats.streak||"—"}`,opponentStats.streak>=4?C.yellow:C.textDim],["BEST",opponentStats.bestTime?`${(opponentStats.bestTime/1000).toFixed(2)}s`:"—",C.orange],["LAST",opponentStats.lastTime?`${(opponentStats.lastTime/1000).toFixed(2)}s`:"—",C.blue]].map(([l,v,c])=>(<div key={l} style={{padding:"6px 9px",borderRadius:6,background:C.bgCard,border:`1px solid ${C.border}`}}><div style={{fontSize:7,color:C.textDim,letterSpacing:2,marginBottom:2}}>{l}</div><div style={{fontSize:13,fontWeight:800,color:c,fontFamily:"var(--mono)"}}>{v}</div></div>))}</div>):(<div style={{fontSize:10,color:C.textGhost,animation:"pulse 2s ease-in-out infinite"}}>Syncing...</div>)}</div><div style={{height:1,background:C.border,flexShrink:0}}/><PerfPanel stats={engine.stats} history={engine.attemptHistory}/></div>);
 
   return <GameView engine={engine} onExit={endMatch} rightPanel={oppPanel}/>;
 }
@@ -663,32 +679,29 @@ function ProfileTab({session,stats,loading,msg,onRefresh}){
     <div className="menu-bg practice-menu-bg">
       <div className="grid-bg"/>
       <div className="menu-glow-orb green"/>
-      <div className="menu-inner" style={{maxWidth:700,textAlign:"left"}}>
-        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:14}}>
+      <div className="menu-inner" style={{maxWidth:1060,width:"100%",textAlign:"left",paddingBottom:24}}>
+        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:24}}>
           <div>
-            <div style={{fontSize:9,color:C.textDim,letterSpacing:3,marginBottom:6}}>PLAYER PROFILE</div>
-            <h2 style={{fontSize:28,fontWeight:900,color:C.text,letterSpacing:-1}}>{username}</h2>
+            <div style={{fontSize:10,color:C.textDim,letterSpacing:3,marginBottom:6}}>PLAYER PROFILE</div>
+            <h2 style={{fontSize:34,fontWeight:900,color:C.text,letterSpacing:-1}}>{username}</h2>
           </div>
-          <button onClick={onRefresh} className="btn-ghost" style={{fontSize:9,padding:"6px 10px"}}>REFRESH</button>
+          <button onClick={onRefresh} className="btn-ghost" style={{fontSize:10,padding:"8px 12px"}}>REFRESH</button>
         </div>
         {msg&&<div className="glass-card" style={{marginBottom:12,padding:"10px 12px",color:C.red,fontSize:10}}>{msg}</div>}
         {loading?<div className="glass-card" style={{fontSize:11,color:C.textDim}}>Loading stats...</div>:<>
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:12}}>
-            <div className="glass-card" style={{padding:"14px 16px"}}>
-              <div style={{fontSize:8,color:C.green,letterSpacing:2.2,marginBottom:10,fontWeight:800}}>PRACTICE</div>
-              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
-                {[["Sessions",stats.practice_sessions],["Rounds",stats.practice_rounds],["Accuracy",`${practiceAcc}%`],["Best RT",stats.practice_best_time!==null?`${(stats.practice_best_time/1000).toFixed(3)}s`:"—"],["Best Streak",stats.practice_best_streak],["Miss+Early",stats.practice_misses+stats.practice_penalties]].map(([l,v])=>(<div key={l} style={{padding:"6px 8px",borderRadius:8,background:C.bgCard,border:`1px solid ${C.border}`}}><div style={{fontSize:7,color:C.textDim,letterSpacing:1.4,marginBottom:2}}>{l}</div><div style={{fontSize:13,fontWeight:800,color:C.text}}>{v}</div></div>))}
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14,marginBottom:16}}>
+            <div className="glass-card" style={{padding:"20px 22px",minHeight:360}}>
+              <div style={{fontSize:9,color:C.green,letterSpacing:2.2,marginBottom:12,fontWeight:800}}>PRACTICE</div>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+                {[["Sessions",stats.practice_sessions],["Rounds",stats.practice_rounds],["Accuracy",`${practiceAcc}%`],["Best RT",stats.practice_best_time!==null?`${(stats.practice_best_time/1000).toFixed(3)}s`:"—"],["Best Streak",stats.practice_best_streak],["Miss+Early",stats.practice_misses+stats.practice_penalties]].map(([l,v])=>(<div key={l} style={{padding:"14px 12px",borderRadius:8,background:C.bgCard,border:`1px solid ${C.border}`,minHeight:78}}><div style={{fontSize:8,color:C.textDim,letterSpacing:1.4,marginBottom:6}}>{l}</div><div style={{fontSize:16,fontWeight:800,color:C.text}}>{v}</div></div>))}
               </div>
             </div>
-            <div className="glass-card" style={{padding:"14px 16px"}}>
-              <div style={{fontSize:8,color:C.orange,letterSpacing:2.2,marginBottom:10,fontWeight:800}}>1V1</div>
-              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
-                {[["Matches",stats.duel_matches],["Wins",stats.duel_wins],["Losses",stats.duel_losses],["Draws",stats.duel_draws],["Win Rate",`${duelWinRate}%`],["Avg Score",avgDuelFor],["Best Score",stats.duel_best_score],["Score Diff",stats.duel_score_for-stats.duel_score_against]].map(([l,v])=>(<div key={l} style={{padding:"6px 8px",borderRadius:8,background:C.bgCard,border:`1px solid ${C.border}`}}><div style={{fontSize:7,color:C.textDim,letterSpacing:1.4,marginBottom:2}}>{l}</div><div style={{fontSize:13,fontWeight:800,color:C.text}}>{v}</div></div>))}
+            <div className="glass-card" style={{padding:"20px 22px",minHeight:360}}>
+              <div style={{fontSize:9,color:C.orange,letterSpacing:2.2,marginBottom:12,fontWeight:800}}>1V1</div>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+                {[["Matches",stats.duel_matches],["Wins",stats.duel_wins],["Losses",stats.duel_losses],["Draws",stats.duel_draws],["Win Rate",`${duelWinRate}%`],["Avg Score",avgDuelFor],["Best Score",stats.duel_best_score],["Score Diff",stats.duel_score_for-stats.duel_score_against]].map(([l,v])=>(<div key={l} style={{padding:"14px 12px",borderRadius:8,background:C.bgCard,border:`1px solid ${C.border}`,minHeight:78}}><div style={{fontSize:8,color:C.textDim,letterSpacing:1.4,marginBottom:6}}>{l}</div><div style={{fontSize:16,fontWeight:800,color:C.text}}>{v}</div></div>))}
               </div>
             </div>
-          </div>
-          <div className="glass-card" style={{padding:"12px 14px",fontSize:10,color:C.textDim,lineHeight:1.65}}>
-            Stats are saved to your account and update after each completed Practice session and each finished 1v1 match.
           </div>
         </>}
       </div>
@@ -738,9 +751,9 @@ function AuthScreen(){
           <h1 className="title-text auth-title" style={{color:C.greenBright}}>TRENCHES ID</h1>
           <div className="auth-subtitle">Secure access for Practice and 1v1 mode.</div>
           <div className="auth-points">
-            <div className="auth-point"><span>⚡</span>Fast sign-in with username + password</div>
+            <div className="auth-point"><span>•</span>Fast sign-in with username + password</div>
             <div className="auth-point"><span>🧠</span>Track your session stats and streaks</div>
-            <div className="auth-point"><span>⚔️</span>Queue into 1v1 rooms instantly</div>
+            <div className="auth-point"><span>•</span>Queue into 1v1 rooms instantly</div>
           </div>
         </div>
         <div className="auth-form-card">
@@ -769,6 +782,7 @@ function AuthScreen(){
 }
 
 export default function App(){
+  const router=useRouter();
   const[tab,setTab]=useState("practice");
   const[startDiff,setStartDiff]=useState(1);
   const[session,setSession]=useState(null);
@@ -871,8 +885,8 @@ export default function App(){
     <div style={{height:"100vh",display:"flex",flexDirection:"column",background:C.bg,fontFamily:"var(--mono)",overflow:"hidden"}}>
       {/* TAB BAR */}
       <div className="tab-bar">
-        <div className="tab-logo"><span style={{color:C.green,fontSize:13}}>⚡</span><span>TRENCHES</span></div>
-        {[["practice","Practice",C.green],["1v1","1v1",C.orange],["profile","Profile",C.blue]].map(([key,label,accent])=>{
+        <button className="tab-logo tab-logo-btn" onClick={()=>router.push("/")} aria-label="Go to home page"><span style={{color:C.green,fontSize:13}}>TT</span><span>TRENCHES</span></button>
+        {[["practice","Practice",C.green],["1v1","1v1",C.orange]].map(([key,label,accent])=>{
           const active=tab===key;
           return(<button key={key} onClick={()=>setTab(key)} className={`tab-btn ${active?"tab-active":""}`} style={{"--accent":accent}}>{active&&<span className="tab-dot" style={{background:accent,boxShadow:`0 0 8px ${accent}50`}}/>}{label}</button>);
         })}
@@ -882,8 +896,17 @@ export default function App(){
           {[1,3,5,7,10].map(d=>{const ac=startDiff===d;const col=d>=8?C.red:d>=5?C.yellow:C.green;return(<button key={d} onClick={()=>setStartDiff(d)} style={{width:28,height:22,borderRadius:5,border:`1px solid ${ac?col:C.border}`,background:ac?`${col}18`:"transparent",color:ac?col:C.textGhost,fontSize:9,fontWeight:ac?800:500,fontFamily:"var(--mono)",cursor:"pointer",transition:"all 0.15s",padding:0}}>{d}</button>);})}
         </div>}
         <div style={{flex:1}}/>
-        <span style={{fontSize:9,color:C.textDim,marginRight:10,maxWidth:220,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{session?.user?.user_metadata?.username||session?.user?.email?.split("@")[0]||"signed in"}</span>
-        <button onClick={logOut} className="btn-ghost" style={{marginRight:10,fontSize:9,padding:"6px 10px"}}>LOGOUT</button>
+        <div style={{display:"flex",alignItems:"center",gap:8,height:31,padding:"0 8px",border:`1px solid ${C.border}`,borderRadius:8,background:C.bgCard,marginRight:10,marginBottom:-1}}>
+          <span style={{display:"flex",alignItems:"center",height:"100%",fontSize:9,lineHeight:1,color:C.textDim,maxWidth:180,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{session?.user?.user_metadata?.username||session?.user?.email?.split("@")[0]||"signed in"}</span>
+          <button
+            onClick={()=>setTab("profile")}
+            className="btn-ghost"
+            style={{display:"flex",alignItems:"center",justifyContent:"center",height:20,fontSize:8,lineHeight:1,padding:"0 8px",borderColor:tab==="profile"?`${C.blue}66`:C.border,color:tab==="profile"?C.blue:C.textDim}}
+          >
+            PROFILE
+          </button>
+          <button onClick={logOut} className="btn-ghost" style={{display:"flex",alignItems:"center",justifyContent:"center",height:20,fontSize:8,lineHeight:1,padding:"0 8px"}}>LOGOUT</button>
+        </div>
         <span style={{fontSize:8,color:C.textGhost,letterSpacing:2.5}}>v3.0</span>
       </div>
       <div style={{flex:1,overflow:"hidden"}}>
@@ -916,6 +939,7 @@ const CSS=`
   .tab-bar::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
     background:linear-gradient(90deg,transparent 10%,${C.border} 50%,transparent 90%);}
   .tab-logo{display:flex;align-items:center;gap:6px;margin-right:22px;font-size:12px;font-weight:800;color:${C.text};letter-spacing:0.5px;}
+  .tab-logo-btn{background:transparent;border:none;padding:0;cursor:pointer;}
   .tab-btn{padding:9px 20px;background:transparent;border:none;border-bottom:2px solid transparent;
     color:${C.textDim};font-size:11px;font-weight:600;font-family:var(--mono);cursor:pointer;
     letter-spacing:1.5px;transition:all 0.25s;margin-bottom:-1px;display:flex;align-items:center;gap:6px;position:relative;}
