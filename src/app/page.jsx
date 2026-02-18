@@ -1,7 +1,8 @@
 'use client';
 
-import Link from 'next/link';
 import { useEffect } from 'react';
+import Link from 'next/link';
+import ThreeBackground from '../components/ThreeBackground';
 
 const C = {
   bg: '#0b0e14',
@@ -49,15 +50,6 @@ const steps = [
   },
 ];
 
-const features = [
-  { icon: null, title: 'Reaction Tracking', desc: 'Millisecond-precise timing from round start to click. Every rep logged.' },
-  { icon: null, title: 'Streak Multipliers', desc: 'Chain hits for up to 3x score multipliers. Break the streak and reset.' },
-  { icon: null, title: 'Traps & Decoys', desc: 'Higher difficulties mix in mismatched name-emoji pairs designed to fool you.' },
-  { icon: null, title: '1v1 Duels', desc: 'Compete head-to-head on identical rounds. Same seed, same tokens, pure skill.' },
-  { icon: null, title: 'Public Lobbies', desc: 'Browse open games and jump in instantly or create your own room with a code.' },
-  { icon: null, title: 'Full Stats Profile', desc: 'Persistent session history, accuracy rates, best times, and duel records.' },
-];
-
 function GlassCard({ children, style, className = '', ...props }) {
   return (
     <div
@@ -78,34 +70,20 @@ function GlassCard({ children, style, className = '', ...props }) {
 
 export default function LandingPage() {
   useEffect(() => {
-    const elements = Array.from(document.querySelectorAll('[data-reveal]'));
-    if (elements.length === 0) return;
-
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reduceMotion) {
-      elements.forEach((el) => el.classList.add('is-visible'));
-      return;
-    }
-
+    const els = Array.from(document.querySelectorAll('[data-reveal]'));
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
-          entry.target.classList.add('is-visible');
-          observer.unobserve(entry.target);
+          if (entry.isIntersecting) {
+            const delay = parseInt(entry.target.dataset.revealOrder || '0', 10);
+            setTimeout(() => entry.target.classList.add('is-visible'), delay);
+            observer.unobserve(entry.target);
+          }
         });
       },
-      { threshold: 0.06, rootMargin: '0px 0px -4% 0px' }
+      { threshold: 0.12 }
     );
-
-    elements.forEach((el, i) => {
-      const order = Number(el.getAttribute('data-reveal-order'));
-      const baseDelay = Number.isFinite(order) ? order : (i % 4) * 35;
-      const delay = Math.min(90, Math.round(baseDelay * 0.35));
-      el.style.setProperty('--reveal-delay', `${delay}ms`);
-      observer.observe(el);
-    });
-
+    els.forEach((el) => observer.observe(el));
     return () => observer.disconnect();
   }, []);
 
@@ -114,36 +92,16 @@ export default function LandingPage() {
       minHeight: '100vh',
       background: C.bg,
       color: C.text,
+      position: 'relative',
       fontFamily: "'Geist Mono', 'Courier New', monospace",
-      overflowX: 'hidden',
     }}>
+      <ThreeBackground />
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;600;700;800;900&display=swap');
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
-        body { background: ${C.bg}; }
-
-        .grid-bg {
-          position: fixed;
-          inset: 0;
-          pointer-events: none;
-          z-index: 0;
-          background-image:
-            linear-gradient(rgba(72,187,120,0.03) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(72,187,120,0.03) 1px, transparent 1px);
-          background-size: 60px 60px;
-        }
-
-        .noise-bg {
-          position: fixed;
-          inset: 0;
-          pointer-events: none;
-          z-index: 0;
-          opacity: 0.018;
-          background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-          background-size: 200px 200px;
-        }
+        html, body { background: ${C.bg}; overflow-x: clip; }
 
         .content { position: relative; z-index: 1; }
 
@@ -250,48 +208,35 @@ export default function LandingPage() {
 
         .reveal {
           opacity: 0;
-          transform: translateY(14px);
-          transition:
-            opacity 0.4s cubic-bezier(0.22, 1, 0.36, 1),
-            transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-          transition-delay: var(--reveal-delay, 0ms);
+          transform: translateY(28px);
+          transition: opacity 0.6s cubic-bezier(0.22,1,0.36,1), transform 0.6s cubic-bezier(0.22,1,0.36,1);
           will-change: opacity, transform;
         }
         .reveal.is-visible {
           opacity: 1;
-          transform: translateY(0);
+          transform: none;
+          will-change: auto;
         }
         @media (prefers-reduced-motion: reduce) {
-          .reveal {
-            opacity: 1 !important;
-            transform: none !important;
-            transition: none !important;
-          }
+          .reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
         }
       `}</style>
 
-      <div className="grid-bg" />
-      <div className="noise-bg" />
-
       {/* NAV */}
       <nav style={{
-        position: 'sticky',
-        top: 0,
+        position: 'relative',
         zIndex: 100,
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'space-between',
         padding: '0 40px',
         height: 60,
-        background: 'rgba(11,14,20,0.85)',
-        backdropFilter: 'blur(12px)',
+        background: 'rgba(11,14,20,0.96)',
         borderBottom: `1px solid rgba(72,187,120,0.1)`,
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <span style={{ fontSize: 20 }}>⚔️</span>
-          <span style={{ fontWeight: 800, fontSize: 15, letterSpacing: 2, color: C.text }}>TRENCHES TRAINER</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, width: 200, flexShrink: 0 }}>
+          <img src="/logo.png" alt="Trenches logo" style={{ height: 38, width: 'auto', display: 'block' }} />
         </div>
-        <div className="nav-links" style={{ display: 'flex', gap: 32, alignItems: 'center' }}>
+        <div className="nav-links" style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: 32, alignItems: 'center' }}>
           <a href="#how-it-works" style={{ color: C.textMuted, textDecoration: 'none', fontSize: 12, letterSpacing: 1.5, fontWeight: 600, transition: 'color 0.2s' }}
             onMouseOver={e => e.target.style.color = C.text}
             onMouseOut={e => e.target.style.color = C.textMuted}>
@@ -308,9 +253,11 @@ export default function LandingPage() {
             RANKS
           </a>
         </div>
-        <Link href="/play" className="btn-primary" style={{ padding: '10px 24px', fontSize: 11 }}>
-          PLAY NOW
-        </Link>
+        <div style={{ width: 200, marginLeft: 'auto', display: 'flex', justifyContent: 'flex-end', flexShrink: 0 }}>
+          <Link href="/play" className="btn-primary" style={{ padding: '10px 24px', fontSize: 11 }}>
+            PLAY NOW
+          </Link>
+        </div>
       </nav>
 
       <div className="content">
@@ -325,78 +272,82 @@ export default function LandingPage() {
           textAlign: 'center',
           padding: '80px 24px 60px',
         }}>
-          <div className="animate-float" style={{ fontSize: 64, marginBottom: 24 }}>⚔️</div>
+          <div style={{ width: 'min(860px, 100%)', margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <div className="animate-float" style={{ marginBottom: 26 }}>
+              <img src="/logo.png" alt="Trenches logo" style={{ height: 112, width: 'auto', display: 'block', margin: '0 auto' }} />
+            </div>
 
-          <div style={{
-            fontSize: 11,
-            fontWeight: 700,
-            letterSpacing: 4,
-            color: C.green,
-            marginBottom: 20,
-            textTransform: 'uppercase',
-          }}>
-            <span className="animate-pulse" style={{ display: 'inline-block', width: 6, height: 6, background: C.green, borderRadius: '50%', marginRight: 8, verticalAlign: 'middle' }} />
-            Reaction Trainer for Crypto Traders
-          </div>
+            <div style={{
+              fontSize: 11,
+              fontWeight: 700,
+              letterSpacing: 4,
+              color: C.green,
+              marginBottom: 20,
+              textTransform: 'uppercase',
+            }}>
+              <span className="animate-pulse" style={{ display: 'inline-block', width: 6, height: 6, background: C.green, borderRadius: '50%', marginRight: 8, verticalAlign: 'middle' }} />
+              Reaction Trainer for Crypto Traders
+            </div>
 
-          <h1 className="hero-title" style={{
-            fontSize: 72,
-            fontWeight: 900,
-            letterSpacing: -3,
-            lineHeight: 1.0,
-            marginBottom: 28,
-            background: `linear-gradient(135deg, ${C.text} 0%, ${C.textMuted} 100%)`,
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-          }}>
-            TRAIN IN THE<br />
-            <span style={{
-              background: `linear-gradient(135deg, ${C.green} 0%, ${C.cyan} 100%)`,
+            <h1 className="hero-title" style={{
+              fontSize: 72,
+              fontWeight: 900,
+              letterSpacing: -3,
+              lineHeight: 1.0,
+              marginBottom: 28,
+              background: `linear-gradient(135deg, ${C.text} 0%, ${C.textMuted} 100%)`,
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
-            }}>TRENCHES</span>
-          </h1>
+            }}>
+              TRAIN IN THE<br />
+              <span style={{
+                background: `linear-gradient(135deg, ${C.green} 0%, ${C.cyan} 100%)`,
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+              }}>TRENCHES</span>
+            </h1>
 
-          <p className="hero-sub" style={{
-            fontSize: 17,
-            color: C.textMuted,
-            maxWidth: 520,
-            lineHeight: 1.75,
-            marginBottom: 48,
-            fontWeight: 400,
-          }}>
-            Sharpen your reaction time. Cut through the noise.
-            Identify the right token before the window closes —
-            then challenge someone to prove it.
-          </p>
+            <p className="hero-sub" style={{
+              fontSize: 17,
+              color: C.textMuted,
+              maxWidth: 520,
+              lineHeight: 1.75,
+              marginBottom: 48,
+              fontWeight: 400,
+            }}>
+              Sharpen your reaction time. Cut through the noise.
+              Identify the right token before the window closes —
+              then challenge someone to prove it.
+            </p>
 
-          <div className="cta-row" style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
-            <Link href="/play" className="btn-primary">
-              START TRAINING
-            </Link>
-            <a href="#how-it-works" className="btn-ghost">
-              SEE HOW IT WORKS
-            </a>
-          </div>
+            <div className="cta-row" style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
+              <Link href="/play" className="btn-primary">
+                START TRAINING
+              </Link>
+              <a href="#how-it-works" className="btn-ghost">
+                SEE HOW IT WORKS
+              </a>
+            </div>
 
-          {/* FAKE STAT BAR */}
-          <div style={{
-            marginTop: 80,
-            display: 'flex',
-            gap: 48,
-            justifyContent: 'center',
-            flexWrap: 'wrap',
-          }}>
-            {[
-              { label: 'AVG REACTION TIME', value: '~280ms', color: C.green },
-              { label: 'TOP RANK THRESHOLD', value: '< 200ms', color: '#ff6bff' },
-              { label: 'DIFFICULTY LEVELS', value: '10', color: C.orange },
-            ].map(stat => (
-              <div key={stat.label} style={{ textAlign: 'center' }}>
-                <div style={{ fontSize: 28, fontWeight: 900, color: stat.color, letterSpacing: -1 }}>{stat.value}</div>
-                <div style={{ fontSize: 10, color: C.textDim, letterSpacing: 2, marginTop: 4, fontWeight: 600 }}>{stat.label}</div>
-              </div>
-            ))}
+            {/* FAKE STAT BAR */}
+            <div style={{
+              marginTop: 80,
+              display: 'flex',
+              gap: 48,
+              justifyContent: 'center',
+              flexWrap: 'wrap',
+            }}>
+              {[
+                { label: 'AVG REACTION TIME', value: '~280ms', color: C.green },
+                { label: 'TOP RANK THRESHOLD', value: '< 200ms', color: '#ff6bff' },
+                { label: 'DIFFICULTY LEVELS', value: '10', color: C.orange },
+              ].map(stat => (
+                <div key={stat.label} style={{ textAlign: 'center' }}>
+                  <div style={{ fontSize: 28, fontWeight: 900, color: stat.color, letterSpacing: -1 }}>{stat.value}</div>
+                  <div style={{ fontSize: 10, color: C.textDim, letterSpacing: 2, marginTop: 4, fontWeight: 600 }}>{stat.label}</div>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
 
@@ -494,24 +445,6 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* FEATURES GRID */}
-        <section style={{ padding: '60px 24px 100px', maxWidth: 960, margin: '0 auto' }}>
-          <div className="reveal" data-reveal data-reveal-order="0" style={{ textAlign: 'center', marginBottom: 64 }}>
-            <div style={{ fontSize: 10, letterSpacing: 4, color: C.cyan, fontWeight: 700, marginBottom: 12 }}>BUILT FOR GRINDERS</div>
-            <h2 style={{ fontSize: 36, fontWeight: 900, letterSpacing: -1 }}>Features</h2>
-          </div>
-
-          <div className="features-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
-            {features.map((f, i) => (
-              <div key={i} className="feature-card reveal" data-reveal data-reveal-order={`${80 + i * 45}`}>
-                {f.icon && <div style={{ fontSize: 32, marginBottom: 16 }}>{f.icon}</div>}
-                <div style={{ fontSize: 12, fontWeight: 800, letterSpacing: 1.5, color: C.text, marginBottom: 8 }}>{f.title}</div>
-                <div style={{ fontSize: 12, color: C.textMuted, lineHeight: 1.8 }}>{f.desc}</div>
-              </div>
-            ))}
-          </div>
-        </section>
-
         {/* RANKS */}
         <section id="ranks" style={{ padding: '60px 24px 100px', maxWidth: 900, margin: '0 auto' }}>
           <div className="reveal" data-reveal data-reveal-order="0" style={{ textAlign: 'center', marginBottom: 64 }}>
@@ -589,7 +522,7 @@ export default function LandingPage() {
           gap: 16,
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ fontSize: 16 }}>⚔️</span>
+            <img src="/logo.png" alt="Trenches logo" style={{ height: 22, width: 'auto', display: 'block' }} />
             <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: 2, color: C.textMuted }}>TRENCHES TRAINER</span>
           </div>
           <div style={{ fontSize: 11, color: C.textDim, letterSpacing: 1 }}>
