@@ -33,6 +33,8 @@ Supabase CLI is used for schema migrations in `supabase/migrations`.
 3. Add keys to `.env.local`:
    - `NEXT_PUBLIC_SUPABASE_URL`
    - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   - `SUPABASE_SERVICE_ROLE_KEY` (required for admin code API route)
+   - `DASHBOARD_KEY` (shared secret for `/dashboard`)
 
 ## Notes
 
@@ -43,6 +45,7 @@ Supabase CLI is used for schema migrations in `supabase/migrations`.
 ## Invite-only signup codes
 
 Signup now requires a one-time access code and enforcement happens in Supabase (not just frontend).
+Login also requires an access code that matches the code consumed by that account.
 
 After running migrations, create codes in Supabase SQL editor:
 
@@ -70,3 +73,16 @@ from public.signup_access_codes
 where consumed_at is not null
 order by consumed_at desc;
 ```
+
+### Dashboard for code management
+
+You can create/revoke codes from the app at `/dashboard`.
+
+Requirements:
+- Be logged in to the app.
+- Provide `DASHBOARD_KEY` in the page input.
+
+The page supports:
+- Listing current codes
+- Creating new unused one-time codes
+- Revoking unused codes

@@ -49,6 +49,12 @@ const THEMES = [
   { kw:"frog",emoji:"🐸",de:["🐍","🦎","🐢","🐊","🦖","🐛","🦗","🐞","🦋","🐝"],names:["FrogCoin","FROG","FrogToken","FRGX"],decoys:["SnakeCoin","LizardTkn","TurtleDAO","CrocCoin","DinoToken","GECKO","ToadCoin","NewtDAO","BugCoin","BeetleTkn"],tweets:[{text:"Frogs taking over the timeline again 🐸",user:"MemeRadar",handle:"@memeradar",time:"6s"},{text:"The frog meta is BACK 🐸🐸",user:"AlphaFrog",handle:"@alphafrog",time:"28s"},{text:"Frog memes everywhere. Crystal clear.",user:"DegenPulse",handle:"@degenpulse",time:"11s"}]},
   { kw:"penguin",emoji:"🐧",de:["🦅","🦆","🦉","🐦","🦜","🕊️","🦩","🐔","🦚","🦢"],names:["PenguinCoin","PENGUIN","PenguinDAO","PNGX"],decoys:["EagleCoin","DuckToken","OwlDAO","BirdCoin","ParrotTkn","DOVE","FlamingoC","ChickenDAO","PeacockCoin","SwanTkn"],tweets:[{text:"Penguins trending everywhere 🐧 Load up.",user:"TrendAlpha",handle:"@trendalpha",time:"15s"},{text:"Antarctic penguin population hits record.",user:"SciAlerts",handle:"@scialerts",time:"38s"},{text:"Penguin szn is here. Don't sleep. 🐧🐧",user:"NarrativeBot",handle:"@narrativebot",time:"4s"}]},
   { kw:"moon",emoji:"🌕",de:["⭐","☀️","🪐","🌍","💫","🌌","☄️","🔭","🌟","✨"],names:["MoonCoin","MOON","MoonToken","MOONX"],decoys:["StarCoin","SunToken","PlanetDAO","EarthCoin","CosmosTkn","GALAXY","CometCoin","NovaCoin","AuroraCoin","NeptuneTkn"],tweets:[{text:"Going to the MOON tonight 🌕 Buckle up.",user:"MoonBoi",handle:"@moonboi",time:"2s"},{text:"Lunar eclipse — moon mania 🌙",user:"AstroAlerts",handle:"@astroalerts",time:"25s"},{text:"Moon content flooding every timeline.",user:"NarrativeHQ",handle:"@narrativehq",time:"18s"}]},
+  { kw:"cat",emoji:"🐈",de:["🐕","🐻","🐰","🦊","🐺","🐹","🦁","🐯","🐼","🐵"],names:["CatCoin","CAT","CatToken","CATX"],decoys:["DogCoin","BearToken","BunnyDAO","FoxCoin","WolfToken","HAMSTER","LionCoin","TigerDAO","PandaCoin","MonkeyTkn"],tweets:[{text:"Cat meta heating up again 🐈",user:"MemeRadar",handle:"@memeradar",time:"9s"},{text:"Cats dominating For You right now.",user:"TrendDesk",handle:"@trenddesk",time:"21s"},{text:"Feline narrative confirmed. 🐾",user:"AlphaCats",handle:"@alphacats",time:"36s"}]},
+  { kw:"shark",emoji:"🦈",de:["🐋","🐬","🐙","🦑","🐟","🐠","🦀","🪼","🐡","🦐"],names:["SharkCoin","SHARK","SharkDAO","SHRK"],decoys:["WhaleCoin","DolphinTkn","OctoDAO","SquidCoin","FishToken","REEF","CrabCoin","JellyDAO","PufferCoin","ShrimpTkn"],tweets:[{text:"Sharks are circling low caps 🦈",user:"WhaleScope",handle:"@whalescope",time:"12s"},{text:"Big wallets just rotated into shark names.",user:"OnchainEdge",handle:"@onchainedge",time:"28s"},{text:"Shark szn back on CT. Teeth out.",user:"TrenchAlpha",handle:"@trenchaIpha",time:"44s"}]},
+  { kw:"coffee",emoji:"☕",de:["🥤","🧋","🍵","🥛","🍶","🧃","🍺","🍷","🥂","🧉"],names:["CoffeeCoin","COFFEE","BrewToken","BREWX"],decoys:["SodaCoin","BobaToken","TeaDAO","MilkCoin","JuiceToken","LATTE","AleCoin","WineDAO","ToastCoin","MateTkn"],tweets:[{text:"Coffee narrative waking up the timeline ☕",user:"MorningCalls",handle:"@morningcalls",time:"5s"},{text:"Caffeine coins pumping before NY open.",user:"MarketWake",handle:"@marketwake",time:"19s"},{text:"Brew meta everywhere. Don't fade.",user:"DegenBrew",handle:"@degenbrew",time:"33s"}]},
+  { kw:"robot",emoji:"🤖",de:["🛸","📡","💻","🧠","🔋","⚙️","🛰️","🦾","🧬","🧪"],names:["RobotCoin","ROBOT","MechDAO","RBTX"],decoys:["UFOToken","SignalCoin","CodeToken","BrainDAO","BatteryCoin","GEAR","SatelliteCoin","CyberDAO","GeneCoin","LabTkn"],tweets:[{text:"AI bots are printing again 🤖",user:"AIPulse",handle:"@aipulse",time:"7s"},{text:"Robot tags trending after open-source launch.",user:"TechWire",handle:"@techwire",time:"23s"},{text:"Machine narrative is loud tonight.",user:"AlphaMech",handle:"@alphamech",time:"41s"}]},
+  { kw:"volcano",emoji:"🌋",de:["🌊","🏔️","🧊","🌪️","☀️","🌧️","⚡","🌫️","🔥","🌈"],names:["VolcanoCoin","VOLCANO","LavaToken","LAVAX"],decoys:["WaveCoin","MountainDAO","IceToken","StormCoin","SunToken","RAIN","ThunderCoin","MistDAO","FlameCoin","ArcTkn"],tweets:[{text:"Volcano tokens erupting 🌋",user:"HeatMap",handle:"@heatmap",time:"11s"},{text:"Lava narrative just broke resistance.",user:"ChartSage",handle:"@chartsage",time:"26s"},{text:"Magma memes all over X right now.",user:"NarrativeNow",handle:"@narrativenow",time:"39s"}]},
+  { kw:"ghost",emoji:"👻",de:["💀","🧟","🧛","🕷️","🦇","🧙","🪄","🌫️","🌙","🕯️"],names:["GhostCoin","GHOST","PhantomDAO","GHSTX"],decoys:["SkullCoin","ZombieToken","VampDAO","SpiderCoin","BatToken","WITCH","MagicCoin","FogDAO","MoonShade","CandleTkn"],tweets:[{text:"Ghost narrative haunting CT 👻",user:"NightAlpha",handle:"@nightalpha",time:"6s"},{text:"Phantom names catching bids into close.",user:"AfterHours",handle:"@afterhours",time:"17s"},{text:"Spooky season came early on chain.",user:"MemeDesk",handle:"@memedesk",time:"29s"}]},
 ];
 
 const FILLER=[
@@ -63,8 +69,16 @@ const FILLER=[
   {text:"this is the play. not financial advice.",user:"whale_alert",handle:"@whale_alert_",time:"30s",reply:"@pumpdotfun",
     quote:{user:"pump.fun",handle:"@pumpdotfun",time:"12m",verified:true,text:"Introducing graduated tokens — LP migration is now live."}},
   {text:"someone just aped $50K into a 2 minute old token lol",user:"onchain_lens",handle:"@onchain_lens",time:"45s",verified:true,media:{type:"image"}},
+  {text:"Volume divergence on memescope. Fast rotations everywhere.",user:"FlowScanner",handle:"@flowscanner",time:"22s",verified:true},
+  {text:"this pair launched 90s ago and already at 4k holders??",user:"chain_hunter",handle:"@chain_hunter",time:"11s",media:{type:"image"}},
+  {text:"Narratives flipping every 10 minutes today. Stay fluid.",user:"MetaShift",handle:"@metashift",time:"3m"},
+  {text:"whale wallet 9Z...k7 bought then sold in 47s. brutal.",user:"TapeReader",handle:"@tapereader",time:"1m",verified:true},
+  {text:"not your keys not your conviction",user:"oldman_ct",handle:"@oldmanct",time:"8m"},
+  {text:"Holders climbing but socials are dead. careful.",user:"RiskDesk",handle:"@riskdesk",time:"2m",warn:true},
+  {text:"I only trust entries after two clean pullbacks.",user:"price_action_ser",handle:"@priceactionser",time:"5m"},
+  {text:"new token launched with website + docs + roadmap. rare.",user:"launch_watch",handle:"@launchwatch",time:"48s",media:{type:"image"}},
 ];
-const NOISE_TICKERS=["BONK","WIF","PEPE","BRETT","ANDY","CHAD","GIGA","SMOL","BASED","SEND","COPE","SLERF","MEW","MYRO","SAMO","TURBO","SNEK","HONK","NEIRO","GOAT","PNUT","SPX","MOG","TOSHI","SIGMA","GRIND","PUMP","YOLO","WAGMI","NGMI","HODL","MONKE","VIBE"];
+const NOISE_TICKERS=["BONK","WIF","PEPE","BRETT","ANDY","CHAD","GIGA","SMOL","BASED","SEND","COPE","SLERF","MEW","MYRO","SAMO","TURBO","SNEK","HONK","NEIRO","GOAT","PNUT","SPX","MOG","TOSHI","SIGMA","GRIND","PUMP","YOLO","WAGMI","NGMI","HODL","MONKE","VIBE","AURA","FROST","KONG","JOLT","DUST","WAVE","BYTE","NOVA","ATOM","FLIP","FOMO","RUSH"];
 const NOISE_EMOJIS=["🐶","🐱","🐻","🦊","🐸","🐧","🎭","🗿","🧠","💊","🫡","👑","💀","🤡","🎪","🦍","🐍","🦈","🐋","🌊","🔮","🪙","💰","🎰","⭐","🌶️","🍄","🧊","🫧","🪐","☄️","🌋","🦎","🎯","⚡","🔥","💎"];
 
 const rA=()=>{const c="ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz123456789";let s="";for(let i=0;i<3;i++)s+=c[Math.floor(Math.random()*c.length)];return s+".."+c[Math.floor(Math.random()*c.length)]+"mp";};
@@ -81,7 +95,7 @@ function genRound(num, seed = null, maxDiffCap = 10) {
   const rng = seed !== null ? seededRng(seed + num * 7919) : null;
   const _pick = rng ? (a) => seededPick(a, rng) : pick;
   const _shuf = rng ? (a) => seededShuffle(a, rng) : shuffle;
-  const diff=Math.min(maxDiffCap,Math.floor(num/2)+1),pc=Math.round(Math.min(5+diff*1.5,20));
+  const diff=maxDiffCap<=3?Math.min(maxDiffCap,num+1):Math.min(maxDiffCap,Math.floor(num/2)+1),pc=Math.round(Math.min(5+diff*1.5,20));
   const th=_pick(THEMES),tw=_pick(th.tweets),cn=_pick(th.names);
   const ad=[...th.decoys,...NOISE_TICKERS.slice(0,10)],ae=[...th.de,...NOISE_EMOJIS.slice(0,10)];
   const ud=_shuf(ad).slice(0,pc-1),ue=_shuf(ae).slice(0,pc-1);
@@ -129,6 +143,7 @@ const EMPTY_PROFILE_STATS = {
 };
 
 const PROFILE_SELECT = "user_id,preferred_mode,practice_sessions,practice_rounds,practice_hits,practice_misses,practice_penalties,practice_best_time,practice_best_streak,duel_matches,duel_wins,duel_losses,duel_draws,duel_score_for,duel_score_against,duel_best_score";
+const HISTORY_SELECT = "id,user_id,mode,outcome,score,opponent_score,rounds,accuracy_pct,best_time,best_streak,created_at";
 const normalizeProfileStats = (raw = {}) => ({
   ...EMPTY_PROFILE_STATS,
   ...raw,
@@ -148,6 +163,15 @@ const normalizeProfileStats = (raw = {}) => ({
   duel_score_against: Number(raw?.duel_score_against || 0),
   duel_best_score: Number(raw?.duel_best_score || 0),
 });
+const formatHistoryDate=(value)=>{
+  if(!value)return"—";
+  const d=new Date(value);
+  if(Number.isNaN(d.getTime()))return"—";
+  const diffMs=Date.now()-d.getTime();
+  if(diffMs>=0&&diffMs<60_000)return"just now";
+  if(diffMs>=0&&diffMs<3_600_000)return`${Math.max(1,Math.floor(diffMs/60_000))}m ago`;
+  return d.toLocaleString();
+};
 
 /* ═══════════════════════════════════════════
    SHARED UI COMPONENTS
@@ -232,7 +256,7 @@ function TokenRow({coin,txState,onBuy,spawned,revealed,clickedId,showCorrect}){
   const wc=clickedId===coin.id,iw=wc&&!coin.isCorrect;
   const isRevealCorrect=showCorrect&&revealed&&coin.isCorrect;
   let bl="transparent",bg="transparent";if(iw){bl=C.red;bg="rgba(245,101,101,0.03)";}else if(isRevealCorrect){bl=C.green;bg="rgba(72,187,120,0.04)";}
-  const ia=txState==="active"&&!revealed,iwa=(txState==="waiting"||txState==="spawning")&&!revealed,sb=!revealed&&!coin.isNoise;
+  const ia=!revealed,sb=!revealed;
   const buyBtnStyle=(active,isMain)=>({display:"flex",alignItems:"center",justifyContent:"center",gap:3,padding:"0",background:"transparent",border:"none",color:active&&isMain?C.green:C.textDim,fontSize:active&&isMain?11:10,fontWeight:active&&isMain?800:600,cursor:active&&isMain?"pointer":"default",fontFamily:"var(--mono)",width:"100%",height:"100%",transition:"all 0.12s"});
 
   return(<div style={{display:"flex",alignItems:"flex-start",padding:"8px 8px",borderBottom:`1px solid ${C.border}`,borderLeft:`2px solid ${bl}`,background:bg,opacity:spawned?1:0,maxHeight:spawned?200:0,transform:spawned?"none":"translateY(-8px)",transition:"opacity 0.3s,transform 0.3s,max-height 0.3s",minHeight:spawned?86:0,overflow:"hidden",gap:8}}>
@@ -279,7 +303,7 @@ function TokenRow({coin,txState,onBuy,spawned,revealed,clickedId,showCorrect}){
       <div style={{width:108,height:64,borderRadius:6,background:C.bgCard,border:`1px solid ${ia&&sb?C.borderLight:C.border}`,display:"flex",flexDirection:"column",overflow:"hidden",transition:"border-color 0.2s"}}>
         <div style={{flex:1}}/>
         {sb?(<button onClick={e=>onBuy(coin,e)} style={buyBtnStyle(ia,true)}>
-          {iwa?<><span className="blink-dot"/>WAIT</>:ia?<><span style={{color:C.yellow,fontSize:9}}>⚡</span> TX NOW</>:<><span style={{color:C.yellow,fontSize:9}}>⚡</span> 3.30</>}
+          <><span style={{color:C.yellow,fontSize:9}}>⚡</span> TX NOW</>
         </button>):(<div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:3,color:C.textDim,fontSize:10,height:"100%"}}><span style={{color:C.yellow,fontSize:9}}>⚡</span> 3.30</div>)}
       </div>
     </div>
@@ -303,7 +327,7 @@ function PerfPanel({stats,history}){const avg=stats.times.length>0?stats.times.r
 /* ═══════════════════════════════════════════
    SESSION SUMMARY
 ═══════════════════════════════════════════ */
-function SessionSummary({stats,history,onBack}){
+function SessionSummary({stats,history,onBack,onProfile}){
   const avg=stats.times.length>0?stats.times.reduce((a,b)=>a+b,0)/stats.times.length:null;const rank=getRank(avg);
   const acc=(stats.hits+stats.misses+stats.penalties)>0?Math.round((stats.hits/(stats.hits+stats.misses+stats.penalties))*100):0;
   const slowest=stats.times.length>0?Math.max(...stats.times):null;
@@ -318,7 +342,10 @@ function SessionSummary({stats,history,onBack}){
       {[["SCORE",stats.score,C.green],["ACCURACY",`${acc}%`,acc>=80?C.green:acc>=50?C.yellow:C.red],["BEST STREAK",stats.bestStreak,C.orange],["FASTEST",stats.bestTime!==null?`${(stats.bestTime/1000).toFixed(3)}s`:"—",C.cyan],["SLOWEST",slowest!==null?`${(slowest/1000).toFixed(2)}s`:"—",C.red],["MISSES",stats.misses+stats.penalties,C.red]].map(([l,v,c])=>(<div key={l} className="glass-card" style={{padding:"10px 12px",textAlign:"center"}}><div style={{fontSize:7,color:C.textDim,letterSpacing:2,marginBottom:4}}>{l}</div><div style={{fontSize:16,fontWeight:900,color:c,fontFamily:"var(--mono)"}}>{v}</div></div>))}
     </div>
     <div className="glass-card" style={{marginBottom:20}}><div style={{fontSize:8,color:C.textDim,letterSpacing:2,marginBottom:12}}>RT DISTRIBUTION</div><div style={{display:"flex",alignItems:"flex-end",gap:6,height:80}}>{bc.map(b=>(<div key={b.l} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:4}}><span style={{fontSize:9,fontWeight:700,color:b.c,fontFamily:"var(--mono)"}}>{b.n}</span><div style={{width:"100%",height:`${Math.max(4,(b.n/mx)*60)}px`,borderRadius:4,background:`linear-gradient(180deg,${b.c},${b.c}60)`}}/><span style={{fontSize:7.5,color:C.textDim}}>{b.l}</span></div>))}</div></div>
-    <button onClick={onBack} className="btn-primary btn-green">Back to Menu</button>
+    <div style={{display:"flex",gap:10}}>
+      <button onClick={onBack} className="btn-primary btn-green" style={{flex:1}}>Back to Menu</button>
+      {onProfile&&<button onClick={onProfile} className="btn-primary btn-blue" style={{flex:1}}>Profile</button>}
+    </div>
   </div></div>);
 }
 
@@ -326,6 +353,7 @@ function SessionSummary({stats,history,onBack}){
    useGameEngine
 ═══════════════════════════════════════════ */
 function useGameEngine(startDiff=1,seed=null,maxDiffCap=10){
+  const FEED_MAX=40;
   const[stats,setStats]=useState({score:0,streak:0,bestStreak:0,bestTime:null,lastTime:null,hits:0,misses:0,penalties:0,times:[]});
   const[roundNum,setRoundNum]=useState(0);const[roundData,setRoundData]=useState(null);
   const[spawned,setSpawned]=useState(new Set());const[txState,setTxState]=useState("idle");
@@ -341,7 +369,7 @@ function useGameEngine(startDiff=1,seed=null,maxDiffCap=10){
   const spawnRef=useRef([]);const fbRef=useRef(null);const nextRef=useRef(null);
   const roundNumRef=useRef(0);const holsterPhaseRef=useRef("idle");const noiseRef=useRef(null);
   const pausedRef=useRef(false);const revealedRef=useRef(false);const pauseStartedRef=useRef(null);
-  const pausedSpawnQueueRef=useRef([]);const timerStartedRef=useRef(false);
+  const pausedSpawnQueueRef=useRef([]);
   const prevMultTier=useRef(0);const seedRef=useRef(seed);seedRef.current=seed;
   useEffect(()=>{roundNumRef.current=roundNum;},[roundNum]);
   useEffect(()=>{holsterPhaseRef.current=holsterPhase;},[holsterPhase]);
@@ -353,20 +381,29 @@ function useGameEngine(startDiff=1,seed=null,maxDiffCap=10){
   // Combo burst on multiplier tier change
   useEffect(()=>{if(multTier>prevMultTier.current&&multTier>0){SFX.combo();setComboBurst(multLabel);setTimeout(()=>setComboBurst(null),900);}prevMultTier.current=multTier;},[multTier,multLabel]);
   const clearAll=useCallback(()=>{spawnRef.current.forEach(clearTimeout);spawnRef.current=[];clearTimeout(fbRef.current);clearTimeout(nextRef.current);clearInterval(noiseRef.current);},[]);
+  const clampLiveFeed=useCallback((list)=>{
+    if(list.length<=FEED_MAX)return list;
+    const clipped=list.slice(0,FEED_MAX);
+    if(revealedRef.current)return clipped;
+    if(clipped.some(c=>c?.isCorrect))return clipped;
+    const correct=list.find(c=>c?.isCorrect);
+    if(!correct)return clipped;
+    clipped[clipped.length-1]=correct;
+    return clipped;
+  },[]);
   const flash=useCallback(c=>{setScreenFlash(c);setTimeout(()=>setScreenFlash(null),300);},[]);
   const shake=useCallback(()=>{setScreenShake(true);setTimeout(()=>setScreenShake(false),350);},[]);
   const showFB=useCallback((type,rt=null)=>{setFeedback({id:Date.now(),type,rt});clearTimeout(fbRef.current);fbRef.current=setTimeout(()=>setFeedback(null),1200);},[]);
-  const startNoiseFeed=useCallback(interval=>{clearInterval(noiseRef.current);noiseRef.current=setInterval(()=>{if(pausedRef.current)return;const n=genNoiseToken();setLiveFeed(p=>{const nx=[n,...p];return nx.length>40?nx.slice(0,40):nx;});setSpawned(p=>new Set([...p,n.id]));},interval);},[]);
-  const startTimerOnCorrectCoin=useCallback((coin)=>{if(!coin?.isCorrect||timerStartedRef.current||revealedRef.current)return;timerStartedRef.current=true;setTxState("active");setTimerRunning(true);setTimerStart(Date.now());},[]);
-  const launchRound=useCallback(()=>{clearAll();setIsPaused(false);pausedRef.current=false;pauseStartedRef.current=null;pausedSpawnQueueRef.current=[];timerStartedRef.current=false;const num=roundNumRef.current,data=genRound(num+Math.max(0,startDiff-1)*2,seedRef.current,maxDiffCap);setRoundData(data);setSpawned(new Set());setRevealed(false);setClickedId(null);setShowCorrect(false);setTxState("spawning");setTweetVis(false);setPairsVis(false);setTimerRunning(false);setTimerStart(null);setHolsterPhase("live");setLiveFeed([]);setTimeout(()=>setTweetVis(true),100);setTimeout(()=>{setPairsVis(true);setTxState("waiting");let si=0;const sn=()=>{if(si>=data.pairs.length){startNoiseFeed(data.noiseInterval);return;}const c=data.pairs[si];si++;if(pausedRef.current){pausedSpawnQueueRef.current.push(c);}else{setLiveFeed(p=>[c,...p]);setSpawned(p=>new Set([...p,c.id]));startTimerOnCorrectCoin(c);}const t=setTimeout(sn,data.spawnDelay);spawnRef.current.push(t);};sn();},400);},[clearAll,startNoiseFeed,startDiff,maxDiffCap,startTimerOnCorrectCoin]);
+  const startNoiseFeed=useCallback(interval=>{clearInterval(noiseRef.current);noiseRef.current=setInterval(()=>{if(pausedRef.current)return;const n=genNoiseToken();setLiveFeed(p=>clampLiveFeed([n,...p]));setSpawned(p=>new Set([...p,n.id]));},interval);},[clampLiveFeed]);
+  const launchRound=useCallback(()=>{clearAll();setIsPaused(false);pausedRef.current=false;pauseStartedRef.current=null;pausedSpawnQueueRef.current=[];const num=roundNumRef.current,data=genRound(num+Math.max(0,startDiff-1)*2,seedRef.current,maxDiffCap);setRoundData(data);setSpawned(new Set());setRevealed(false);setClickedId(null);setShowCorrect(false);setTxState("spawning");setTweetVis(false);setPairsVis(false);setTimerRunning(false);setTimerStart(null);setHolsterPhase("live");setLiveFeed([]);setTimeout(()=>setTweetVis(true),100);setTimeout(()=>{setPairsVis(true);setTxState("active");setTimerRunning(true);setTimerStart(Date.now());let si=0;const sn=()=>{if(si>=data.pairs.length){startNoiseFeed(data.noiseInterval);return;}const c=data.pairs[si];si++;if(pausedRef.current){pausedSpawnQueueRef.current.push(c);}else{setLiveFeed(p=>clampLiveFeed([c,...p]));setSpawned(p=>new Set([...p,c.id]));}const t=setTimeout(sn,data.spawnDelay);spawnRef.current.push(t);};sn();},400);},[clearAll,startNoiseFeed,startDiff,maxDiffCap,clampLiveFeed]);
   const cancelArm=useCallback(()=>{cancelAnimationFrame(armRafRef.current);clearTimeout(armTimeoutRef.current);armStartRef.current=null;setArmProgress(0);if(holsterPhaseRef.current==="arming")setHolsterPhase("idle");},[]);
   const startArming=useCallback(()=>{if(holsterPhaseRef.current!=="idle")return;setHolsterPhase("arming");SFX.arm();armStartRef.current=Date.now();const tick=()=>{if(!armStartRef.current)return;const el=Date.now()-armStartRef.current,prog=Math.min(el/CFG.holsterArm,1);setArmProgress(prog);if(prog<1){armRafRef.current=requestAnimationFrame(tick);}else{setHolsterPhase("armed");SFX.armed();armTimeoutRef.current=setTimeout(()=>launchRound(),200);}};armRafRef.current=requestAnimationFrame(tick);},[launchRound]);
   const handleHolsterEnter=useCallback(()=>{if(holsterPhaseRef.current==="idle")startArming();},[startArming]);
   const handleHolsterLeave=useCallback(()=>{if(holsterPhaseRef.current==="arming")cancelArm();},[cancelArm]);
   const handlePauseEnter=useCallback(()=>{if(holsterPhaseRef.current!=="live"||revealedRef.current||pausedRef.current)return;setIsPaused(true);pausedRef.current=true;pauseStartedRef.current=Date.now();},[]);
-  const handlePauseLeave=useCallback(()=>{if(!pausedRef.current)return;pausedRef.current=false;pauseStartedRef.current=null;setIsPaused(false);if(pausedSpawnQueueRef.current.length){const queued=pausedSpawnQueueRef.current;pausedSpawnQueueRef.current=[];setLiveFeed(p=>[...queued.slice().reverse(),...p]);setSpawned(p=>new Set([...p,...queued.map(c=>c.id)]));const correctQueued=queued.find(c=>c.isCorrect);if(correctQueued)startTimerOnCorrectCoin(correctQueued);}},[startTimerOnCorrectCoin]);
+  const handlePauseLeave=useCallback(()=>{if(!pausedRef.current)return;pausedRef.current=false;pauseStartedRef.current=null;setIsPaused(false);if(pausedSpawnQueueRef.current.length){const queued=pausedSpawnQueueRef.current;pausedSpawnQueueRef.current=[];setLiveFeed(p=>clampLiveFeed([...queued.slice().reverse(),...p]));setSpawned(p=>new Set([...p,...queued.map(c=>c.id)]));}},[clampLiveFeed]);
   const finishRound=useCallback(ok=>{clearInterval(noiseRef.current);setIsPaused(false);pausedRef.current=false;pauseStartedRef.current=null;pausedSpawnQueueRef.current=[];if(!ok)setShowCorrect(true);setHolsterPhase("cooldown");setTimeout(()=>{setRoundNum(p=>p+1);setHolsterPhase("idle");setArmProgress(0);setShowCorrect(false);},ok?1000:2000);},[]);
-  const handleBuy=useCallback((coin,e)=>{if(revealed)return;SFX.click();if(txState==="waiting"||txState==="spawning"){clearAll();setTxState("penalty");setRevealed(true);setTimerRunning(false);setClickedId(coin.id);showFB("penalty");flash("red");shake();SFX.penalty();setStats(p=>({...p,streak:0,penalties:p.penalties+1}));setAttemptHistory(p=>[...p,{id:Date.now(),type:"penalty",rt:null,round:roundNumRef.current+1}]);finishRound(false);return;}if(txState!=="active"||timerStart===null)return;const rt=Math.max(0,Date.now()-timerStart);setTimerRunning(false);setRevealed(true);setClickedId(coin.id);clearAll();if(coin.isCorrect){setTxState("hit");showFB("hit",rt);flash("green");SFX.hit();setStats(p=>{const ns=p.streak+1;return{...p,score:p.score+1,streak:ns,bestStreak:Math.max(p.bestStreak,ns),bestTime:p.bestTime===null?rt:Math.min(p.bestTime,rt),lastTime:rt,hits:p.hits+1,times:[...p.times,rt]};});setAttemptHistory(p=>[...p,{id:Date.now(),type:"hit",rt,round:roundNumRef.current+1}]);finishRound(true);}else{setTxState("missed");showFB("wrong",rt);flash("red");shake();SFX.miss();setStats(p=>({...p,streak:0,misses:p.misses+1,lastTime:rt}));setAttemptHistory(p=>[...p,{id:Date.now(),type:"wrong",rt,round:roundNumRef.current+1}]);finishRound(false);}},[txState,revealed,timerStart,clearAll,showFB,flash,shake,finishRound]);
+  const handleBuy=useCallback((coin,e)=>{if(revealed)return;SFX.click();if(timerStart===null)return;const rt=Math.max(0,Date.now()-timerStart);setTimerRunning(false);setRevealed(true);setClickedId(coin.id);clearAll();if(coin.isCorrect){setTxState("hit");showFB("hit",rt);flash("green");SFX.hit();setStats(p=>{const ns=p.streak+1;return{...p,score:p.score+1,streak:ns,bestStreak:Math.max(p.bestStreak,ns),bestTime:p.bestTime===null?rt:Math.min(p.bestTime,rt),lastTime:rt,hits:p.hits+1,times:[...p.times,rt]};});setAttemptHistory(p=>[...p,{id:Date.now(),type:"hit",rt,round:roundNumRef.current+1}]);finishRound(true);}else{setTxState("missed");showFB("wrong",rt);flash("red");shake();SFX.miss();setStats(p=>({...p,streak:0,misses:p.misses+1,lastTime:rt}));setAttemptHistory(p=>[...p,{id:Date.now(),type:"wrong",rt,round:roundNumRef.current+1}]);finishRound(false);}},[revealed,timerStart,clearAll,showFB,flash,shake,finishRound]);
   const reset=useCallback(()=>{clearAll();cancelAnimationFrame(armRafRef.current);clearTimeout(armTimeoutRef.current);clearInterval(noiseRef.current);setStats({score:0,streak:0,bestStreak:0,bestTime:null,lastTime:null,hits:0,misses:0,penalties:0,times:[]});setRoundNum(0);roundNumRef.current=0;setRoundData(null);setSpawned(new Set());setTxState("idle");setRevealed(false);setClickedId(null);setFeedback(null);setScreenFlash(null);setScreenShake(false);setComboBurst(null);setTweetVis(false);setPairsVis(false);setTimerRunning(false);setTimerStart(null);setLiveFeed([]);setAttemptHistory([]);setHolsterPhase("idle");setArmProgress(0);setShowCorrect(false);setIsPaused(false);pausedRef.current=false;pauseStartedRef.current=null;pausedSpawnQueueRef.current=[];},[clearAll]);
   useEffect(()=>()=>{clearAll();cancelAnimationFrame(armRafRef.current);clearTimeout(armTimeoutRef.current);},[clearAll]);
   return{stats,roundData,spawned,txState,revealed,clickedId,feedback,screenFlash,screenShake,comboBurst,showCorrect,isPaused,tweetVis,pairsVis,timerRunning,timerStart,liveFeed,attemptHistory,holsterPhase,armProgress,mult,multLabel,multColor,pnl,difficulty,roundNum,handleHolsterEnter,handleHolsterLeave,handlePauseEnter,handlePauseLeave,handleBuy,reset};
@@ -377,6 +414,12 @@ function useGameEngine(startDiff=1,seed=null,maxDiffCap=10){
 ═══════════════════════════════════════════ */
 function GameView({engine,onExit,rightPanel}){
   const g=engine;
+  const [searchQuery,setSearchQuery]=useState("");
+  const normalizedSearch=searchQuery.trim().toLowerCase();
+  const visibleFeed=normalizedSearch?g.liveFeed.filter(coin=>{
+    const name=(coin?.name||"").toLowerCase();
+    return name.includes(normalizedSearch);
+  }):g.liveFeed;
   return(
     <div style={{height:"100%",display:"flex",flexDirection:"column",background:C.bg,fontFamily:"var(--mono)",color:C.text,overflow:"hidden",position:"relative"}} className={g.screenShake?"shake":""}>
       {g.screenFlash&&<div className="screen-flash" style={{background:g.screenFlash==="green"?`radial-gradient(ellipse at center,rgba(72,187,120,0.1) 0%,transparent 65%)`:`radial-gradient(ellipse at center,rgba(245,101,101,0.1) 0%,transparent 65%)`}}/>}
@@ -394,8 +437,6 @@ function GameView({engine,onExit,rightPanel}){
         <div style={{width:"37%",minWidth:300,maxWidth:460,borderRight:`1px solid ${C.border}`,display:"flex",flexDirection:"column",background:C.bg,flexShrink:0}}>
           <div className="col-header" style={{gap:8}}>
             <span style={{fontWeight:800,fontSize:12,color:C.text}}>𝕏 Tracker</span>
-            <div style={{flex:1}}/>
-            {["🔇","▽","📌","↗","✕"].map((s,i)=><span key={i} style={{color:C.textGhost,fontSize:10,cursor:"pointer",padding:"0 2px"}}>{s}</span>)}
           </div>
           <div style={{flex:1,overflowY:"auto"}}>{g.tweetVis&&g.roundData?<><XTweet data={g.roundData.tweet} isSignal animDelay={0}/>{g.roundData.fillers.map((ft,i)=><XTweet key={i} data={ft} isSignal={false} animDelay={300+i*350}/>)}</>:<div className="empty-msg">Arm the holster to<br/>start a round</div>}</div>
         </div>
@@ -413,10 +454,14 @@ function GameView({engine,onExit,rightPanel}){
           <div style={{display:"flex",alignItems:"center",padding:"5px 12px",borderBottom:`1px solid ${C.border}`,gap:8,flexShrink:0}}>
             <span style={{color:C.text,fontSize:10.5,fontWeight:700}}>New</span>
             <div style={{flex:1}}/>
-            <span style={{color:C.textDim,fontSize:10}}>Search</span>
-            {["⚡","8","≡","📈","🔇","▽"].map((s,i)=><span key={i} style={{color:C.textGhost,fontSize:9,cursor:"pointer",padding:"0 1px"}}>{s}</span>)}
+            <input
+              value={searchQuery}
+              onChange={e=>setSearchQuery(e.target.value)}
+              placeholder="Search"
+              style={{width:120,height:24,padding:"0 8px",borderRadius:6,border:`1px solid ${C.border}`,background:C.bgCard,color:C.text,fontSize:10,fontFamily:"var(--mono)",outline:"none"}}
+            />
           </div>
-          <div style={{flex:1,overflowY:"auto",position:"relative"}}>{g.pairsVis&&g.liveFeed.length>0?g.liveFeed.map(coin=><TokenRow key={coin.id} coin={coin} spawned={g.spawned.has(coin.id)} txState={g.txState} revealed={g.revealed} clickedId={g.clickedId} onBuy={g.handleBuy} showCorrect={g.showCorrect}/>):<div className="empty-msg">Tokens appear here<br/>once round is armed</div>}{g.feedback&&<div className="feedback-wrap"><div className={`feedback-pill ${g.feedback.type==="hit"?"fb-hit":"fb-miss"}`}>{g.feedback.type==="hit"?`SNIPED ${(g.feedback.rt/1000).toFixed(2)}s ✅`:g.feedback.type==="penalty"?"TOO EARLY ⛔":g.feedback.rt?`WRONG ${(g.feedback.rt/1000).toFixed(2)}s ❌`:"WRONG ❌"}</div></div>}</div>
+          <div style={{flex:1,overflowY:"auto",position:"relative"}}>{g.pairsVis&&visibleFeed.length>0?visibleFeed.map(coin=><TokenRow key={coin.id} coin={coin} spawned={g.spawned.has(coin.id)} txState={g.txState} revealed={g.revealed} clickedId={g.clickedId} onBuy={g.handleBuy} showCorrect={g.showCorrect}/>):g.pairsVis&&g.liveFeed.length>0&&normalizedSearch?<div className="empty-msg">No matches found</div>:<div className="empty-msg">Tokens appear here<br/>once round is armed</div>}{g.feedback&&<div className="feedback-wrap"><div className={`feedback-pill ${g.feedback.type==="hit"?"fb-hit":"fb-miss"}`}>{g.feedback.type==="hit"?`SNIPED ${(g.feedback.rt/1000).toFixed(2)}s ✅`:g.feedback.type==="penalty"?"TOO EARLY ⛔":g.feedback.rt?`WRONG ${(g.feedback.rt/1000).toFixed(2)}s ❌`:"WRONG ❌"}</div></div>}</div>
         </div>
         {/* COL3 */}
         <div style={{flex:1,display:"flex",flexDirection:"column",background:C.bg,position:"relative"}}>
@@ -435,13 +480,13 @@ function GameView({engine,onExit,rightPanel}){
 /* ═══════════════════════════════════════════
    PRACTICE MODE
 ═══════════════════════════════════════════ */
-function PracticeMode({startDiff=1,onSessionComplete,onStartDiffChange}){
+function PracticeMode({startDiff=1,onSessionComplete,onStartDiffChange,onOpenProfile}){
   const[screen,setScreen]=useState("menu"); // menu | playing | summary
   const levelCap=startDiff===1?3:10;
   const engine=useGameEngine(startDiff,null,levelCap);
   const summarySavedRef=useRef(false);
   const start=()=>{engine.reset();setScreen("playing");};
-  const practiceSteps=[["01","Hold HOLSTER 0.8s to arm",C.text],["02","Read signal tweet first",C.text],["03","Tap TX NOW on match",C.green],["04","Traps use partial matches",C.yellow],["05","Clicking during WAIT = penalty",C.red],["06","Streaks boost PnL to x3",C.orange]];
+  const practiceSteps=[["01","Hold HOLSTER 0.8s to arm",C.text],["02","Read signal tweet first",C.text],["03","Tap TX NOW on match",C.green],["04","Traps use partial matches",C.yellow],["05","Any wrong click = miss",C.red],["06","Streaks boost PnL to x3",C.orange]];
   const levelOptions=[1,3,5,7,10];
   useEffect(()=>{
     if(screen==="menu"){summarySavedRef.current=false;return;}
@@ -452,7 +497,12 @@ function PracticeMode({startDiff=1,onSessionComplete,onStartDiffChange}){
       onSessionComplete?.(engine.stats);
     }
   },[screen,engine.stats,onSessionComplete]);
-  if(screen==="summary")return <SessionSummary stats={engine.stats} history={engine.attemptHistory} onBack={()=>{engine.reset();setScreen("menu");}}/>;
+  useEffect(()=>{
+    if(screen==="playing"&&levelCap===3&&engine.roundNum>=3){
+      setScreen("summary");
+    }
+  },[screen,levelCap,engine.roundNum]);
+  if(screen==="summary")return <SessionSummary stats={engine.stats} history={engine.attemptHistory} onBack={()=>{engine.reset();setScreen("menu");}} onProfile={onOpenProfile}/>;
   if(screen==="menu")return(
     <div className="menu-bg prac-page"><div className="grid-bg"/>
       <div className="menu-glow-orb green"/>
@@ -750,12 +800,14 @@ function OneVOneMode({onMatchComplete}){
 /* ═══════════════════════════════════════════
    APP
 ═══════════════════════════════════════════ */
-function ProfileTab({session,stats,loading,msg,onRefresh}){
+function ProfileTab({session,stats,history,loading,msg,onRefresh}){
   const rounds=stats.practice_rounds;
   const practiceAcc=rounds>0?Math.round((stats.practice_hits/rounds)*100):0;
   const duelWinRate=stats.duel_matches>0?Math.round((stats.duel_wins/stats.duel_matches)*100):0;
   const avgDuelFor=stats.duel_matches>0?(stats.duel_score_for/stats.duel_matches).toFixed(1):"0.0";
   const username=session?.user?.user_metadata?.username||session?.user?.email?.split("@")[0]||"signed in";
+  const getOutcomeColor=(row)=>{if(row.mode==="practice")return C.blue;if(row.outcome==="win")return C.green;if(row.outcome==="loss")return C.red;return C.orange;};
+  const getOutcomeLabel=(row)=>{if(row.mode==="practice")return"SESSION";if(row.outcome==="win")return"WIN";if(row.outcome==="loss")return"LOSS";return"DRAW";};
 
   return(
     <div className="menu-bg practice-menu-bg">
@@ -767,7 +819,9 @@ function ProfileTab({session,stats,loading,msg,onRefresh}){
             <div style={{fontSize:10,color:C.textDim,letterSpacing:3,marginBottom:6}}>PLAYER PROFILE</div>
             <h2 style={{fontSize:34,fontWeight:900,color:C.text,letterSpacing:-1}}>{username}</h2>
           </div>
-          <button onClick={onRefresh} className="btn-ghost" style={{fontSize:10,padding:"8px 12px"}}>REFRESH</button>
+          <div style={{display:"flex",alignItems:"center",gap:8}}>
+            <button onClick={onRefresh} className="btn-ghost" style={{fontSize:10,padding:"8px 12px"}}>REFRESH</button>
+          </div>
         </div>
         {msg&&<div className="glass-card" style={{marginBottom:12,padding:"10px 12px",color:C.red,fontSize:10}}>{msg}</div>}
         {loading?<div className="glass-card" style={{fontSize:11,color:C.textDim}}>Loading stats...</div>:<>
@@ -784,6 +838,24 @@ function ProfileTab({session,stats,loading,msg,onRefresh}){
                 {[["Matches",stats.duel_matches],["Wins",stats.duel_wins],["Losses",stats.duel_losses],["Draws",stats.duel_draws],["Win Rate",`${duelWinRate}%`],["Avg Score",avgDuelFor],["Best Score",stats.duel_best_score],["Score Diff",stats.duel_score_for-stats.duel_score_against]].map(([l,v])=>(<div key={l} style={{padding:"14px 12px",borderRadius:8,background:C.bgCard,border:`1px solid ${C.border}`,minHeight:78}}><div style={{fontSize:8,color:C.textDim,letterSpacing:1.4,marginBottom:6}}>{l}</div><div style={{fontSize:16,fontWeight:800,color:C.text}}>{v}</div></div>))}
               </div>
             </div>
+          </div>
+          <div className="glass-card" style={{padding:"18px 20px"}}>
+            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:12}}>
+              <div style={{fontSize:9,color:C.cyan,letterSpacing:2.2,fontWeight:800}}>MATCH HISTORY</div>
+              <div style={{fontSize:10,color:C.textDim}}>{history.length} entries</div>
+            </div>
+            {history.length===0?<div style={{fontSize:11,color:C.textDim}}>No matches yet. Complete a practice run or duel to populate history.</div>:<div style={{display:"grid",gap:8,maxHeight:320,overflowY:"auto",paddingRight:2}}>
+              {history.map((row)=>{const isPractice=row.mode==="practice";const rt=row.best_time!==null?`${(row.best_time/1000).toFixed(3)}s`:"—";return(
+                <div key={row.id} style={{display:"grid",gridTemplateColumns:"auto 1fr auto",alignItems:"center",gap:12,padding:"10px 12px",borderRadius:8,border:`1px solid ${C.border}`,background:C.bgCard}}>
+                  <div style={{fontSize:9,fontWeight:800,letterSpacing:1.2,color:getOutcomeColor(row)}}>{getOutcomeLabel(row)}</div>
+                  <div style={{minWidth:0}}>
+                    <div style={{fontSize:11,color:C.text,fontWeight:700}}>{isPractice?`Practice • ${row.rounds||0} rounds • ${row.accuracy_pct??0}% accuracy`:`1v1 • ${row.score} - ${row.opponent_score??0}`}</div>
+                    <div style={{fontSize:9,color:C.textDim,marginTop:2}}>{isPractice?`Best RT ${rt} • Best streak ${row.best_streak||0}`:`Recorded ${formatHistoryDate(row.created_at)}`}</div>
+                  </div>
+                  <div style={{fontSize:9,color:C.textDim,textAlign:"right",whiteSpace:"nowrap"}}>{formatHistoryDate(row.created_at)}</div>
+                </div>
+              );})}
+            </div>}
           </div>
         </>}
       </div>
@@ -845,13 +917,22 @@ function AuthScreen(){
     if(!email||!password){setMsg("Username and password are required.");return;}
     if(username.trim().length<3){setMsg("Username must be at least 3 characters.");return;}
     const normalizedAccessCode=accessCode.trim().toUpperCase();
-    if(!isLogin&&!normalizedAccessCode){setMsg("Access code is required to create an account.");return;}
+    if(!normalizedAccessCode){setMsg(isLogin?"Access code is required to login.":"Access code is required to create an account.");return;}
     setBusy(true);setMsg("");
     try{
       if(isLogin){
         const{error}=await supabase.auth.signInWithPassword({email,password});
         if(error)throw error;
+        const { data: isValid, error: verifyError } = await supabase.rpc("verify_login_access_code", { input_code: normalizedAccessCode });
+        if(verifyError)throw verifyError;
+        if(!isValid){
+          await supabase.auth.signOut();
+          throw new Error("Invalid access code for this account.");
+        }
       }else{
+        const { data: codeAvailable, error: checkError } = await supabase.rpc("check_signup_access_code", { input_code: normalizedAccessCode });
+        if(checkError)throw checkError;
+        if(!codeAvailable)throw new Error("Invalid or already used access code.");
         const{error}=await supabase.auth.signUp({
           email,
           password,
@@ -866,7 +947,14 @@ function AuthScreen(){
         setMsg("Account created.");
         setAccessCode("");
       }
-    }catch(e){setMsg(e?.message||"Auth request failed.");}
+    }catch(e){
+      const message=e?.message||"Auth request failed.";
+      if(message==="Database error saving new user"){
+        setMsg("Signup failed. Access code may be invalid/used, or auth trigger is missing on this Supabase project.");
+      }else{
+        setMsg(message);
+      }
+    }
     finally{setBusy(false);}
   };
 
@@ -888,7 +976,7 @@ function AuthScreen(){
         <div className="auth-form-card">
           <div className="auth-form-head">
             <div style={{fontSize:11,color:C.textDim,letterSpacing:3,fontWeight:700}}>ACCOUNT ACCESS</div>
-            <div style={{fontSize:9,color:C.textGhost,letterSpacing:1.5}}>{isLogin?"WELCOME BACK":"CODE REQUIRED"}</div>
+            <div style={{fontSize:9,color:C.textGhost,letterSpacing:1.5}}>CODE REQUIRED</div>
           </div>
           <div className="auth-mode-switch">
             <button onClick={()=>setMode("login")} className="auth-mode-btn" style={{background:isLogin?`linear-gradient(135deg,${C.green},${C.greenDim})`:"transparent",color:isLogin?C.bg:C.textDim,borderColor:isLogin?"transparent":C.border}}>Login</button>
@@ -898,12 +986,8 @@ function AuthScreen(){
           <input value={username} onChange={e=>setUsername(e.target.value)} placeholder="yourname" className="input-field auth-input" style={{marginBottom:8}}/>
           <div style={{fontSize:8,color:C.textDim,letterSpacing:2.5,marginTop:12,marginBottom:6}}>PASSWORD</div>
           <input value={password} onChange={e=>setPassword(e.target.value)} onKeyDown={e=>{if(e.key==="Enter"&&!busy)submit();}} type="password" placeholder="••••••••" className="input-field auth-input" style={{marginBottom:10}}/>
-          {!isLogin&&(
-            <>
-              <div style={{fontSize:8,color:C.textDim,letterSpacing:2.5,marginTop:2,marginBottom:6}}>ACCESS CODE</div>
-              <input value={accessCode} onChange={e=>setAccessCode(e.target.value.toUpperCase())} onKeyDown={e=>{if(e.key==="Enter"&&!busy)submit();}} placeholder="ALPHA001" className="input-field auth-input" style={{marginBottom:10,textTransform:"uppercase"}}/>
-            </>
-          )}
+          <div style={{fontSize:8,color:C.textDim,letterSpacing:2.5,marginTop:2,marginBottom:6}}>ACCESS CODE</div>
+          <input value={accessCode} onChange={e=>setAccessCode(e.target.value.toUpperCase())} onKeyDown={e=>{if(e.key==="Enter"&&!busy)submit();}} placeholder="ALPHA001" className="input-field auth-input" style={{marginBottom:10,textTransform:"uppercase"}}/>
           <div style={{fontSize:9,color:C.textGhost,marginBottom:12}}>Use letters, numbers, and underscore in username.</div>
           {msg&&<div className="auth-msg" style={{color:msg.toLowerCase().includes("failed")||msg.toLowerCase().includes("required")||msg.toLowerCase().includes("invalid")||msg.toLowerCase().includes("already used")?C.red:C.green,borderColor:msg.toLowerCase().includes("failed")||msg.toLowerCase().includes("required")||msg.toLowerCase().includes("invalid")||msg.toLowerCase().includes("already used")?`${C.red}35`:`${C.green}35`,background:msg.toLowerCase().includes("failed")||msg.toLowerCase().includes("required")||msg.toLowerCase().includes("invalid")||msg.toLowerCase().includes("already used")?`${C.red}10`:`${C.green}10`}}>{msg}</div>}
           <button onClick={submit} disabled={busy} className={`btn-primary ${isLogin?"btn-green":"btn-blue"}`} style={{opacity:busy?0.7:1,cursor:busy?"default":"pointer",marginTop:msg?0:4}}>
@@ -923,6 +1007,7 @@ export default function App(){
   const[session,setSession]=useState(null);
   const[authReady,setAuthReady]=useState(false);
   const[profileStats,setProfileStats]=useState(EMPTY_PROFILE_STATS);
+  const[matchHistory,setMatchHistory]=useState([]);
   const[profileLoading,setProfileLoading]=useState(false);
   const[profileMsg,setProfileMsg]=useState("");
 
@@ -935,6 +1020,7 @@ export default function App(){
         setSession(nextSession);
         if(!nextSession){
           setProfileStats(EMPTY_PROFILE_STATS);
+          setMatchHistory([]);
           setEntryScreen("loading");
         }
         setAuthReady(true);
@@ -944,6 +1030,7 @@ export default function App(){
       setSession(nextSession||null);
       if(!nextSession){
         setProfileStats(EMPTY_PROFILE_STATS);
+        setMatchHistory([]);
         setEntryScreen("loading");
       }
     });
@@ -954,17 +1041,32 @@ export default function App(){
     if(!supabase||!session?.user?.id)return;
     setProfileLoading(true);
     setProfileMsg("");
-    const { data, error } = await supabase
-      .from("player_profiles")
-      .select(PROFILE_SELECT)
-      .eq("user_id", session.user.id)
-      .maybeSingle();
+    const [{ data, error }, { data: historyData, error: historyError }] = await Promise.all([
+      supabase
+        .from("player_profiles")
+        .select(PROFILE_SELECT)
+        .eq("user_id", session.user.id)
+        .maybeSingle(),
+      supabase
+        .from("player_match_history")
+        .select(HISTORY_SELECT)
+        .eq("user_id", session.user.id)
+        .order("created_at", { ascending: false })
+        .limit(30),
+    ]);
     setProfileLoading(false);
     if(error){
       setProfileMsg("Could not load profile stats.");
       setProfileStats(EMPTY_PROFILE_STATS);
+      setMatchHistory([]);
       if(resolveEntry)setEntryScreen("mode-picker");
       return;
+    }
+    if(historyError){
+      setProfileMsg("Could not load full match history.");
+      setMatchHistory([]);
+    }else{
+      setMatchHistory(historyData||[]);
     }
     const nextStats=normalizeProfileStats(data||{});
     setProfileStats(nextStats);
@@ -1002,6 +1104,23 @@ export default function App(){
     setProfileStats(next);
   },[session]);
 
+  const insertMatchHistory=useCallback(async(entry)=>{
+    if(!supabase||!session?.user?.id)return;
+    const payload={user_id:session.user.id,...entry};
+    const { data, error } = await supabase
+      .from("player_match_history")
+      .insert(payload)
+      .select(HISTORY_SELECT)
+      .single();
+    if(error){
+      setProfileMsg("Could not save match history.");
+      return;
+    }
+    if(data){
+      setMatchHistory((prev)=>[data,...prev].slice(0,30));
+    }
+  },[session]);
+
   const savePreferredMode=useCallback(async(mode)=>{
     const normalized=normalizeModeKey(mode);
     await updateProfileStats((prev)=>({...prev,preferred_mode:normalized}));
@@ -1017,6 +1136,7 @@ export default function App(){
   const recordPracticeSession=useCallback(async(practiceStats)=>{
     const rounds=practiceStats.hits+practiceStats.misses+practiceStats.penalties;
     if(rounds<=0)return;
+    const accuracy=Math.round((practiceStats.hits/rounds)*100);
     await updateProfileStats((prev)=>({
       ...prev,
       practice_sessions:prev.practice_sessions+1,
@@ -1027,11 +1147,22 @@ export default function App(){
       practice_best_time:practiceStats.bestTime===null?prev.practice_best_time:prev.practice_best_time===null?practiceStats.bestTime:Math.min(prev.practice_best_time,practiceStats.bestTime),
       practice_best_streak:Math.max(prev.practice_best_streak,practiceStats.bestStreak||0),
     }));
-  },[updateProfileStats]);
+    await insertMatchHistory({
+      mode:"practice",
+      outcome:"session",
+      score:practiceStats.hits||0,
+      opponent_score:null,
+      rounds,
+      accuracy_pct:accuracy,
+      best_time:practiceStats.bestTime??null,
+      best_streak:practiceStats.bestStreak||0,
+    });
+  },[updateProfileStats,insertMatchHistory]);
 
   const recordDuelMatch=useCallback(async(result)=>{
     const isDraw=result.myScore===result.oppScore;
     const isWin=result.myScore>result.oppScore;
+    const outcome=isDraw?"draw":isWin?"win":"loss";
     await updateProfileStats((prev)=>({
       ...prev,
       duel_matches:prev.duel_matches+1,
@@ -1042,7 +1173,17 @@ export default function App(){
       duel_score_against:prev.duel_score_against+result.oppScore,
       duel_best_score:Math.max(prev.duel_best_score,result.myScore),
     }));
-  },[updateProfileStats]);
+    await insertMatchHistory({
+      mode:"1v1",
+      outcome,
+      score:result.myScore||0,
+      opponent_score:result.oppScore||0,
+      rounds:null,
+      accuracy_pct:null,
+      best_time:null,
+      best_streak:null,
+    });
+  },[updateProfileStats,insertMatchHistory]);
 
   const logOut=async()=>{if(supabase)await supabase.auth.signOut();};
 
@@ -1075,7 +1216,7 @@ export default function App(){
         <span style={{fontSize:8,color:C.textGhost,letterSpacing:2.5}}>v3.0</span>
       </div>
       <div style={{flex:1,overflow:"hidden",minHeight:0}}>
-        {tab==="practice"?<PracticeMode startDiff={startDiff} onSessionComplete={recordPracticeSession} onStartDiffChange={setStartDiff}/>:tab==="1v1"?<OneVOneMode onMatchComplete={recordDuelMatch}/>:<ProfileTab session={session} stats={profileStats} loading={profileLoading} msg={profileMsg} onRefresh={loadProfileStats}/>}
+        {tab==="practice"?<PracticeMode startDiff={startDiff} onSessionComplete={recordPracticeSession} onStartDiffChange={setStartDiff} onOpenProfile={()=>handleModeSelect("profile")}/>:tab==="1v1"?<OneVOneMode onMatchComplete={recordDuelMatch}/>:<ProfileTab session={session} stats={profileStats} history={matchHistory} loading={profileLoading} msg={profileMsg} onRefresh={loadProfileStats}/>}
       </div>
       <style>{CSS}</style>
     </div>

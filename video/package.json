@@ -1,0 +1,24 @@
+{
+  "name": "trenches-trainer-video",
+  "version": "1.0.0",
+  "description": "Remotion demo video for Trenches Trainer",
+  "scripts": {
+    "start": "remotion studio",
+    "render": "remotion render TrenchesDemo out/demo.mp4"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.290",
+    "@remotion/google-fonts": "4.0.290",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "remotion": "4.0.290"
+  },
+  "devDependencies": {
+    "@types/react": "18.3.21",
+    "@types/react-dom": "18.3.5",
+    "typescript": "5.8.2"
+  },
+  "remotion": {
+    "entryPoint": "./src/index.ts"
+  }
+}

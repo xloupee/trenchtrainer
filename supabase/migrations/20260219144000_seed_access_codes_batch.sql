@@ -1,0 +1,17 @@
+insert into public.signup_access_codes (code, note) values
+  ('TT2B737DA5', 'batch-2026-02-19')
+ ,('TT90DCE65B', 'batch-2026-02-19')
+ ,('TTD5AC01F6', 'batch-2026-02-19')
+ ,('TT3CC24545', 'batch-2026-02-19')
+ ,('TT28F3ED43', 'batch-2026-02-19')
+ ,('TT97904C44', 'batch-2026-02-19')
+ ,('TT480CA526', 'batch-2026-02-19')
+ ,('TT65576380', 'batch-2026-02-19')
+ ,('TT8B4EE281', 'batch-2026-02-19')
+ ,('TT332BE4EB', 'batch-2026-02-19')
+ ,('TTE48B56A9', 'batch-2026-02-19')
+ ,('TTD86EF711', 'batch-2026-02-19')
+ ,('TT748D069B', 'batch-2026-02-19')
+ ,('TTD0672BF4', 'batch-2026-02-19')
+ ,('TT8E3E44B2', 'batch-2026-02-19')
+on conflict (code) do nothing;
