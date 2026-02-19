@@ -106,7 +106,7 @@ function genRound(num, seed = null, maxDiffCap = 10) {
   return{tweet:tw,pairs,correctName:cn,correctEmoji:th.emoji,fillers:shuffle(FILLER).slice(0,4),spawnDelay:Math.max(600-diff*55,80),diff,noiseInterval:diff>=8?600:diff>=5?1000:diff>=3?1800:3000};
 }
 
-function getRank(avgMs){if(avgMs===null)return{tier:"UNRANKED",color:"#4a5568",glow:"none",icon:"—"};const s=avgMs/1000;if(s<.65)return{tier:"CHALLENGER",color:"#f56565",glow:"0 0 18px rgba(245,101,101,0.35)",icon:"♛"};if(s<.85)return{tier:"DIAMOND",color:"#63b3ed",glow:"0 0 16px rgba(99,179,237,0.3)",icon:"◆"};if(s<1.05)return{tier:"GOLD",color:"#ecc94b",glow:"0 0 14px rgba(236,201,75,0.3)",icon:"★"};if(s<1.35)return{tier:"SILVER",color:"#a0aec0",glow:"0 0 10px rgba(160,174,192,0.2)",icon:"☆"};return{tier:"BRONZE",color:"#c77c48",glow:"0 0 10px rgba(199,124,72,0.25)",icon:"●"};}
+function getRank(avgMs){if(avgMs===null)return{tier:"UNRANKED",color:"#4a5568",glow:"none",icon:"—"};const s=avgMs/1000;if(s<1.25)return{tier:"CHALLENGER",color:"#f56565",glow:"0 0 18px rgba(245,101,101,0.35)",icon:"♛"};if(s<1.8)return{tier:"DIAMOND",color:"#63b3ed",glow:"0 0 16px rgba(99,179,237,0.3)",icon:"◆"};if(s<2.4)return{tier:"GOLD",color:"#ecc94b",glow:"0 0 14px rgba(236,201,75,0.3)",icon:"★"};if(s<3)return{tier:"SILVER",color:"#a0aec0",glow:"0 0 10px rgba(160,174,192,0.2)",icon:"☆"};return{tier:"BRONZE",color:"#c77c48",glow:"0 0 10px rgba(199,124,72,0.25)",icon:"●"};}
 function getRC(ms){if(!ms)return"#f56565";const s=ms/1000;if(s<.5)return"#48bb78";if(s<.8)return"#68d391";if(s<1.2)return"#ecc94b";if(s<2)return"#ed8936";return"#f56565";}
 const genCode=()=>{const c="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";let s="";for(let i=0;i<6;i++)s+=c[Math.floor(Math.random()*c.length)];return s;};
 
@@ -917,18 +917,12 @@ function AuthScreen(){
     if(!email||!password){setMsg("Username and password are required.");return;}
     if(username.trim().length<3){setMsg("Username must be at least 3 characters.");return;}
     const normalizedAccessCode=accessCode.trim().toUpperCase();
-    if(!normalizedAccessCode){setMsg(isLogin?"Access code is required to login.":"Access code is required to create an account.");return;}
+    if(!isLogin&&!normalizedAccessCode){setMsg("Access code is required to create an account.");return;}
     setBusy(true);setMsg("");
     try{
       if(isLogin){
         const{error}=await supabase.auth.signInWithPassword({email,password});
         if(error)throw error;
-        const { data: isValid, error: verifyError } = await supabase.rpc("verify_login_access_code", { input_code: normalizedAccessCode });
-        if(verifyError)throw verifyError;
-        if(!isValid){
-          await supabase.auth.signOut();
-          throw new Error("Invalid access code for this account.");
-        }
       }else{
         const { data: codeAvailable, error: checkError } = await supabase.rpc("check_signup_access_code", { input_code: normalizedAccessCode });
         if(checkError)throw checkError;
@@ -976,7 +970,7 @@ function AuthScreen(){
         <div className="auth-form-card">
           <div className="auth-form-head">
             <div style={{fontSize:11,color:C.textDim,letterSpacing:3,fontWeight:700}}>ACCOUNT ACCESS</div>
-            <div style={{fontSize:9,color:C.textGhost,letterSpacing:1.5}}>CODE REQUIRED</div>
+            <div style={{fontSize:9,color:C.textGhost,letterSpacing:1.5}}>{isLogin?"PASSWORD LOGIN":"SIGNUP CODE REQUIRED"}</div>
           </div>
           <div className="auth-mode-switch">
             <button onClick={()=>setMode("login")} className="auth-mode-btn" style={{background:isLogin?`linear-gradient(135deg,${C.green},${C.greenDim})`:"transparent",color:isLogin?C.bg:C.textDim,borderColor:isLogin?"transparent":C.border}}>Login</button>
@@ -986,8 +980,10 @@ function AuthScreen(){
           <input value={username} onChange={e=>setUsername(e.target.value)} placeholder="yourname" className="input-field auth-input" style={{marginBottom:8}}/>
           <div style={{fontSize:8,color:C.textDim,letterSpacing:2.5,marginTop:12,marginBottom:6}}>PASSWORD</div>
           <input value={password} onChange={e=>setPassword(e.target.value)} onKeyDown={e=>{if(e.key==="Enter"&&!busy)submit();}} type="password" placeholder="••••••••" className="input-field auth-input" style={{marginBottom:10}}/>
-          <div style={{fontSize:8,color:C.textDim,letterSpacing:2.5,marginTop:2,marginBottom:6}}>ACCESS CODE</div>
-          <input value={accessCode} onChange={e=>setAccessCode(e.target.value.toUpperCase())} onKeyDown={e=>{if(e.key==="Enter"&&!busy)submit();}} placeholder="ALPHA001" className="input-field auth-input" style={{marginBottom:10,textTransform:"uppercase"}}/>
+          {!isLogin&&<>
+            <div style={{fontSize:8,color:C.textDim,letterSpacing:2.5,marginTop:2,marginBottom:6}}>ACCESS CODE</div>
+            <input value={accessCode} onChange={e=>setAccessCode(e.target.value.toUpperCase())} onKeyDown={e=>{if(e.key==="Enter"&&!busy)submit();}} placeholder="ALPHA001" className="input-field auth-input" style={{marginBottom:10,textTransform:"uppercase"}}/>
+          </>}
           <div style={{fontSize:9,color:C.textGhost,marginBottom:12}}>Use letters, numbers, and underscore in username.</div>
           {msg&&<div className="auth-msg" style={{color:msg.toLowerCase().includes("failed")||msg.toLowerCase().includes("required")||msg.toLowerCase().includes("invalid")||msg.toLowerCase().includes("already used")?C.red:C.green,borderColor:msg.toLowerCase().includes("failed")||msg.toLowerCase().includes("required")||msg.toLowerCase().includes("invalid")||msg.toLowerCase().includes("already used")?`${C.red}35`:`${C.green}35`,background:msg.toLowerCase().includes("failed")||msg.toLowerCase().includes("required")||msg.toLowerCase().includes("invalid")||msg.toLowerCase().includes("already used")?`${C.red}10`:`${C.green}10`}}>{msg}</div>}
           <button onClick={submit} disabled={busy} className={`btn-primary ${isLogin?"btn-green":"btn-blue"}`} style={{opacity:busy?0.7:1,cursor:busy?"default":"pointer",marginTop:msg?0:4}}>

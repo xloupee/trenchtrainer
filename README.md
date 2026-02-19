@@ -45,7 +45,7 @@ Supabase CLI is used for schema migrations in `supabase/migrations`.
 ## Invite-only signup codes
 
 Signup now requires a one-time access code and enforcement happens in Supabase (not just frontend).
-Login also requires an access code that matches the code consumed by that account.
+Login requires username + password only.
 
 After running migrations, create codes in Supabase SQL editor:
 
