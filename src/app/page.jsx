@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 
 const C = {
@@ -33,6 +33,8 @@ const steps = [
   { num: '02', title: 'SNIPE THE TOKEN',  desc: 'A wave of tokens floods your screen — real ones, traps, decoys. Click the right one before the window closes.' },
   { num: '03', title: 'BUILD YOUR EDGE',  desc: 'Track your reaction time, accuracy, and streaks. Climb the ranks. Challenge others 1v1.' },
 ];
+
+const HERO_TITLES = ['AIM TRAINER', 'REACTION TRAINER'];
 
 // Scattered coins for the hero right column
 // top/left are absolute within the 600px-tall right panel
@@ -69,6 +71,8 @@ export default function LandingPage() {
   const headlineRef = useRef(null);
   const subRef      = useRef(null);
   const coinRefs    = useRef([]);
+  const [heroTitleIndex, setHeroTitleIndex] = useState(0);
+  const [heroTitleVisible, setHeroTitleVisible] = useState(true);
 
   // ── Scroll reveal ────────────────────────────────────────────────────────
   useEffect(() => {
@@ -120,6 +124,23 @@ export default function LandingPage() {
     raf = requestAnimationFrame(tick);
     window.addEventListener('mousemove', onMove);
     return () => { window.removeEventListener('mousemove', onMove); cancelAnimationFrame(raf); };
+  }, []);
+
+  // ── Hero heading swap (AIM TRAINER / REACTION TRAINER) ──────────────────
+  useEffect(() => {
+    let swapTimeout;
+    const interval = setInterval(() => {
+      setHeroTitleVisible(false);
+      swapTimeout = setTimeout(() => {
+        setHeroTitleIndex((prev) => (prev + 1) % HERO_TITLES.length);
+        setHeroTitleVisible(true);
+      }, 180);
+    }, 2200);
+
+    return () => {
+      clearInterval(interval);
+      clearTimeout(swapTimeout);
+    };
   }, []);
 
   return (
@@ -176,6 +197,26 @@ export default function LandingPage() {
 
         .step-line { display: flex; align-items: flex-start; gap: 28px; }
 
+        .hero-word-gradient {
+          background: linear-gradient(135deg, ${C.green} 0%, ${C.cyan} 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+        }
+        .hero-title-main,
+        .hero-title-sub {
+          display: block;
+          font-size: clamp(40px, 4.2vw, 62px);
+          line-height: 1.05;
+        }
+        .hero-title-main { white-space: nowrap; }
+        .hero-title-anim {
+          display: inline-block;
+          transition: opacity 180ms ease, transform 180ms ease;
+          will-change: opacity, transform;
+        }
+        .hero-title-out { opacity: 0; transform: translateY(8px); }
+        .hero-title-in { opacity: 1; transform: translateY(0); }
+
         /* ── Coin float ───────────────────────────────────────────── */
         @keyframes coinFloat {
           0%, 100% { transform: translateY(0px); }
@@ -205,20 +246,28 @@ export default function LandingPage() {
         @media (prefers-reduced-motion: reduce) {
           html, body { scroll-behavior: auto; }
           .reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
+          .hero-title-anim { transition: none !important; }
         }
 
         .parallax-layer { will-change: transform; }
 
         /* ── Responsive ───────────────────────────────────────────── */
+        @media (max-width: 1200px) {
+          .hero-title-main,
+          .hero-title-sub { font-size: clamp(34px, 3.7vw, 52px); }
+        }
         @media (max-width: 960px) {
           .hero-inner { flex-direction: column !important; gap: 60px !important; }
           .hero-left  { flex: none !important; max-width: 100% !important; text-align: center; padding-right: 0 !important; }
           .hero-right { display: none !important; }
           .cta-row    { justify-content: center !important; }
           .hero-stats { justify-content: center !important; }
+          .hero-title-main { white-space: normal; }
         }
         @media (max-width: 700px) {
           .hero-title    { font-size: 36px !important; letter-spacing: -1px !important; }
+          .hero-title-main,
+          .hero-title-sub { font-size: 36px !important; }
           .hero-sub      { font-size: 14px !important; }
           .cta-row       { flex-direction: column !important; align-items: stretch !important; }
           .cta-row a, .cta-row button { text-align: center !important; }
@@ -278,19 +327,19 @@ export default function LandingPage() {
               {/* Headline */}
               <div ref={headlineRef} className="parallax-layer">
                 <h1 className="hero-title" style={{
-                  fontSize: 'clamp(40px, 4.2vw, 62px)',
                   fontWeight: 900,
                   letterSpacing: -2,
                   lineHeight: 1.1,
                   marginBottom: 28,
                 }}>
-                  <span style={{
-                    background: `linear-gradient(135deg, ${C.green} 0%, ${C.cyan} 100%)`,
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                  }}>AIM TRAINER</span>
-                  <br />
-                  <span style={{
+                  <span
+                    className={`hero-word-gradient hero-title-main hero-title-anim ${heroTitleVisible ? 'hero-title-in' : 'hero-title-out'}`}
+                    aria-live="polite"
+                    aria-atomic="true"
+                  >
+                    {HERO_TITLES[heroTitleIndex]}
+                  </span>
+                  <span className="hero-title-sub" style={{
                     background: `linear-gradient(135deg, ${C.text} 0%, ${C.textMuted} 100%)`,
                     WebkitBackgroundClip: 'text',
                     WebkitTextFillColor: 'transparent',
