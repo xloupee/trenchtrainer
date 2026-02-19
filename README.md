@@ -39,3 +39,34 @@ Supabase CLI is used for schema migrations in `supabase/migrations`.
 - Current 1v1 tables are intentionally open to `anon` and `authenticated` roles so no-auth room sharing works immediately.
 - If you add auth later, tighten RLS policies in `supabase/migrations/20260216214509_duel_tables.sql`.
 - The app now includes login/signup UI using Supabase Auth (`email + password`).
+
+## Invite-only signup codes
+
+Signup now requires a one-time access code and enforcement happens in Supabase (not just frontend).
+
+After running migrations, create codes in Supabase SQL editor:
+
+```sql
+insert into public.signup_access_codes (code, note)
+values
+  ('ALPHA001', 'founder batch'),
+  ('ALPHA002', 'founder batch');
+```
+
+Inspect unused codes:
+
+```sql
+select code, note, created_at
+from public.signup_access_codes
+where consumed_at is null
+order by created_at desc;
+```
+
+Inspect consumed codes:
+
+```sql
+select code, note, consumed_at, consumed_by
+from public.signup_access_codes
+where consumed_at is not null
+order by consumed_at desc;
+```

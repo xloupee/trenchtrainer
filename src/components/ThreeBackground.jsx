@@ -2,22 +2,19 @@
 
 import { useEffect, useRef } from 'react';
 
-// Three wave channels: top (green), mid (cyan), bottom (green)
-const WAVE_DEFS = [
-  { yFrac: 0.25, baseAmp: 65, freq: 0.006, speed: 0.018, phase: 0,   r: 72, g: 187, b: 120, breatheOff: 0   },
-  { yFrac: 0.50, baseAmp: 46, freq: 0.009, speed: 0.024, phase: 2.1, r: 79, g: 209, b: 197, breatheOff: 2.1 },
-  { yFrac: 0.75, baseAmp: 56, freq: 0.005, speed: 0.014, phase: 4.4, r: 72, g: 187, b: 120, breatheOff: 4.4 },
+// Color palette — mostly green, some cyan, rare orange accent
+const PALETTE = [
+  [72, 187, 120],
+  [72, 187, 120],
+  [72, 187, 120],
+  [72, 187, 120],
+  [79, 209, 197],
+  [79, 209, 197],
+  [237, 137, 54],
 ];
 
-// Composite sine: sum of harmonics gives an organic, market-like shape
-function sample(x, freq, phase, amp) {
-  const t = freq * x + phase;
-  return amp * (
-    0.50 * Math.sin(t) +
-    0.30 * Math.sin(2.1 * t + 0.9) +
-    0.20 * Math.sin(3.7 * t - 0.4)
-  );
-}
+function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+function rand(lo, hi) { return lo + Math.random() * (hi - lo); }
 
 export default function ThreeBackground() {
   const canvasRef = useRef(null);
@@ -39,57 +36,65 @@ export default function ThreeBackground() {
     };
     setup();
 
-    // Clone defs so we can mutate phase without touching the module constant
-    const waves = WAVE_DEFS.map(w => ({ ...w }));
+    const COUNT = window.innerWidth < 768 ? 12 : 20;
+
+    const orbs = Array.from({ length: COUNT }, () => {
+      const [r, g, b] = pick(PALETTE);
+      const radius = rand(40, 210);
+      const speed = rand(0.1, 0.38);
+      const angle = rand(0, Math.PI * 2);
+      return {
+        x: rand(0, W),
+        y: rand(0, H),
+        radius,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        opacity: rand(0.12, 0.22),
+        phase: rand(0, Math.PI * 2),
+        pulseSpeed: rand(0.004, 0.009),
+        r, g, b,
+      };
+    });
 
     let time = 0;
     let rafId;
-
-    const drawWave = (w) => {
-      // Amplitude breathes slowly in and out
-      const amp = w.baseAmp * (1 + 0.18 * Math.sin(time * 0.007 + w.breatheOff));
-      const cy = H * w.yFrac;
-      const { r, g, b } = w;
-
-      // Faint center guide line
-      ctx.beginPath();
-      ctx.moveTo(0, cy);
-      ctx.lineTo(W, cy);
-      ctx.strokeStyle = `rgba(${r},${g},${b},0.035)`;
-      ctx.lineWidth = 1;
-      ctx.stroke();
-
-      // Build wave path
-      ctx.beginPath();
-      for (let x = 0; x <= W; x += 3) {
-        const y = cy + sample(x, w.freq, w.phase, amp);
-        x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-      }
-
-      // Triple-layer fake glow (wide dim → mid → thin bright core)
-      // avoids expensive ctx.shadowBlur
-      ctx.lineWidth = 7;
-      ctx.strokeStyle = `rgba(${r},${g},${b},0.04)`;
-      ctx.stroke();
-
-      ctx.lineWidth = 3;
-      ctx.strokeStyle = `rgba(${r},${g},${b},0.10)`;
-      ctx.stroke();
-
-      ctx.lineWidth = 1;
-      ctx.strokeStyle = `rgba(${r},${g},${b},0.52)`;
-      ctx.stroke();
-    };
 
     const animate = () => {
       rafId = requestAnimationFrame(animate);
       time++;
       ctx.clearRect(0, 0, W, H);
 
-      waves.forEach(w => {
-        w.phase -= w.speed; // scroll left (newer data appears on right)
-        drawWave(w);
+      // Screen blend: overlapping orbs brighten each other like real light sources
+      ctx.globalCompositeOperation = 'screen';
+
+      orbs.forEach(o => {
+        // Drift
+        o.x += o.vx;
+        o.y += o.vy;
+
+        // Wrap edges smoothly
+        if (o.x < -o.radius) o.x = W + o.radius;
+        if (o.x > W + o.radius) o.x = -o.radius;
+        if (o.y < -o.radius) o.y = H + o.radius;
+        if (o.y > H + o.radius) o.y = -o.radius;
+
+        // Slow opacity pulse
+        const op = o.opacity * (1 + 0.22 * Math.sin(time * o.pulseSpeed + o.phase));
+
+        // Bokeh: slightly dim centre, bright ring at ~65%, fade to 0 at edge
+        // mimics real lens bokeh where light accumulates at the aperture boundary
+        const g = ctx.createRadialGradient(o.x, o.y, 0, o.x, o.y, o.radius);
+        g.addColorStop(0,    `rgba(${o.r},${o.g},${o.b},${(op * 0.55).toFixed(3)})`);
+        g.addColorStop(0.65, `rgba(${o.r},${o.g},${o.b},${op.toFixed(3)})`);
+        g.addColorStop(1,    `rgba(${o.r},${o.g},${o.b},0)`);
+
+        ctx.beginPath();
+        ctx.arc(o.x, o.y, o.radius, 0, Math.PI * 2);
+        ctx.fillStyle = g;
+        ctx.fill();
       });
+
+      ctx.globalCompositeOperation = 'source-over';
     };
 
     animate();

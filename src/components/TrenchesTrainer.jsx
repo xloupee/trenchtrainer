@@ -106,7 +106,12 @@ const C = {
   text: "#f1f5f9", textMuted: "#94a3b8", textDim: "#475569", textGhost: "#1e293b",
 };
 
+const MODE_KEYS = ["practice", "1v1", "profile"];
+const isModeKey = (value) => MODE_KEYS.includes(value);
+const normalizeModeKey = (value) => (isModeKey(value) ? value : "practice");
+
 const EMPTY_PROFILE_STATS = {
+  preferred_mode: "practice",
   practice_sessions: 0,
   practice_rounds: 0,
   practice_hits: 0,
@@ -123,10 +128,11 @@ const EMPTY_PROFILE_STATS = {
   duel_best_score: 0,
 };
 
-const PROFILE_SELECT = "user_id,practice_sessions,practice_rounds,practice_hits,practice_misses,practice_penalties,practice_best_time,practice_best_streak,duel_matches,duel_wins,duel_losses,duel_draws,duel_score_for,duel_score_against,duel_best_score";
+const PROFILE_SELECT = "user_id,preferred_mode,practice_sessions,practice_rounds,practice_hits,practice_misses,practice_penalties,practice_best_time,practice_best_streak,duel_matches,duel_wins,duel_losses,duel_draws,duel_score_for,duel_score_against,duel_best_score";
 const normalizeProfileStats = (raw = {}) => ({
   ...EMPTY_PROFILE_STATS,
   ...raw,
+  preferred_mode: normalizeModeKey(raw?.preferred_mode),
   practice_sessions: Number(raw?.practice_sessions || 0),
   practice_rounds: Number(raw?.practice_rounds || 0),
   practice_hits: Number(raw?.practice_hits || 0),
@@ -148,7 +154,7 @@ const normalizeProfileStats = (raw = {}) => ({
 ═══════════════════════════════════════════ */
 function HudStat({label,value,color,large}){return(<div style={{display:"flex",flexDirection:"column",alignItems:"center",padding:"0 8px",gap:2}}><span style={{fontSize:7,fontWeight:500,color:C.textDim,letterSpacing:2.5,textTransform:"uppercase"}}>{label}</span><span style={{fontSize:large?20:13,fontWeight:800,color:color||C.text,fontFamily:"var(--mono)",textShadow:large?`0 0 14px ${color}25`:"none",transition:"all 0.2s"}}>{value}</span></div>);}
 
-function ElapsedTimer({startTime,running}){const[el,setEl]=useState(0);const raf=useRef(null);useEffect(()=>{if(!startTime){setEl(0);return;}const tick=()=>{setEl(Date.now()-startTime);raf.current=requestAnimationFrame(tick);};raf.current=requestAnimationFrame(tick);return()=>cancelAnimationFrame(raf.current);},[startTime]);const s=el/1000;const col=s<1?C.green:s<2?C.greenBright:s<3?C.yellow:s<5?C.orange:C.red;return(<div style={{display:"flex",alignItems:"center",gap:7}}><div style={{position:"relative",width:40,height:40,flexShrink:0}}><svg width={40} height={40} style={{transform:"rotate(-90deg)"}}><circle cx={20} cy={20} r={17} fill="none" stroke={C.border} strokeWidth={2}/><circle cx={20} cy={20} r={17} fill="none" stroke={col} strokeWidth={2} strokeDasharray={`${Math.min(s/10,1)*106.8} 106.8`} strokeLinecap="round" style={{transition:"stroke 0.3s",filter:`drop-shadow(0 0 4px ${col}40)`}}/></svg><div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:800,color:col,fontFamily:"var(--mono)"}}>{s.toFixed(1)}</div></div><div><div style={{fontSize:7,color:C.textDim,letterSpacing:2}}>ELAPSED</div><div style={{fontSize:12,fontWeight:800,color:col,fontFamily:"var(--mono)",transition:"color 0.3s"}}>{s.toFixed(2)}s</div></div></div>);}
+function ElapsedTimer({startTime,running}){const[el,setEl]=useState(0);const raf=useRef(null);useEffect(()=>{if(!startTime){setEl(0);return;}if(!running){setEl(Date.now()-startTime);return;}const tick=()=>{setEl(Date.now()-startTime);raf.current=requestAnimationFrame(tick);};raf.current=requestAnimationFrame(tick);return()=>cancelAnimationFrame(raf.current);},[startTime,running]);const s=el/1000;const col=s<1?C.green:s<2?C.greenBright:s<3?C.yellow:s<5?C.orange:C.red;return(<div style={{display:"flex",alignItems:"center",gap:7}}><div style={{position:"relative",width:40,height:40,flexShrink:0}}><svg width={40} height={40} style={{transform:"rotate(-90deg)"}}><circle cx={20} cy={20} r={17} fill="none" stroke={C.border} strokeWidth={2}/><circle cx={20} cy={20} r={17} fill="none" stroke={col} strokeWidth={2} strokeDasharray={`${Math.min(s/10,1)*106.8} 106.8`} strokeLinecap="round" style={{transition:"stroke 0.3s",filter:`drop-shadow(0 0 4px ${col}40)`}}/></svg><div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:800,color:col,fontFamily:"var(--mono)"}}>{s.toFixed(1)}</div></div><div><div style={{fontSize:7,color:C.textDim,letterSpacing:2}}>ELAPSED</div><div style={{fontSize:12,fontWeight:800,color:col,fontFamily:"var(--mono)",transition:"color 0.3s"}}>{s.toFixed(2)}s</div></div></div>);}
 
 /* avatar color from name string */
 const avatarGrad=(name)=>{let h=0;for(let i=0;i<name.length;i++)h=name.charCodeAt(i)+((h<<5)-h);const hue=Math.abs(h)%360;return`linear-gradient(135deg,hsl(${hue},55%,45%),hsl(${(hue+40)%360},50%,35%))`;};
@@ -268,19 +274,13 @@ function TokenRow({coin,txState,onBuy,spawned,revealed,clickedId,showCorrect}){
       </div>
     </div>
 
-    {/* Chart boxes + Buy buttons */}
+    {/* TX button */}
     <div style={{display:"flex",gap:4,flexShrink:0}}>
-      {/* Box 1: 3.30 */}
-      <div style={{width:80,height:64,borderRadius:6,background:C.bgCard,border:`1px solid ${ia&&sb?C.borderLight:C.border}`,display:"flex",flexDirection:"column",overflow:"hidden",transition:"border-color 0.2s"}}>
+      <div style={{width:108,height:64,borderRadius:6,background:C.bgCard,border:`1px solid ${ia&&sb?C.borderLight:C.border}`,display:"flex",flexDirection:"column",overflow:"hidden",transition:"border-color 0.2s"}}>
         <div style={{flex:1}}/>
         {sb?(<button onClick={e=>onBuy(coin,e)} style={buyBtnStyle(ia,true)}>
           {iwa?<><span className="blink-dot"/>WAIT</>:ia?<><span style={{color:C.yellow,fontSize:9}}>⚡</span> TX NOW</>:<><span style={{color:C.yellow,fontSize:9}}>⚡</span> 3.30</>}
         </button>):(<div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:3,color:C.textDim,fontSize:10,height:"100%"}}><span style={{color:C.yellow,fontSize:9}}>⚡</span> 3.30</div>)}
-      </div>
-      {/* Box 2: 8.00 */}
-      <div style={{width:80,height:64,borderRadius:6,background:C.bgCard,border:`1px solid ${C.border}`,display:"flex",flexDirection:"column",overflow:"hidden"}}>
-        <div style={{flex:1}}/>
-        <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:3,color:C.textDim,fontSize:10,height:"100%"}}><span style={{color:C.yellow,fontSize:9}}>⚡</span> 8.00</div>
       </div>
     </div>
 
@@ -340,14 +340,12 @@ function useGameEngine(startDiff=1,seed=null){
   const armStartRef=useRef(null);const armRafRef=useRef(null);const armTimeoutRef=useRef(null);
   const spawnRef=useRef([]);const fbRef=useRef(null);const nextRef=useRef(null);
   const roundNumRef=useRef(0);const holsterPhaseRef=useRef("idle");const noiseRef=useRef(null);
-  const pausedRef=useRef(false);const timerStartRef=useRef(null);const timerRunningRef=useRef(false);const revealedRef=useRef(false);const pauseStartedRef=useRef(null);
+  const pausedRef=useRef(false);const revealedRef=useRef(false);const pauseStartedRef=useRef(null);
   const pausedSpawnQueueRef=useRef([]);
   const prevMultTier=useRef(0);const seedRef=useRef(seed);seedRef.current=seed;
   useEffect(()=>{roundNumRef.current=roundNum;},[roundNum]);
   useEffect(()=>{holsterPhaseRef.current=holsterPhase;},[holsterPhase]);
   useEffect(()=>{pausedRef.current=isPaused;},[isPaused]);
-  useEffect(()=>{timerStartRef.current=timerStart;},[timerStart]);
-  useEffect(()=>{timerRunningRef.current=timerRunning;},[timerRunning]);
   useEffect(()=>{revealedRef.current=revealed;},[revealed]);
   const mult=getMult(stats.streak);const multLabel=getMultLabel(stats.streak);const multTier=getMultTier(stats.streak);
   const multColor=multTier>=3?C.red:multTier>=2?C.orange:multTier>=1?C.yellow:C.textDim;
@@ -364,10 +362,10 @@ function useGameEngine(startDiff=1,seed=null){
   const startArming=useCallback(()=>{if(holsterPhaseRef.current!=="idle")return;setHolsterPhase("arming");SFX.arm();armStartRef.current=Date.now();const tick=()=>{if(!armStartRef.current)return;const el=Date.now()-armStartRef.current,prog=Math.min(el/CFG.holsterArm,1);setArmProgress(prog);if(prog<1){armRafRef.current=requestAnimationFrame(tick);}else{setHolsterPhase("armed");SFX.armed();armTimeoutRef.current=setTimeout(()=>launchRound(),200);}};armRafRef.current=requestAnimationFrame(tick);},[launchRound]);
   const handleHolsterEnter=useCallback(()=>{if(holsterPhaseRef.current==="idle")startArming();},[startArming]);
   const handleHolsterLeave=useCallback(()=>{if(holsterPhaseRef.current==="arming")cancelArm();},[cancelArm]);
-  const handlePauseEnter=useCallback(()=>{if(holsterPhaseRef.current!=="live"||revealedRef.current||pausedRef.current)return;setIsPaused(true);pausedRef.current=true;pauseStartedRef.current=Date.now();if(timerRunningRef.current)setTimerRunning(false);},[]);
-  const handlePauseLeave=useCallback(()=>{if(!pausedRef.current)return;const pausedFor=pauseStartedRef.current?Date.now()-pauseStartedRef.current:0;pausedRef.current=false;pauseStartedRef.current=null;setIsPaused(false);if(pausedSpawnQueueRef.current.length){const queued=pausedSpawnQueueRef.current;pausedSpawnQueueRef.current=[];setLiveFeed(p=>[...queued.slice().reverse(),...p]);setSpawned(p=>new Set([...p,...queued.map(c=>c.id)]));}if(txState==="active"&&timerStartRef.current!==null&&!revealedRef.current){setTimerStart(prev=>prev===null?prev:prev+pausedFor);setTimerRunning(true);}},[txState]);
+  const handlePauseEnter=useCallback(()=>{if(holsterPhaseRef.current!=="live"||revealedRef.current||pausedRef.current)return;setIsPaused(true);pausedRef.current=true;pauseStartedRef.current=Date.now();},[]);
+  const handlePauseLeave=useCallback(()=>{if(!pausedRef.current)return;pausedRef.current=false;pauseStartedRef.current=null;setIsPaused(false);if(pausedSpawnQueueRef.current.length){const queued=pausedSpawnQueueRef.current;pausedSpawnQueueRef.current=[];setLiveFeed(p=>[...queued.slice().reverse(),...p]);setSpawned(p=>new Set([...p,...queued.map(c=>c.id)]));}},[]);
   const finishRound=useCallback(ok=>{clearInterval(noiseRef.current);setIsPaused(false);pausedRef.current=false;pauseStartedRef.current=null;pausedSpawnQueueRef.current=[];if(!ok)setShowCorrect(true);setHolsterPhase("cooldown");setTimeout(()=>{setRoundNum(p=>p+1);setHolsterPhase("idle");setArmProgress(0);setShowCorrect(false);},ok?1000:2000);},[]);
-  const handleBuy=useCallback((coin,e)=>{if(revealed)return;SFX.click();if(txState==="waiting"||txState==="spawning"){clearAll();setTxState("penalty");setRevealed(true);setTimerRunning(false);setClickedId(coin.id);showFB("penalty");flash("red");shake();SFX.penalty();setStats(p=>({...p,streak:0,penalties:p.penalties+1}));setAttemptHistory(p=>[...p,{id:Date.now(),type:"penalty",rt:null,round:roundNumRef.current+1}]);finishRound(false);return;}if(txState!=="active")return;const pausedForCurrent=pausedRef.current&&pauseStartedRef.current?Date.now()-pauseStartedRef.current:0;const rt=Math.max(0,Date.now()-timerStart-pausedForCurrent);setTimerRunning(false);setRevealed(true);setClickedId(coin.id);clearAll();if(coin.isCorrect){setTxState("hit");showFB("hit",rt);flash("green");SFX.hit();setStats(p=>{const ns=p.streak+1;return{...p,score:p.score+1,streak:ns,bestStreak:Math.max(p.bestStreak,ns),bestTime:p.bestTime===null?rt:Math.min(p.bestTime,rt),lastTime:rt,hits:p.hits+1,times:[...p.times,rt]};});setAttemptHistory(p=>[...p,{id:Date.now(),type:"hit",rt,round:roundNumRef.current+1}]);finishRound(true);}else{setTxState("missed");showFB("wrong",rt);flash("red");shake();SFX.miss();setStats(p=>({...p,streak:0,misses:p.misses+1,lastTime:rt}));setAttemptHistory(p=>[...p,{id:Date.now(),type:"wrong",rt,round:roundNumRef.current+1}]);finishRound(false);}},[txState,revealed,timerStart,clearAll,showFB,flash,shake,finishRound]);
+  const handleBuy=useCallback((coin,e)=>{if(revealed)return;SFX.click();if(txState==="waiting"||txState==="spawning"){clearAll();setTxState("penalty");setRevealed(true);setTimerRunning(false);setClickedId(coin.id);showFB("penalty");flash("red");shake();SFX.penalty();setStats(p=>({...p,streak:0,penalties:p.penalties+1}));setAttemptHistory(p=>[...p,{id:Date.now(),type:"penalty",rt:null,round:roundNumRef.current+1}]);finishRound(false);return;}if(txState!=="active")return;const rt=Math.max(0,Date.now()-timerStart);setTimerRunning(false);setRevealed(true);setClickedId(coin.id);clearAll();if(coin.isCorrect){setTxState("hit");showFB("hit",rt);flash("green");SFX.hit();setStats(p=>{const ns=p.streak+1;return{...p,score:p.score+1,streak:ns,bestStreak:Math.max(p.bestStreak,ns),bestTime:p.bestTime===null?rt:Math.min(p.bestTime,rt),lastTime:rt,hits:p.hits+1,times:[...p.times,rt]};});setAttemptHistory(p=>[...p,{id:Date.now(),type:"hit",rt,round:roundNumRef.current+1}]);finishRound(true);}else{setTxState("missed");showFB("wrong",rt);flash("red");shake();SFX.miss();setStats(p=>({...p,streak:0,misses:p.misses+1,lastTime:rt}));setAttemptHistory(p=>[...p,{id:Date.now(),type:"wrong",rt,round:roundNumRef.current+1}]);finishRound(false);}},[txState,revealed,timerStart,clearAll,showFB,flash,shake,finishRound]);
   const reset=useCallback(()=>{clearAll();cancelAnimationFrame(armRafRef.current);clearTimeout(armTimeoutRef.current);clearInterval(noiseRef.current);setStats({score:0,streak:0,bestStreak:0,bestTime:null,lastTime:null,hits:0,misses:0,penalties:0,times:[]});setRoundNum(0);roundNumRef.current=0;setRoundData(null);setSpawned(new Set());setTxState("idle");setRevealed(false);setClickedId(null);setFeedback(null);setScreenFlash(null);setScreenShake(false);setComboBurst(null);setTweetVis(false);setPairsVis(false);setTimerRunning(false);setTimerStart(null);setLiveFeed([]);setAttemptHistory([]);setHolsterPhase("idle");setArmProgress(0);setShowCorrect(false);setIsPaused(false);pausedRef.current=false;pauseStartedRef.current=null;pausedSpawnQueueRef.current=[];},[clearAll]);
   useEffect(()=>()=>{clearAll();cancelAnimationFrame(armRafRef.current);clearTimeout(armTimeoutRef.current);},[clearAll]);
   return{stats,roundData,spawned,txState,revealed,clickedId,feedback,screenFlash,screenShake,comboBurst,showCorrect,isPaused,tweetVis,pairsVis,timerRunning,timerStart,liveFeed,attemptHistory,holsterPhase,armProgress,mult,multLabel,multColor,pnl,difficulty,roundNum,handleHolsterEnter,handleHolsterLeave,handlePauseEnter,handlePauseLeave,handleBuy,reset};
@@ -436,12 +434,13 @@ function GameView({engine,onExit,rightPanel}){
 /* ═══════════════════════════════════════════
    PRACTICE MODE
 ═══════════════════════════════════════════ */
-function PracticeMode({startDiff=1,onSessionComplete}){
+function PracticeMode({startDiff=1,onSessionComplete,onScreenChange}){
   const[screen,setScreen]=useState("menu"); // menu | playing | summary
   const engine=useGameEngine(startDiff);
   const summarySavedRef=useRef(false);
   const start=()=>{engine.reset();setScreen("playing");};
   const practiceSteps=[["01","Hold HOLSTER 0.8s to arm",C.text],["02","Read signal tweet first",C.text],["03","Tap TX NOW on match",C.green],["04","Traps use partial matches",C.yellow],["05","Clicking during WAIT = penalty",C.red],["06","Streaks boost PnL to x3",C.orange]];
+  useEffect(()=>{onScreenChange?.(screen);},[screen,onScreenChange]);
   useEffect(()=>{
     if(screen==="menu"){summarySavedRef.current=false;return;}
     if(screen!=="summary"||summarySavedRef.current)return;
@@ -484,12 +483,12 @@ function PracticeMode({startDiff=1,onSessionComplete}){
             <div className="practice-steps">
               {practiceSteps.map(([n,t,c],i)=>(
                 <div key={i} className="practice-step" style={{animationDelay:`${100+i*60}ms`}}>
-                  <span style={{color:c,minWidth:22,flexShrink:0}}>{n}</span>
+                  <span className="practice-step-num" style={{color:c}}>{n}</span>
                   <span>{t}</span>
                 </div>
               ))}
             </div>
-            <div className="practice-card-foot">Speed beats hesitation.</div>
+            <div className="practice-card-foot">Speed beats hesitation</div>
           </div>
           <button onClick={start} className="btn-primary btn-green" style={{width:"100%",fontSize:14,padding:"16px 24px",letterSpacing:2.5,marginTop:4}}>
             Start Training →
@@ -506,7 +505,7 @@ function PracticeMode({startDiff=1,onSessionComplete}){
 ═══════════════════════════════════════════ */
 function OneVOneMode({onMatchComplete}){
   const[phase,setPhase]=useState("lobby");const[gameCode,setGameCode]=useState("");const[joinCode,setJoinCode]=useState("");const[isHost,setIsHost]=useState(false);const[playerName,setPlayerName]=useState("");const[opponentName,setOpponentName]=useState("");const[opponentStats,setOpponentStats]=useState(null);const[matchResult,setMatchResult]=useState(null);
-  const[bestOf,setBestOf]=useState(10);const[gameSeed,setGameSeed]=useState(null);const[isPublicLobby,setIsPublicLobby]=useState(true);const[publicLobbies,setPublicLobbies]=useState([]);const[loadingLobbies,setLoadingLobbies]=useState(false);
+  const[bestOf,setBestOf]=useState(10);const[gameSeed,setGameSeed]=useState(null);const[isPublicLobby,setIsPublicLobby]=useState(true);const[publicLobbies,setPublicLobbies]=useState([]);
   const[countdown,setCountdown]=useState(null);
   const countdownRef=useRef(null);
   const supabaseWarnedRef=useRef(false);const lobbyPollRef=useRef(null);
@@ -594,19 +593,75 @@ function OneVOneMode({onMatchComplete}){
       roundNum:data.round_num,
     };
   }
+  async function storageRemove(k){
+    if(!ensureSupabase())return;
+    const parsed=parseGameKey(k);
+    if(!parsed)return;
+    if(parsed.type==="game"){
+      const{error:statsError}=await supabase.from("duel_game_stats").delete().eq("game_code",parsed.code);
+      if(statsError)console.error("supabase storageRemove stats failed",statsError);
+      const{error}=await supabase.from("duel_games").delete().eq("code",parsed.code);
+      if(error)console.error("supabase storageRemove game failed",error);
+      return;
+    }
+    const{error}=await supabase.from("duel_game_stats").delete().eq("game_code",parsed.code).eq("player_role",parsed.role);
+    if(error)console.error("supabase storageRemove stats row failed",error);
+  }
 
   const fetchPublicLobbies=useCallback(async()=>{
     if(!ensureSupabase())return;
-    setLoadingLobbies(true);
     const{data,error}=await supabase.from("duel_games").select("code,host_id,host_name,best_of,created_at").eq("status","waiting").eq("is_public",true).is("guest_id",null).order("created_at",{ascending:false}).limit(20);
-    setLoadingLobbies(false);
     if(error){console.error("supabase fetch public lobbies failed",error);return;}
-    setPublicLobbies((data||[]).filter(l=>l.host_id!==playerId));
+    const next=(data||[]).filter(l=>l.host_id!==playerId);
+    setPublicLobbies(prev=>{
+      if(prev.length===next.length&&prev.every((p,i)=>p.code===next[i]?.code&&p.host_id===next[i]?.host_id&&p.host_name===next[i]?.host_name&&p.best_of===next[i]?.best_of))return prev;
+      return next;
+    });
   },[ensureSupabase,playerId]);
   const createGame=async()=>{const code=genCode();const name=playerName||"Player 1";const seed=Date.now();await storageSet(`game:${code}`,{code,host:{id:playerId,name},guest:null,status:"waiting",seed,bestOf,isPublic:isPublicLobby});resultSavedRef.current=false;setGameCode(code);setIsHost(true);setGameSeed(seed);setPhase("waiting");startPolling(code);};
   const joinGame=async(explicitCode=null)=>{const code=(explicitCode||joinCode).toUpperCase().trim();if(code.length!==6)return;const game=await storageGet(`game:${code}`);if(!game||game.status!=="waiting"){alert("Game not found or already started.");return;}if(game.host?.id===playerId){alert("You can't join your own lobby.");return;}const name=playerName||"Player 2";game.guest={id:playerId,name};game.status="ready";await storageSet(`game:${code}`,game);resultSavedRef.current=false;setJoinCode(code);setGameCode(code);setIsHost(false);setOpponentName(game.host.name);setGameSeed(game.seed);setBestOf(game.bestOf||10);setIsPublicLobby(!!game.isPublic);setPhase("waiting");startPolling(code);};
   const joinPublicLobby=async(code)=>{await joinGame(code);};
-  const startPolling=(code)=>{clearInterval(pollRef.current);pollRef.current=setInterval(async()=>{const game=await storageGet(`game:${code}`);if(!game)return;if(isHost&&game.guest)setOpponentName(game.guest.name);if(!isHost&&game.host)setOpponentName(game.host.name);if(game.seed)setGameSeed(game.seed);if(game.status==="countdown"&&!countdownRef.current){runCountdown();}if(game.status==="playing"&&phase!=="playing"&&!countdownRef.current){setPhase("playing");engine.reset();}const oppKey=isHost?`game:${code}:guest-stats`:`game:${code}:host-stats`;const os=await storageGet(oppKey);if(os)setOpponentStats(os);if(game.status==="finished"){setMatchResult({myScore:engine.stats.score,oppScore:os?os.score:0,win:engine.stats.score>(os?os.score:0)});setPhase("results");clearInterval(pollRef.current);}},800);};
+  const resetDuelView=()=>{
+    clearInterval(pollRef.current);
+    engine.reset();
+    resultSavedRef.current=false;
+    setPhase("lobby");
+    setGameCode("");
+    setJoinCode("");
+    setOpponentName("");
+    setOpponentStats(null);
+    setMatchResult(null);
+    setCountdown(null);
+    countdownRef.current=null;
+    setGameSeed(null);
+  };
+  const cleanupLobby=async(code)=>{
+    const normalizedCode=(code||"").toUpperCase().trim();
+    if(normalizedCode.length!==6)return;
+    const key=`game:${normalizedCode}`;
+    const game=await storageGet(key);
+    if(!game)return;
+    const amHost=game.host?.id===playerId;
+    const amGuest=game.guest?.id===playerId;
+    if(!amHost&&!amGuest)return;
+    if(amHost){
+      await storageRemove(key);
+      return;
+    }
+    if(amGuest){
+      game.guest=null;
+      game.status="waiting";
+      await storageSet(key,game);
+      await storageRemove(`game:${normalizedCode}:guest-stats`);
+    }
+  };
+  const backToLobby=async({skipCleanup=false}={})=>{
+    const leavingCode=gameCode;
+    clearInterval(pollRef.current);
+    if(!skipCleanup)await cleanupLobby(leavingCode);
+    resetDuelView();
+  };
+  const startPolling=(code)=>{clearInterval(pollRef.current);pollRef.current=setInterval(async()=>{const game=await storageGet(`game:${code}`);if(!game){backToLobby({skipCleanup:true});return;}if(isHost&&game.guest)setOpponentName(game.guest.name);if(!isHost&&game.host)setOpponentName(game.host.name);if(game.seed)setGameSeed(game.seed);if(game.status==="countdown"&&!countdownRef.current){runCountdown();}if(game.status==="playing"&&phase!=="playing"&&!countdownRef.current){setPhase("playing");engine.reset();}const oppKey=isHost?`game:${code}:guest-stats`:`game:${code}:host-stats`;const os=await storageGet(oppKey);if(os)setOpponentStats(os);if(game.status==="finished"){setMatchResult({myScore:engine.stats.score,oppScore:os?os.score:0,win:engine.stats.score>(os?os.score:0)});setPhase("results");clearInterval(pollRef.current);}},800);};
 
   const runCountdown=()=>{if(countdownRef.current)return;countdownRef.current=true;let n=3;setCountdown(n);SFX.countdown(n);const iv=setInterval(()=>{n--;setCountdown(n);SFX.countdown(n);if(n<=0){clearInterval(iv);setTimeout(()=>{setCountdown(null);countdownRef.current=null;setPhase("playing");engine.reset();},400);}},1000);};
 
@@ -614,8 +669,7 @@ function OneVOneMode({onMatchComplete}){
 
   useEffect(()=>{if(phase!=="playing"||!gameCode)return;const iv=setInterval(async()=>{const key=isHost?`game:${gameCode}:host-stats`:`game:${gameCode}:guest-stats`;await storageSet(key,{score:engine.stats.score,streak:engine.stats.streak,bestTime:engine.stats.bestTime,hits:engine.stats.hits,misses:engine.stats.misses,lastTime:engine.stats.lastTime,roundNum:engine.roundNum});},500);return()=>clearInterval(iv);},[phase,gameCode,isHost,engine.stats,engine.roundNum]);
   const endMatch=async()=>{const game=await storageGet(`game:${gameCode}`);if(game){game.status="finished";await storageSet(`game:${gameCode}`,game);}setPhase("results");clearInterval(pollRef.current);const oppKey=isHost?`game:${gameCode}:guest-stats`:`game:${gameCode}:host-stats`;const os=await storageGet(oppKey);setMatchResult({myScore:engine.stats.score,oppScore:os?os.score:0,win:engine.stats.score>(os?os.score:0)});};
-  const backToLobby=()=>{clearInterval(pollRef.current);engine.reset();resultSavedRef.current=false;setPhase("lobby");setGameCode("");setJoinCode("");setOpponentName("");setOpponentStats(null);setMatchResult(null);setCountdown(null);countdownRef.current=null;setGameSeed(null);};
-  useEffect(()=>{if(phase!=="lobby"){clearInterval(lobbyPollRef.current);return;}fetchPublicLobbies();lobbyPollRef.current=setInterval(fetchPublicLobbies,2500);return()=>clearInterval(lobbyPollRef.current);},[phase,fetchPublicLobbies]);
+  useEffect(()=>{if(phase!=="lobby"){clearInterval(lobbyPollRef.current);return;}fetchPublicLobbies();lobbyPollRef.current=setInterval(fetchPublicLobbies,5000);return()=>clearInterval(lobbyPollRef.current);},[phase,fetchPublicLobbies]);
   useEffect(()=>()=>clearInterval(pollRef.current),[]);
   useEffect(()=>()=>clearInterval(lobbyPollRef.current),[]);
   useEffect(()=>{
@@ -631,14 +685,13 @@ function OneVOneMode({onMatchComplete}){
     </div></div>);
 
   if(phase==="lobby")return(
-    <div className="menu-bg"><div className="grid-bg"/><div className="menu-inner" style={{maxWidth:560}}>
-      <div className="menu-glow-orb orange"/>
-      <div style={{fontSize:52,marginBottom:8,animation:"float 3s ease-in-out infinite"}}>⚔️</div>
+    <div className="menu-bg" style={{minHeight:"100%",height:"100%",justifyContent:"flex-start",paddingTop:36,paddingBottom:140,overflowY:"auto",overflowX:"hidden",backgroundImage:`linear-gradient(rgba(74,222,128,0.022) 1px,transparent 1px),linear-gradient(90deg,rgba(74,222,128,0.022) 1px,transparent 1px)`,backgroundSize:"60px 60px"}}><div className="menu-inner" style={{maxWidth:560,paddingBottom:180}}>
+      <div style={{fontSize:52,marginBottom:8}}>⚔️</div>
       <h1 className="title-text" style={{color:C.orange}}>1v1 DUEL</h1>
       <div style={{fontSize:10.5,color:C.textDim,letterSpacing:7,marginBottom:24,fontWeight:500}}>COMPETE HEAD TO HEAD</div>
       <div style={{marginBottom:16,opacity:0,animation:"slideUp 0.4s ease 100ms forwards"}}><div style={{fontSize:8,color:C.textDim,letterSpacing:2.5,marginBottom:6,textAlign:"left"}}>YOUR NAME</div><input value={playerName} onChange={e=>setPlayerName(e.target.value)} placeholder="Enter name..." className="input-field"/></div>
       <div style={{marginBottom:16,opacity:0,animation:"slideUp 0.4s ease 150ms forwards"}}><div style={{fontSize:8,color:C.textDim,letterSpacing:2.5,marginBottom:6,textAlign:"left"}}>FORMAT</div><div style={{display:"flex",gap:6}}>{[5,10,20].map(n=>{const ac=bestOf===n;return(<button key={n} onClick={()=>setBestOf(n)} style={{flex:1,padding:"8px 0",borderRadius:8,border:`1px solid ${ac?C.orange:C.border}`,background:ac?`${C.orange}12`:C.bgCard,color:ac?C.orange:C.textDim,fontSize:11,fontWeight:ac?800:600,fontFamily:"var(--mono)",cursor:"pointer"}}>Best of {n}</button>);})}</div></div>
-      <div className="glass-card" style={{marginBottom:14,opacity:0,animation:"slideUp 0.4s ease 200ms forwards"}}><div style={{fontSize:8.5,color:C.orange,fontWeight:700,letterSpacing:2.5,marginBottom:10}}>CREATE GAME</div><p style={{fontSize:11,color:C.textMuted,marginBottom:10,lineHeight:1.6}}>Create a room and share the code with your opponent.</p><label style={{display:"flex",alignItems:"center",gap:8,fontSize:10,color:C.textMuted,marginBottom:12,cursor:"pointer"}}><input type="checkbox" checked={isPublicLobby} onChange={e=>setIsPublicLobby(e.target.checked)} style={{accentColor:C.green}}/><span>Public lobby (appears in live list)</span></label><button onClick={createGame} className="btn-primary btn-orange">Create Room</button></div>
+      <div className="glass-card" style={{marginBottom:14,opacity:0,animation:"slideUp 0.4s ease 200ms forwards"}}><div style={{fontSize:8.5,color:C.orange,fontWeight:700,letterSpacing:2.5,marginBottom:10}}>CREATE GAME</div><p style={{fontSize:11,color:C.textMuted,marginBottom:10,lineHeight:1.6}}>Create a room and share the code with your opponent.</p><label style={{display:"flex",alignItems:"center",gap:8,fontSize:10,color:C.textMuted,marginBottom:12,cursor:"pointer"}}><input type="checkbox" checked={isPublicLobby} onChange={e=>setIsPublicLobby(e.target.checked)} style={{accentColor:C.green}}/><span>Public lobby (appears in live list)</span></label><button onClick={createGame} className="btn-primary btn-orange btn-static">Create Room</button></div>
       <div className="glass-card" style={{marginBottom:14,opacity:0,animation:"slideUp 0.4s ease 300ms forwards"}}>
         <div style={{fontSize:8.5,color:C.blue,fontWeight:700,letterSpacing:2.5,marginBottom:10}}>JOIN BY CODE</div>
         <div style={{display:"flex",gap:10,alignItems:"stretch"}}>
@@ -650,12 +703,12 @@ function OneVOneMode({onMatchComplete}){
             className="input-field"
             style={{flex:1,textAlign:"center",fontSize:22,fontWeight:900,letterSpacing:6,height:52,lineHeight:1,padding:"0 14px"}}
           />
-          <button onClick={joinGame} className="btn-primary btn-blue" style={{width:108,height:52,padding:0,fontSize:13,display:"inline-flex",alignItems:"center",justifyContent:"center",lineHeight:1}}>
+          <button onClick={joinGame} className="btn-primary btn-blue btn-static" style={{width:108,height:52,padding:0,fontSize:13,display:"inline-flex",alignItems:"center",justifyContent:"center",lineHeight:1}}>
             JOIN
           </button>
         </div>
       </div>
-      <div className="glass-card" style={{opacity:0,animation:"slideUp 0.4s ease 360ms forwards"}}><div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:10}}><div style={{fontSize:8.5,color:C.green,fontWeight:700,letterSpacing:2.5}}>PUBLIC LOBBIES</div><button onClick={fetchPublicLobbies} className="btn-ghost" style={{fontSize:8,padding:"4px 8px"}}>Refresh</button></div>{loadingLobbies&&publicLobbies.length===0?<div style={{fontSize:10,color:C.textGhost}}>Loading lobbies...</div>:publicLobbies.length===0?<div style={{fontSize:10,color:C.textGhost}}>No public lobbies right now.</div>:<div style={{display:"flex",flexDirection:"column",gap:8,maxHeight:220,overflowY:"auto"}}>{publicLobbies.map((l)=>(<div key={l.code} style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:10,padding:"8px 10px",border:`1px solid ${C.border}`,borderRadius:8,background:C.bgCard}}><div style={{minWidth:0}}><div style={{fontSize:11,color:C.text,fontWeight:700,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{l.host_name||"Host"}</div><div style={{fontSize:9,color:C.textDim,marginTop:2}}>Code {l.code} • Best of {l.best_of}</div></div><button onClick={()=>joinPublicLobby(l.code)} className="btn-primary btn-blue" style={{width:"auto",padding:"7px 12px",fontSize:10,letterSpacing:1}}>Join</button></div>))}</div>}</div>
+      <div className="glass-card" style={{marginBottom:18,opacity:0,animation:"slideUp 0.4s ease 360ms forwards"}}><div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:10}}><div style={{fontSize:8.5,color:C.green,fontWeight:700,letterSpacing:2.5}}>PUBLIC LOBBIES</div><button onClick={fetchPublicLobbies} className="btn-ghost" style={{fontSize:8,padding:"4px 8px"}}>Refresh</button></div>{publicLobbies.length===0?<div style={{fontSize:10,color:C.textGhost}}>No public lobbies right now.</div>:<div style={{display:"flex",flexDirection:"column",gap:8,maxHeight:220,overflowY:"auto"}}>{publicLobbies.map((l)=>(<div key={l.code} style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:10,padding:"8px 10px",border:`1px solid ${C.border}`,borderRadius:8,background:C.bgCard}}><div style={{minWidth:0}}><div style={{fontSize:11,color:C.text,fontWeight:700,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{l.host_name||"Host"}</div><div style={{fontSize:9,color:C.textDim,marginTop:2}}>Code {l.code} • Best of {l.best_of}</div></div><button onClick={()=>joinPublicLobby(l.code)} className="btn-primary btn-blue btn-static" style={{width:"auto",padding:"7px 12px",fontSize:10,letterSpacing:1}}>Join</button></div>))}</div>}</div>
     </div></div>);
 
   if(phase==="waiting")return(
@@ -726,10 +779,45 @@ function ProfileTab({session,stats,loading,msg,onRefresh}){
   );
 }
 
+function ModePickerScreen({session,onSelect,onLogOut}){
+  const username=session?.user?.user_metadata?.username||session?.user?.email?.split("@")[0]||"signed in";
+  const pickerAccent=C.yellow;
+  const cards=[
+    {key:"practice",label:"Practice",desc:"Train reaction speed solo and improve consistency.",icon:"⚡"},
+    {key:"1v1",label:"1v1 Duel",desc:"Face another player with synchronized rounds.",icon:"⚔️"},
+    {key:"profile",label:"Profile",desc:"Check your stats, records, and progression.",icon:"📊"},
+  ];
+
+  return(
+    <div className="menu-bg mode-picker-page">
+      <div className="grid-bg"/>
+      <div className="menu-glow-orb yellow"/>
+      <div className="mode-picker-shell">
+        <div className="mode-picker-head">
+          <div className="mode-picker-kicker">WELCOME BACK</div>
+          <h2 className="title-text mode-picker-title">{username}</h2>
+          <p className="mode-picker-subtitle">Choose how you want to start. We will remember this and open it automatically next time.</p>
+        </div>
+        <div className="mode-picker-grid">
+          {cards.map((card)=>(
+            <button key={card.key} onClick={()=>onSelect(card.key)} className="mode-picker-card" style={{"--pick-accent":pickerAccent}}>
+              <div className="mode-picker-icon">{card.icon}</div>
+              <div className="mode-picker-label">{card.label}</div>
+              <div className="mode-picker-desc">{card.desc}</div>
+            </button>
+          ))}
+        </div>
+        <button onClick={onLogOut} className="btn-ghost" style={{fontSize:9,padding:"7px 10px",marginTop:16}}>LOGOUT</button>
+      </div>
+    </div>
+  );
+}
+
 function AuthScreen(){
   const[mode,setMode]=useState("login");
   const[username,setUsername]=useState("");
   const[password,setPassword]=useState("");
+  const[accessCode,setAccessCode]=useState("");
   const[busy,setBusy]=useState(false);
   const[msg,setMsg]=useState("");
   const isLogin=mode==="login";
@@ -744,15 +832,27 @@ function AuthScreen(){
     const email=toInternalEmail(username);
     if(!email||!password){setMsg("Username and password are required.");return;}
     if(username.trim().length<3){setMsg("Username must be at least 3 characters.");return;}
+    const normalizedAccessCode=accessCode.trim().toUpperCase();
+    if(!isLogin&&!normalizedAccessCode){setMsg("Access code is required to create an account.");return;}
     setBusy(true);setMsg("");
     try{
       if(isLogin){
         const{error}=await supabase.auth.signInWithPassword({email,password});
         if(error)throw error;
       }else{
-        const{error}=await supabase.auth.signUp({email,password,options:{data:{username:username.trim()}}});
+        const{error}=await supabase.auth.signUp({
+          email,
+          password,
+          options:{
+            data:{
+              username:username.trim(),
+              access_code:normalizedAccessCode,
+            },
+          },
+        });
         if(error)throw error;
         setMsg("Account created.");
+        setAccessCode("");
       }
     }catch(e){setMsg(e?.message||"Auth request failed.");}
     finally{setBusy(false);}
@@ -776,7 +876,7 @@ function AuthScreen(){
         <div className="auth-form-card">
           <div className="auth-form-head">
             <div style={{fontSize:11,color:C.textDim,letterSpacing:3,fontWeight:700}}>ACCOUNT ACCESS</div>
-            <div style={{fontSize:9,color:C.textGhost,letterSpacing:1.5}}>FREE TO JOIN</div>
+            <div style={{fontSize:9,color:C.textGhost,letterSpacing:1.5}}>{isLogin?"WELCOME BACK":"CODE REQUIRED"}</div>
           </div>
           <div className="auth-mode-switch">
             <button onClick={()=>setMode("login")} className="auth-mode-btn" style={{background:isLogin?`linear-gradient(135deg,${C.green},${C.greenDim})`:"transparent",color:isLogin?C.bg:C.textDim,borderColor:isLogin?"transparent":C.border}}>Login</button>
@@ -787,8 +887,14 @@ function AuthScreen(){
           <div className="auth-email-hint">{username.trim()?toInternalEmail(username):""}</div>
           <div style={{fontSize:8,color:C.textDim,letterSpacing:2.5,marginTop:12,marginBottom:6}}>PASSWORD</div>
           <input value={password} onChange={e=>setPassword(e.target.value)} onKeyDown={e=>{if(e.key==="Enter"&&!busy)submit();}} type="password" placeholder="••••••••" className="input-field auth-input" style={{marginBottom:10}}/>
+          {!isLogin&&(
+            <>
+              <div style={{fontSize:8,color:C.textDim,letterSpacing:2.5,marginTop:2,marginBottom:6}}>ACCESS CODE</div>
+              <input value={accessCode} onChange={e=>setAccessCode(e.target.value.toUpperCase())} onKeyDown={e=>{if(e.key==="Enter"&&!busy)submit();}} placeholder="ALPHA001" className="input-field auth-input" style={{marginBottom:10,textTransform:"uppercase"}}/>
+            </>
+          )}
           <div style={{fontSize:9,color:C.textGhost,marginBottom:12}}>Use letters, numbers, and underscore in username.</div>
-          {msg&&<div className="auth-msg" style={{color:msg.toLowerCase().includes("failed")||msg.toLowerCase().includes("required")?C.red:C.green,borderColor:msg.toLowerCase().includes("failed")||msg.toLowerCase().includes("required")?`${C.red}35`:`${C.green}35`,background:msg.toLowerCase().includes("failed")||msg.toLowerCase().includes("required")?`${C.red}10`:`${C.green}10`}}>{msg}</div>}
+          {msg&&<div className="auth-msg" style={{color:msg.toLowerCase().includes("failed")||msg.toLowerCase().includes("required")||msg.toLowerCase().includes("invalid")||msg.toLowerCase().includes("already used")?C.red:C.green,borderColor:msg.toLowerCase().includes("failed")||msg.toLowerCase().includes("required")||msg.toLowerCase().includes("invalid")||msg.toLowerCase().includes("already used")?`${C.red}35`:`${C.green}35`,background:msg.toLowerCase().includes("failed")||msg.toLowerCase().includes("required")||msg.toLowerCase().includes("invalid")||msg.toLowerCase().includes("already used")?`${C.red}10`:`${C.green}10`}}>{msg}</div>}
           <button onClick={submit} disabled={busy} className={`btn-primary ${isLogin?"btn-green":"btn-blue"}`} style={{opacity:busy?0.7:1,cursor:busy?"default":"pointer",marginTop:msg?0:4}}>
             {busy?"Submitting...":isLogin?"Login":"Create Account"}
           </button>
@@ -801,6 +907,8 @@ function AuthScreen(){
 export default function App(){
   const router=useRouter();
   const[tab,setTab]=useState("practice");
+  const[practiceScreen,setPracticeScreen]=useState("menu");
+  const[entryScreen,setEntryScreen]=useState("loading"); // loading | mode-picker | app
   const[startDiff,setStartDiff]=useState(1);
   const[session,setSession]=useState(null);
   const[authReady,setAuthReady]=useState(false);
@@ -815,18 +923,24 @@ export default function App(){
       if(active){
         const nextSession=data?.session||null;
         setSession(nextSession);
-        if(!nextSession)setProfileStats(EMPTY_PROFILE_STATS);
+        if(!nextSession){
+          setProfileStats(EMPTY_PROFILE_STATS);
+          setEntryScreen("loading");
+        }
         setAuthReady(true);
       }
     });
     const { data: authListener } = supabase.auth.onAuthStateChange((_event, nextSession) => {
       setSession(nextSession||null);
-      if(!nextSession)setProfileStats(EMPTY_PROFILE_STATS);
+      if(!nextSession){
+        setProfileStats(EMPTY_PROFILE_STATS);
+        setEntryScreen("loading");
+      }
     });
     return()=>{active=false;authListener?.subscription?.unsubscribe();};
   },[]);
 
-  const loadProfileStats=useCallback(async()=>{
+  const loadProfileStats=useCallback(async({resolveEntry=false}={})=>{
     if(!supabase||!session?.user?.id)return;
     setProfileLoading(true);
     setProfileMsg("");
@@ -836,12 +950,27 @@ export default function App(){
       .eq("user_id", session.user.id)
       .maybeSingle();
     setProfileLoading(false);
-    if(error){setProfileMsg("Could not load profile stats.");return;}
-    setProfileStats(normalizeProfileStats(data||{}));
+    if(error){
+      setProfileMsg("Could not load profile stats.");
+      setProfileStats(EMPTY_PROFILE_STATS);
+      if(resolveEntry)setEntryScreen("mode-picker");
+      return;
+    }
+    const nextStats=normalizeProfileStats(data||{});
+    setProfileStats(nextStats);
+    if(resolveEntry){
+      if(data){
+        setTab(normalizeModeKey(nextStats.preferred_mode));
+        setEntryScreen("app");
+      }else{
+        setEntryScreen("mode-picker");
+      }
+    }
   },[session]);
 
   useEffect(()=>{
-    if(session?.user?.id)loadProfileStats();
+    if(!session?.user?.id)return;
+    loadProfileStats({resolveEntry:true});
   },[session,loadProfileStats]);
 
   const updateProfileStats=useCallback(async(updater)=>{
@@ -862,6 +991,18 @@ export default function App(){
     if(writeError){setProfileMsg("Could not save profile stats.");return;}
     setProfileStats(next);
   },[session]);
+
+  const savePreferredMode=useCallback(async(mode)=>{
+    const normalized=normalizeModeKey(mode);
+    await updateProfileStats((prev)=>({...prev,preferred_mode:normalized}));
+  },[updateProfileStats]);
+
+  const handleModeSelect=useCallback((mode,{persist=true,openApp=false}={})=>{
+    const normalized=normalizeModeKey(mode);
+    setTab(normalized);
+    if(openApp)setEntryScreen("app");
+    if(persist)void savePreferredMode(normalized);
+  },[savePreferredMode]);
 
   const recordPracticeSession=useCallback(async(practiceStats)=>{
     const rounds=practiceStats.hits+practiceStats.misses+practiceStats.penalties;
@@ -897,26 +1038,28 @@ export default function App(){
 
   if(!authReady)return(<div className="menu-bg"><div className="grid-bg"/><div style={{position:"relative",zIndex:1,color:C.textDim,fontSize:12,letterSpacing:2}}>LOADING AUTH...</div><style>{CSS}</style></div>);
   if(!session)return(<><AuthScreen/><style>{CSS}</style></>);
+  if(entryScreen==="loading")return(<div className="menu-bg"><div className="grid-bg"/><div style={{position:"relative",zIndex:1,color:C.textDim,fontSize:12,letterSpacing:2}}>LOADING PROFILE...</div><style>{CSS}</style></div>);
+  if(entryScreen==="mode-picker")return(<><ModePickerScreen session={session} onSelect={(mode)=>handleModeSelect(mode,{persist:true,openApp:true})} onLogOut={logOut}/><style>{CSS}</style></>);
 
   return(
     <div style={{height:"100vh",display:"flex",flexDirection:"column",background:C.bg,fontFamily:"var(--mono)",overflow:"hidden"}}>
       {/* TAB BAR */}
       <div className="tab-bar">
-        <button className="tab-logo tab-logo-btn" onClick={()=>router.push("/")} aria-label="Go to home page"><img src="/logo.png" alt="" style={{height:22,width:"auto",display:"block"}}/><span style={{color:C.text,fontWeight:900,letterSpacing:1.5}}>TRENCHES</span></button>
+        <button className="tab-logo tab-logo-btn" onClick={()=>router.push("/")} aria-label="Go to home page"><img src="/logo.png" alt="" style={{height:32,width:"auto",display:"block"}}/></button>
         {[["practice","Practice",C.green],["1v1","1v1",C.orange]].map(([key,label,accent])=>{
           const active=tab===key;
-          return(<button key={key} onClick={()=>setTab(key)} className={`tab-btn ${active?"tab-active":""}`} style={{"--accent":accent}}>{active&&<span className="tab-dot" style={{background:accent,boxShadow:`0 0 8px ${accent}50`}}/>}{label}</button>);
+          return(<button key={key} onClick={()=>handleModeSelect(key)} className={`tab-btn ${active?"tab-active":""}`} style={{"--accent":accent}}>{active&&<span className="tab-dot" style={{background:accent,boxShadow:`0 0 8px ${accent}50`}}/>}{label}</button>);
         })}
         {/* Difficulty selector in tab bar when Practice is active */}
         {tab==="practice"&&<div style={{display:"flex",alignItems:"center",gap:3,marginLeft:14,paddingLeft:14,borderLeft:`1px solid ${C.border}`}}>
           <span style={{fontSize:8,color:C.textDim,letterSpacing:1.5,marginRight:4}}>LVL</span>
-          {[1,3,5,7,10].map(d=>{const ac=startDiff===d;const col=d>=8?C.red:d>=5?C.yellow:C.green;return(<button key={d} onClick={()=>setStartDiff(d)} style={{width:28,height:22,borderRadius:5,border:`1px solid ${ac?col:C.border}`,background:ac?`${col}18`:"transparent",color:ac?col:C.textGhost,fontSize:9,fontWeight:ac?800:500,fontFamily:"var(--mono)",cursor:"pointer",transition:"all 0.15s",padding:0}}>{d}</button>);})}
+          {[1,3,5,7,10].map(d=>{const ac=startDiff===d;const canChange=practiceScreen==="menu";const col=d>=8?C.red:d>=5?C.yellow:C.green;return(<button key={d} onClick={()=>{if(canChange)setStartDiff(d);}} disabled={!canChange} style={{width:28,height:22,borderRadius:5,border:`1px solid ${ac?col:C.border}`,background:ac?`${col}18`:"transparent",color:ac?col:C.textGhost,fontSize:9,fontWeight:ac?800:500,fontFamily:"var(--mono)",cursor:canChange?"pointer":"not-allowed",opacity:canChange?1:0.45,transition:"all 0.15s",padding:0}}>{d}</button>);})}
         </div>}
         <div style={{flex:1}}/>
         <div style={{display:"flex",alignItems:"center",gap:8,height:31,padding:"0 8px",border:`1px solid ${C.border}`,borderRadius:8,background:C.bgCard,marginRight:10,marginBottom:-1}}>
           <span style={{display:"flex",alignItems:"center",height:"100%",fontSize:9,lineHeight:1,color:C.textDim,maxWidth:180,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{session?.user?.user_metadata?.username||session?.user?.email?.split("@")[0]||"signed in"}</span>
           <button
-            onClick={()=>setTab("profile")}
+            onClick={()=>handleModeSelect("profile")}
             className="btn-ghost"
             style={{display:"flex",alignItems:"center",justifyContent:"center",height:20,fontSize:8,lineHeight:1,padding:"0 8px",borderColor:tab==="profile"?`${C.blue}66`:C.border,color:tab==="profile"?C.blue:C.textDim}}
           >
@@ -927,7 +1070,7 @@ export default function App(){
         <span style={{fontSize:8,color:C.textGhost,letterSpacing:2.5}}>v3.0</span>
       </div>
       <div style={{flex:1,overflow:"hidden",minHeight:0}}>
-        {tab==="practice"?<PracticeMode startDiff={startDiff} onSessionComplete={recordPracticeSession}/>:tab==="1v1"?<OneVOneMode onMatchComplete={recordDuelMatch}/>:<ProfileTab session={session} stats={profileStats} loading={profileLoading} msg={profileMsg} onRefresh={loadProfileStats}/>}
+        {tab==="practice"?<PracticeMode startDiff={startDiff} onSessionComplete={recordPracticeSession} onScreenChange={setPracticeScreen}/>:tab==="1v1"?<OneVOneMode onMatchComplete={recordDuelMatch}/>:<ProfileTab session={session} stats={profileStats} loading={profileLoading} msg={profileMsg} onRefresh={loadProfileStats}/>}
       </div>
       <style>{CSS}</style>
     </div>
@@ -949,6 +1092,7 @@ const CSS=`
   .grid-bg::after{content:'';position:absolute;inset:0;
     background:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
     opacity:0.022;mix-blend-mode:overlay;pointer-events:none;}
+  .grid-bg-lite::after{display:none;}
 
   /* ── Tab Bar ── */
   .tab-bar{display:flex;align-items:center;padding:0 20px;height:50px;
@@ -957,7 +1101,7 @@ const CSS=`
   .tab-bar::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
     background:linear-gradient(90deg,transparent 5%,${C.green}28 40%,${C.green}28 60%,transparent 95%);
     pointer-events:none;}
-  .tab-logo{display:flex;align-items:center;gap:8px;margin-right:24px;font-size:13px;font-weight:900;color:${C.text};letter-spacing:1px;}
+  .tab-logo{display:flex;align-items:center;gap:0;margin-right:24px;font-size:13px;font-weight:900;color:${C.text};letter-spacing:1px;}
   .tab-logo-btn{background:transparent;border:none;padding:0;cursor:pointer;transition:opacity 0.2s;}
   .tab-logo-btn:hover{opacity:0.75;}
   .tab-btn{padding:10px 22px;background:transparent;border:none;border-bottom:2px solid transparent;
@@ -994,6 +1138,44 @@ const CSS=`
     animation:breathe 6s ease-in-out infinite;}
   .menu-glow-orb.green{background:${C.green};}
   .menu-glow-orb.orange{background:${C.orange};}
+  .menu-glow-orb.yellow{background:${C.yellow};opacity:0.1;}
+
+  .mode-picker-page{padding:26px 20px;}
+  .mode-picker-shell{position:relative;z-index:1;width:min(980px,100%);display:flex;flex-direction:column;align-items:center;text-align:center;}
+  .mode-picker-head{margin-bottom:22px;}
+  .mode-picker-kicker{font-size:10px;color:${C.yellow};letter-spacing:3px;margin-bottom:8px;font-weight:700;text-shadow:0 0 12px rgba(251,191,36,0.25);}
+  .mode-picker-title{font-size:38px;letter-spacing:-1.2px;margin-bottom:10px;color:${C.text};text-shadow:0 0 24px rgba(251,191,36,0.16);}
+  .mode-picker-subtitle{font-size:12px;color:${C.textMuted};line-height:1.75;max-width:560px;margin:0 auto;}
+  .mode-picker-snapshot{width:min(780px,100%);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:12px;}
+  .mode-snapshot-item{padding:12px 10px;border-radius:12px;border:1px solid ${C.border};background:linear-gradient(145deg,${C.bgCard},${C.bgAlt});text-align:center;}
+  .mode-snapshot-label{font-size:8px;letter-spacing:1.6px;color:${C.textDim};margin-bottom:6px;}
+  .mode-snapshot-value{font-size:17px;font-weight:900;color:${C.text};font-family:var(--mono);}
+  .mode-recommend-card{width:min(780px,100%);padding:11px 13px;border:1px solid ${C.border};border-radius:12px;background:linear-gradient(145deg,rgba(251,191,36,0.08),rgba(251,191,36,0.03));margin-bottom:12px;text-align:left;}
+  .mode-recommend-title{font-size:10px;letter-spacing:1.6px;color:${C.yellow};font-weight:800;margin-bottom:4px;}
+  .mode-recommend-reason{font-size:11px;color:${C.textMuted};line-height:1.6;}
+  .mode-continue-card{width:min(780px,100%);padding:14px 14px;border:1px solid ${C.border};border-radius:14px;background:linear-gradient(145deg,${C.bgCard},${C.bgAlt});margin-bottom:14px;text-align:left;}
+  .mode-continue-label{font-size:8px;letter-spacing:2px;color:${C.textDim};margin-bottom:6px;}
+  .mode-continue-copy{font-size:12px;color:${C.textMuted};line-height:1.65;margin-bottom:12px;}
+  .mode-continue-copy b{color:${C.text};font-weight:800;}
+  .mode-continue-actions{display:flex;gap:10px;align-items:center;}
+  .mode-continue-btn{width:auto;padding:10px 14px;font-size:10px;letter-spacing:1.2px;}
+  .mode-choose-btn{font-size:9px;padding:8px 10px;}
+  .mode-picker-grid{width:100%;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;}
+  .mode-picker-card{
+    font-family:var(--mono);
+    text-align:left;background:linear-gradient(145deg,${C.bgCard} 0%,${C.bgAlt} 100%);
+    border:1px solid ${C.border};border-radius:16px;padding:18px 16px;cursor:pointer;
+    box-shadow:0 8px 32px rgba(0,0,0,0.24),inset 0 1px 0 rgba(255,255,255,0.03);
+    transition:transform 0.18s ease,border-color 0.18s ease,box-shadow 0.18s ease;
+  }
+  .mode-picker-card:hover{
+    transform:translateY(-2px);
+    border-color:color-mix(in srgb,var(--pick-accent) 48%,${C.border});
+    box-shadow:0 12px 34px color-mix(in srgb,var(--pick-accent) 16%, transparent),0 8px 32px rgba(0,0,0,0.24);
+  }
+  .mode-picker-icon{font-size:22px;line-height:1;margin-bottom:12px;color:var(--pick-accent);text-shadow:0 0 12px color-mix(in srgb,var(--pick-accent) 35%, transparent);}
+  .mode-picker-label{font-size:14px;font-weight:900;letter-spacing:0.6px;color:${C.text};margin-bottom:7px;}
+  .mode-picker-desc{font-size:11px;line-height:1.65;color:${C.textMuted};}
 
   /* ── Practice Menu (2-col layout) ── */
   .prac-page{justify-content:center;padding:24px 32px;}
@@ -1021,11 +1203,11 @@ const CSS=`
     padding:32px 30px;}
   .practice-card-title{font-size:10px;color:${C.green};font-weight:800;letter-spacing:3.5px;text-transform:uppercase;margin-bottom:18px;}
   .practice-steps{display:grid;grid-template-columns:1fr;row-gap:14px;justify-items:center;}
-  .practice-step{display:flex;align-items:center;justify-content:center;gap:10px;font-size:13.5px;line-height:1.55;
-    color:${C.textMuted};opacity:0;animation:slideUp 0.35s ease forwards;text-align:center;max-width:420px;}
-  .practice-step span:first-child{flex-shrink:0;transform:none;}
+  .practice-step{display:flex;align-items:center;justify-content:flex-start;gap:10px;font-size:13.5px;line-height:1.55;
+    color:${C.textMuted};opacity:0;animation:slideUp 0.35s ease forwards;text-align:left;max-width:420px;width:fit-content;min-width:330px;}
+  .practice-step-num{width:30px;flex-shrink:0;text-align:right;font-variant-numeric:tabular-nums;letter-spacing:0.4px;}
   .practice-card-foot{margin-top:18px;padding-top:14px;border-top:1px solid ${C.border};
-    font-size:10px;letter-spacing:1.5px;color:${C.textGhost};text-transform:uppercase;}
+    font-size:10px;letter-spacing:1.5px;color:${C.textMuted};text-transform:uppercase;}
   .btn-primary.practice-start-btn{width:min(260px,100%);font-size:13px;padding:12px 12px;letter-spacing:2px;}
 
   /* ── Auth ── */
@@ -1078,6 +1260,9 @@ const CSS=`
     animation:shimmer 3.5s ease-in-out infinite;pointer-events:none;}
   .btn-primary:hover{transform:translateY(-2px);}
   .btn-primary:active{transform:scale(0.97)!important;}
+  .btn-static::before{display:none;}
+  .btn-static:hover{transform:none;}
+  .btn-static:active{transform:none!important;}
   .btn-green{background:linear-gradient(135deg,${C.green},${C.greenDim});
     box-shadow:0 4px 24px rgba(74,222,128,0.2),inset 0 1px 0 rgba(255,255,255,0.12);}
   .btn-green:hover{box-shadow:0 8px 48px rgba(74,222,128,0.38),inset 0 1px 0 rgba(255,255,255,0.12);filter:brightness(1.06);}
@@ -1132,6 +1317,11 @@ const CSS=`
 
   /* ── Responsive ── */
   @media (max-width:860px){
+    .mode-picker-snapshot{grid-template-columns:1fr;max-width:560px;}
+    .mode-continue-actions{flex-direction:column;align-items:stretch;}
+    .mode-continue-btn,.mode-choose-btn{width:100%;}
+    .mode-picker-grid{grid-template-columns:1fr;max-width:560px;margin:0 auto;}
+    .mode-picker-title{font-size:32px;}
     .prac-shell{grid-template-columns:1fr;gap:28px;}
     .prac-brand{align-items:center;text-align:center;}
     .auth-shell{grid-template-columns:1fr;max-width:560px;}
