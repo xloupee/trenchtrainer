@@ -1055,7 +1055,7 @@ export default function App(){
     <div style={{height:"100vh",display:"flex",flexDirection:"column",background:C.bg,fontFamily:"var(--mono)",overflow:"hidden"}}>
       {/* TAB BAR */}
       <div className="tab-bar">
-        <button className="tab-logo tab-logo-btn" onClick={()=>router.push("/")} aria-label="Go to home page"><img src="/logo.png" alt="" style={{height:32,width:"auto",display:"block"}}/></button>
+        <button className="tab-logo tab-logo-btn" onClick={()=>router.push("/")} aria-label="Go to home page"><img src="/logo.png" alt="" style={{height:40,width:"auto",display:"block"}}/></button>
         {[["practice","Practice",C.green],["1v1","1v1",C.orange]].map(([key,label,accent])=>{
           const active=tab===key;
           return(<button key={key} onClick={()=>handleModeSelect(key)} className={`tab-btn ${active?"tab-active":""}`} style={{"--accent":accent}}>{active&&<span className="tab-dot" style={{background:accent,boxShadow:`0 0 8px ${accent}50`}}/>}{label}</button>);
@@ -1100,7 +1100,7 @@ const CSS=`
   .grid-bg-lite::after{display:none;}
 
   /* ── Tab Bar ── */
-  .tab-bar{display:flex;align-items:center;padding:0 20px;height:50px;
+  .tab-bar{display:flex;align-items:center;padding:0 20px;height:56px;
     background:linear-gradient(180deg,${C.bgAlt} 0%,${C.bg} 100%);
     border-bottom:1px solid ${C.border};flex-shrink:0;z-index:20;gap:2px;position:relative;}
   .tab-bar::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
