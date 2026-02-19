@@ -21,11 +21,11 @@ const C = {
 
 const ranks = [
   { label: 'UNRANKED',   color: C.textDim,  threshold: null },
-  { label: 'BRONZE',     color: '#cd7f32',  threshold: '< 600ms' },
-  { label: 'SILVER',     color: '#a8a9ad',  threshold: '< 450ms' },
-  { label: 'GOLD',       color: '#ffd700',  threshold: '< 350ms' },
-  { label: 'DIAMOND',    color: '#b9f2ff',  threshold: '< 260ms' },
-  { label: 'CHALLENGER', color: '#ff6bff',  threshold: '< 200ms' },
+  { label: 'BRONZE',     color: '#cd7f32',  threshold: '>= 1.35s' },
+  { label: 'SILVER',     color: '#a8a9ad',  threshold: '< 1.35s' },
+  { label: 'GOLD',       color: '#ffd700',  threshold: '< 1.05s' },
+  { label: 'DIAMOND',    color: '#b9f2ff',  threshold: '< 850ms' },
+  { label: 'CHALLENGER', color: '#ff6bff',  threshold: '< 650ms' },
 ];
 
 const steps = [
@@ -34,25 +34,16 @@ const steps = [
   { num: '03', title: 'BUILD YOUR EDGE',  desc: 'Track your reaction time, accuracy, and streaks. Climb the ranks. Challenge others 1v1.' },
 ];
 
-const features = [
-  { title: 'Reaction Tracking',  desc: 'Millisecond-precise timing from round start to click. Every rep logged.' },
-  { title: 'Streak Multipliers', desc: 'Chain hits for up to 3x score multipliers. Break the streak and reset.' },
-  { title: 'Traps & Decoys',     desc: 'Higher difficulties mix in mismatched name-emoji pairs designed to fool you.' },
-  { title: '1v1 Duels',          desc: 'Compete head-to-head on identical rounds. Same seed, same tokens, pure skill.' },
-  { title: 'Public Lobbies',     desc: 'Browse open games and jump in instantly or create your own room with a code.' },
-  { title: 'Full Stats Profile', desc: 'Persistent session history, accuracy rates, best times, and duel records.' },
-];
-
 // Scattered coins for the hero right column
 // top/left are absolute within the 600px-tall right panel
 // depth: how many px the coin shifts on mouse move (larger = nearer)
 const COINS = [
-  { top: '-20px', left: '36%', size: 155, rx:  8, ry: -18, rz:  4, delay: 0.0, dur: 5.5, depth: 28 },
-  { top:  '55px', left: '76%', size:  82, rx: -6, ry:  20, rz: -5, delay: 1.1, dur: 4.8, depth: 11 },
-  { top: '205px', left:  '4%', size: 115, rx:  5, ry: -14, rz:  3, delay: 0.6, dur: 6.1, depth: 20 },
-  { top: '250px', left: '63%', size: 105, rx: -7, ry:  17, rz: -4, delay: 1.6, dur: 5.2, depth: 16 },
-  { top: '410px', left: '20%', size:  75, rx:  3, ry:  -9, rz:  7, delay: 0.3, dur: 4.6, depth:  8 },
-  { top: '390px', left: '53%', size: 138, rx: -9, ry:  13, rz: -2, delay: 1.9, dur: 5.9, depth: 25 },
+  { top: '-20px', left: '36%', size: 155, rx:  8, ry: -18, rz:  4, delay: 0.0, dur: 5.5, depth: 28, img: '/coins/coin1.png' },
+  { top:  '55px', left: '76%', size:  82, rx: -6, ry:  20, rz: -5, delay: 1.1, dur: 4.8, depth: 11, img: '/coins/coin2.png' },
+  { top: '205px', left:  '4%', size: 115, rx:  5, ry: -14, rz:  3, delay: 0.6, dur: 6.1, depth: 20, img: '/coins/coin3.png' },
+  { top: '250px', left: '63%', size: 105, rx: -7, ry:  17, rz: -4, delay: 1.6, dur: 5.2, depth: 16, img: '/coins/coin4.png' },
+  { top: '410px', left: '20%', size:  75, rx:  3, ry:  -9, rz:  7, delay: 0.3, dur: 4.6, depth:  8, img: '/coins/coin5.png' },
+  { top: '390px', left: '53%', size: 138, rx: -9, ry:  13, rz: -2, delay: 1.9, dur: 5.9, depth: 25, img: '/coins/coin6.png' },
 ];
 
 
@@ -351,25 +342,20 @@ export default function LandingPage() {
                 >
                   <div style={{ animation: `coinFloat ${coin.dur}s ease-in-out ${coin.delay}s infinite` }}>
                     <div style={{ transform: `perspective(700px) rotateX(${coin.rx}deg) rotateY(${coin.ry}deg) rotateZ(${coin.rz}deg)` }}>
-                      {/*
-                        ── PLACEHOLDER COIN ──────────────────────────────
-                        Replace the contents of this div with your coin image:
-                          <img src="/coins/token.png" style={{ width: '100%', height: '100%', borderRadius: '50%' }} />
-                        ─────────────────────────────────────────────────
-                      */}
-                      <div style={{
-                        width: coin.size, height: coin.size, borderRadius: '50%',
-                        background: 'radial-gradient(circle at 35% 32%, #1e2535, #0b0e14)',
-                        border: '1.5px dashed rgba(72,187,120,0.28)',
-                        boxShadow: `0 8px 40px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.04), 0 0 ${Math.round(coin.size * 0.28)}px rgba(72,187,120,0.06)`,
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        overflow: 'hidden',
-                      }}>
-                        <img src="/logo.png" alt="" style={{
-                          width: '54%', height: '54%', objectFit: 'contain',
-                          opacity: 0.28, userSelect: 'none', pointerEvents: 'none',
-                        }} />
-                      </div>
+                      <img
+                        src={coin.img}
+                        alt=""
+                        style={{
+                          width: coin.size,
+                          height: coin.size,
+                          borderRadius: '50%',
+                          objectFit: 'cover',
+                          boxShadow: `0 8px 40px rgba(0,0,0,0.7), 0 0 ${Math.round(coin.size * 0.28)}px rgba(72,187,120,0.08)`,
+                          userSelect: 'none',
+                          pointerEvents: 'none',
+                          display: 'block',
+                        }}
+                      />
                     </div>
                   </div>
                 </div>
@@ -445,22 +431,6 @@ export default function LandingPage() {
                 boxShadow: '0 0 24px rgba(237,137,54,0.35)', transition: 'all 0.2s',
               }}>FIND A MATCH</Link>
             </GlassCard>
-          </div>
-        </section>
-
-        {/* ── FEATURES ────────────────────────────────────────────────── */}
-        <section style={{ padding: '60px 24px 100px', maxWidth: 960, margin: '0 auto' }}>
-          <div className="reveal" data-reveal data-reveal-order="0" style={{ textAlign: 'center', marginBottom: 64 }}>
-            <div style={{ fontSize: 10, letterSpacing: 4, color: C.cyan, fontWeight: 700, marginBottom: 12 }}>BUILT FOR GRINDERS</div>
-            <h2 style={{ fontSize: 36, fontWeight: 900, letterSpacing: -1 }}>Features</h2>
-          </div>
-          <div className="features-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
-            {features.map((f, i) => (
-              <div key={i} className="feature-card reveal" data-reveal data-reveal-order={`${80 + i * 45}`}>
-                <div style={{ fontSize: 12, fontWeight: 800, letterSpacing: 1.5, color: C.text, marginBottom: 8 }}>{f.title}</div>
-                <div style={{ fontSize: 12, color: C.textMuted, lineHeight: 1.8 }}>{f.desc}</div>
-              </div>
-            ))}
           </div>
         </section>
 

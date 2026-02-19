@@ -77,11 +77,11 @@ const rT2=()=>`${Math.floor(Math.random()*30)}%`;const rS2=()=>({web:Math.random
 
 function genNoiseToken(){return{name:pick(NOISE_TICKERS),emoji:pick(NOISE_EMOJIS),isCorrect:false,isTrap:false,isNoise:true,id:`noise-${Date.now()}-${Math.random()}`,addr:rA(),handle:rH2(),vol:rV(),mcap:rM2(),holders:rHo(),age:rAg(),devPct:rDP(),devAge:rDA(),buySell:rBS(),top10:rT2(),socials:rS2(),hasDS:Math.random()>.5};}
 
-function genRound(num, seed = null) {
+function genRound(num, seed = null, maxDiffCap = 10) {
   const rng = seed !== null ? seededRng(seed + num * 7919) : null;
   const _pick = rng ? (a) => seededPick(a, rng) : pick;
   const _shuf = rng ? (a) => seededShuffle(a, rng) : shuffle;
-  const diff=Math.min(10,Math.floor(num/2)+1),pc=Math.round(Math.min(5+diff*1.5,20));
+  const diff=Math.min(maxDiffCap,Math.floor(num/2)+1),pc=Math.round(Math.min(5+diff*1.5,20));
   const th=_pick(THEMES),tw=_pick(th.tweets),cn=_pick(th.names);
   const ad=[...th.decoys,...NOISE_TICKERS.slice(0,10)],ae=[...th.de,...NOISE_EMOJIS.slice(0,10)];
   const ud=_shuf(ad).slice(0,pc-1),ue=_shuf(ae).slice(0,pc-1);
@@ -92,7 +92,7 @@ function genRound(num, seed = null) {
   return{tweet:tw,pairs,correctName:cn,correctEmoji:th.emoji,fillers:shuffle(FILLER).slice(0,4),spawnDelay:Math.max(600-diff*55,80),diff,noiseInterval:diff>=8?600:diff>=5?1000:diff>=3?1800:3000};
 }
 
-function getRank(avgMs){if(avgMs===null)return{tier:"UNRANKED",color:"#4a5568",glow:"none",icon:"—"};const s=avgMs/1000;if(s<.45)return{tier:"CHALLENGER",color:"#f56565",glow:"0 0 18px rgba(245,101,101,0.35)",icon:"♛"};if(s<.6)return{tier:"DIAMOND",color:"#63b3ed",glow:"0 0 16px rgba(99,179,237,0.3)",icon:"◆"};if(s<.8)return{tier:"GOLD",color:"#ecc94b",glow:"0 0 14px rgba(236,201,75,0.3)",icon:"★"};if(s<1)return{tier:"SILVER",color:"#a0aec0",glow:"0 0 10px rgba(160,174,192,0.2)",icon:"☆"};return{tier:"BRONZE",color:"#c77c48",glow:"0 0 10px rgba(199,124,72,0.25)",icon:"●"};}
+function getRank(avgMs){if(avgMs===null)return{tier:"UNRANKED",color:"#4a5568",glow:"none",icon:"—"};const s=avgMs/1000;if(s<.65)return{tier:"CHALLENGER",color:"#f56565",glow:"0 0 18px rgba(245,101,101,0.35)",icon:"♛"};if(s<.85)return{tier:"DIAMOND",color:"#63b3ed",glow:"0 0 16px rgba(99,179,237,0.3)",icon:"◆"};if(s<1.05)return{tier:"GOLD",color:"#ecc94b",glow:"0 0 14px rgba(236,201,75,0.3)",icon:"★"};if(s<1.35)return{tier:"SILVER",color:"#a0aec0",glow:"0 0 10px rgba(160,174,192,0.2)",icon:"☆"};return{tier:"BRONZE",color:"#c77c48",glow:"0 0 10px rgba(199,124,72,0.25)",icon:"●"};}
 function getRC(ms){if(!ms)return"#f56565";const s=ms/1000;if(s<.5)return"#48bb78";if(s<.8)return"#68d391";if(s<1.2)return"#ecc94b";if(s<2)return"#ed8936";return"#f56565";}
 const genCode=()=>{const c="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";let s="";for(let i=0;i<6;i++)s+=c[Math.floor(Math.random()*c.length)];return s;};
 
@@ -325,7 +325,7 @@ function SessionSummary({stats,history,onBack}){
 /* ═══════════════════════════════════════════
    useGameEngine
 ═══════════════════════════════════════════ */
-function useGameEngine(startDiff=1,seed=null){
+function useGameEngine(startDiff=1,seed=null,maxDiffCap=10){
   const[stats,setStats]=useState({score:0,streak:0,bestStreak:0,bestTime:null,lastTime:null,hits:0,misses:0,penalties:0,times:[]});
   const[roundNum,setRoundNum]=useState(0);const[roundData,setRoundData]=useState(null);
   const[spawned,setSpawned]=useState(new Set());const[txState,setTxState]=useState("idle");
@@ -341,7 +341,7 @@ function useGameEngine(startDiff=1,seed=null){
   const spawnRef=useRef([]);const fbRef=useRef(null);const nextRef=useRef(null);
   const roundNumRef=useRef(0);const holsterPhaseRef=useRef("idle");const noiseRef=useRef(null);
   const pausedRef=useRef(false);const revealedRef=useRef(false);const pauseStartedRef=useRef(null);
-  const pausedSpawnQueueRef=useRef([]);
+  const pausedSpawnQueueRef=useRef([]);const timerStartedRef=useRef(false);
   const prevMultTier=useRef(0);const seedRef=useRef(seed);seedRef.current=seed;
   useEffect(()=>{roundNumRef.current=roundNum;},[roundNum]);
   useEffect(()=>{holsterPhaseRef.current=holsterPhase;},[holsterPhase]);
@@ -357,15 +357,16 @@ function useGameEngine(startDiff=1,seed=null){
   const shake=useCallback(()=>{setScreenShake(true);setTimeout(()=>setScreenShake(false),350);},[]);
   const showFB=useCallback((type,rt=null)=>{setFeedback({id:Date.now(),type,rt});clearTimeout(fbRef.current);fbRef.current=setTimeout(()=>setFeedback(null),1200);},[]);
   const startNoiseFeed=useCallback(interval=>{clearInterval(noiseRef.current);noiseRef.current=setInterval(()=>{if(pausedRef.current)return;const n=genNoiseToken();setLiveFeed(p=>{const nx=[n,...p];return nx.length>40?nx.slice(0,40):nx;});setSpawned(p=>new Set([...p,n.id]));},interval);},[]);
-  const launchRound=useCallback(()=>{clearAll();setIsPaused(false);pausedRef.current=false;pauseStartedRef.current=null;pausedSpawnQueueRef.current=[];const num=roundNumRef.current,data=genRound(num+Math.max(0,startDiff-1)*2,seedRef.current);setRoundData(data);setSpawned(new Set());setRevealed(false);setClickedId(null);setShowCorrect(false);setTxState("spawning");setTweetVis(false);setPairsVis(false);setTimerRunning(false);setTimerStart(null);setHolsterPhase("live");setLiveFeed([]);setTimeout(()=>setTweetVis(true),100);setTimeout(()=>{setPairsVis(true);let si=0;const sn=()=>{if(si>=data.pairs.length){startNoiseFeed(data.noiseInterval);return;}const c=data.pairs[si];si++;if(pausedRef.current){pausedSpawnQueueRef.current.push(c);}else{setLiveFeed(p=>[c,...p]);setSpawned(p=>new Set([...p,c.id]));}const t=setTimeout(sn,data.spawnDelay);spawnRef.current.push(t);};sn();const dl=CFG.antiSpamMin+Math.random()*(CFG.antiSpamMax-CFG.antiSpamMin);setTimeout(()=>{setTxState("waiting");setTimeout(()=>{setTxState("active");setTimerRunning(true);setTimerStart(Date.now());},80);},dl);},400);},[clearAll,startNoiseFeed,startDiff]);
+  const startTimerOnCorrectCoin=useCallback((coin)=>{if(!coin?.isCorrect||timerStartedRef.current||revealedRef.current)return;timerStartedRef.current=true;setTxState("active");setTimerRunning(true);setTimerStart(Date.now());},[]);
+  const launchRound=useCallback(()=>{clearAll();setIsPaused(false);pausedRef.current=false;pauseStartedRef.current=null;pausedSpawnQueueRef.current=[];timerStartedRef.current=false;const num=roundNumRef.current,data=genRound(num+Math.max(0,startDiff-1)*2,seedRef.current,maxDiffCap);setRoundData(data);setSpawned(new Set());setRevealed(false);setClickedId(null);setShowCorrect(false);setTxState("spawning");setTweetVis(false);setPairsVis(false);setTimerRunning(false);setTimerStart(null);setHolsterPhase("live");setLiveFeed([]);setTimeout(()=>setTweetVis(true),100);setTimeout(()=>{setPairsVis(true);setTxState("waiting");let si=0;const sn=()=>{if(si>=data.pairs.length){startNoiseFeed(data.noiseInterval);return;}const c=data.pairs[si];si++;if(pausedRef.current){pausedSpawnQueueRef.current.push(c);}else{setLiveFeed(p=>[c,...p]);setSpawned(p=>new Set([...p,c.id]));startTimerOnCorrectCoin(c);}const t=setTimeout(sn,data.spawnDelay);spawnRef.current.push(t);};sn();},400);},[clearAll,startNoiseFeed,startDiff,maxDiffCap,startTimerOnCorrectCoin]);
   const cancelArm=useCallback(()=>{cancelAnimationFrame(armRafRef.current);clearTimeout(armTimeoutRef.current);armStartRef.current=null;setArmProgress(0);if(holsterPhaseRef.current==="arming")setHolsterPhase("idle");},[]);
   const startArming=useCallback(()=>{if(holsterPhaseRef.current!=="idle")return;setHolsterPhase("arming");SFX.arm();armStartRef.current=Date.now();const tick=()=>{if(!armStartRef.current)return;const el=Date.now()-armStartRef.current,prog=Math.min(el/CFG.holsterArm,1);setArmProgress(prog);if(prog<1){armRafRef.current=requestAnimationFrame(tick);}else{setHolsterPhase("armed");SFX.armed();armTimeoutRef.current=setTimeout(()=>launchRound(),200);}};armRafRef.current=requestAnimationFrame(tick);},[launchRound]);
   const handleHolsterEnter=useCallback(()=>{if(holsterPhaseRef.current==="idle")startArming();},[startArming]);
   const handleHolsterLeave=useCallback(()=>{if(holsterPhaseRef.current==="arming")cancelArm();},[cancelArm]);
   const handlePauseEnter=useCallback(()=>{if(holsterPhaseRef.current!=="live"||revealedRef.current||pausedRef.current)return;setIsPaused(true);pausedRef.current=true;pauseStartedRef.current=Date.now();},[]);
-  const handlePauseLeave=useCallback(()=>{if(!pausedRef.current)return;pausedRef.current=false;pauseStartedRef.current=null;setIsPaused(false);if(pausedSpawnQueueRef.current.length){const queued=pausedSpawnQueueRef.current;pausedSpawnQueueRef.current=[];setLiveFeed(p=>[...queued.slice().reverse(),...p]);setSpawned(p=>new Set([...p,...queued.map(c=>c.id)]));}},[]);
+  const handlePauseLeave=useCallback(()=>{if(!pausedRef.current)return;pausedRef.current=false;pauseStartedRef.current=null;setIsPaused(false);if(pausedSpawnQueueRef.current.length){const queued=pausedSpawnQueueRef.current;pausedSpawnQueueRef.current=[];setLiveFeed(p=>[...queued.slice().reverse(),...p]);setSpawned(p=>new Set([...p,...queued.map(c=>c.id)]));const correctQueued=queued.find(c=>c.isCorrect);if(correctQueued)startTimerOnCorrectCoin(correctQueued);}},[startTimerOnCorrectCoin]);
   const finishRound=useCallback(ok=>{clearInterval(noiseRef.current);setIsPaused(false);pausedRef.current=false;pauseStartedRef.current=null;pausedSpawnQueueRef.current=[];if(!ok)setShowCorrect(true);setHolsterPhase("cooldown");setTimeout(()=>{setRoundNum(p=>p+1);setHolsterPhase("idle");setArmProgress(0);setShowCorrect(false);},ok?1000:2000);},[]);
-  const handleBuy=useCallback((coin,e)=>{if(revealed)return;SFX.click();if(txState==="waiting"||txState==="spawning"){clearAll();setTxState("penalty");setRevealed(true);setTimerRunning(false);setClickedId(coin.id);showFB("penalty");flash("red");shake();SFX.penalty();setStats(p=>({...p,streak:0,penalties:p.penalties+1}));setAttemptHistory(p=>[...p,{id:Date.now(),type:"penalty",rt:null,round:roundNumRef.current+1}]);finishRound(false);return;}if(txState!=="active")return;const rt=Math.max(0,Date.now()-timerStart);setTimerRunning(false);setRevealed(true);setClickedId(coin.id);clearAll();if(coin.isCorrect){setTxState("hit");showFB("hit",rt);flash("green");SFX.hit();setStats(p=>{const ns=p.streak+1;return{...p,score:p.score+1,streak:ns,bestStreak:Math.max(p.bestStreak,ns),bestTime:p.bestTime===null?rt:Math.min(p.bestTime,rt),lastTime:rt,hits:p.hits+1,times:[...p.times,rt]};});setAttemptHistory(p=>[...p,{id:Date.now(),type:"hit",rt,round:roundNumRef.current+1}]);finishRound(true);}else{setTxState("missed");showFB("wrong",rt);flash("red");shake();SFX.miss();setStats(p=>({...p,streak:0,misses:p.misses+1,lastTime:rt}));setAttemptHistory(p=>[...p,{id:Date.now(),type:"wrong",rt,round:roundNumRef.current+1}]);finishRound(false);}},[txState,revealed,timerStart,clearAll,showFB,flash,shake,finishRound]);
+  const handleBuy=useCallback((coin,e)=>{if(revealed)return;SFX.click();if(txState==="waiting"||txState==="spawning"){clearAll();setTxState("penalty");setRevealed(true);setTimerRunning(false);setClickedId(coin.id);showFB("penalty");flash("red");shake();SFX.penalty();setStats(p=>({...p,streak:0,penalties:p.penalties+1}));setAttemptHistory(p=>[...p,{id:Date.now(),type:"penalty",rt:null,round:roundNumRef.current+1}]);finishRound(false);return;}if(txState!=="active"||timerStart===null)return;const rt=Math.max(0,Date.now()-timerStart);setTimerRunning(false);setRevealed(true);setClickedId(coin.id);clearAll();if(coin.isCorrect){setTxState("hit");showFB("hit",rt);flash("green");SFX.hit();setStats(p=>{const ns=p.streak+1;return{...p,score:p.score+1,streak:ns,bestStreak:Math.max(p.bestStreak,ns),bestTime:p.bestTime===null?rt:Math.min(p.bestTime,rt),lastTime:rt,hits:p.hits+1,times:[...p.times,rt]};});setAttemptHistory(p=>[...p,{id:Date.now(),type:"hit",rt,round:roundNumRef.current+1}]);finishRound(true);}else{setTxState("missed");showFB("wrong",rt);flash("red");shake();SFX.miss();setStats(p=>({...p,streak:0,misses:p.misses+1,lastTime:rt}));setAttemptHistory(p=>[...p,{id:Date.now(),type:"wrong",rt,round:roundNumRef.current+1}]);finishRound(false);}},[txState,revealed,timerStart,clearAll,showFB,flash,shake,finishRound]);
   const reset=useCallback(()=>{clearAll();cancelAnimationFrame(armRafRef.current);clearTimeout(armTimeoutRef.current);clearInterval(noiseRef.current);setStats({score:0,streak:0,bestStreak:0,bestTime:null,lastTime:null,hits:0,misses:0,penalties:0,times:[]});setRoundNum(0);roundNumRef.current=0;setRoundData(null);setSpawned(new Set());setTxState("idle");setRevealed(false);setClickedId(null);setFeedback(null);setScreenFlash(null);setScreenShake(false);setComboBurst(null);setTweetVis(false);setPairsVis(false);setTimerRunning(false);setTimerStart(null);setLiveFeed([]);setAttemptHistory([]);setHolsterPhase("idle");setArmProgress(0);setShowCorrect(false);setIsPaused(false);pausedRef.current=false;pauseStartedRef.current=null;pausedSpawnQueueRef.current=[];},[clearAll]);
   useEffect(()=>()=>{clearAll();cancelAnimationFrame(armRafRef.current);clearTimeout(armTimeoutRef.current);},[clearAll]);
   return{stats,roundData,spawned,txState,revealed,clickedId,feedback,screenFlash,screenShake,comboBurst,showCorrect,isPaused,tweetVis,pairsVis,timerRunning,timerStart,liveFeed,attemptHistory,holsterPhase,armProgress,mult,multLabel,multColor,pnl,difficulty,roundNum,handleHolsterEnter,handleHolsterLeave,handlePauseEnter,handlePauseLeave,handleBuy,reset};
@@ -434,13 +435,14 @@ function GameView({engine,onExit,rightPanel}){
 /* ═══════════════════════════════════════════
    PRACTICE MODE
 ═══════════════════════════════════════════ */
-function PracticeMode({startDiff=1,onSessionComplete,onScreenChange}){
+function PracticeMode({startDiff=1,onSessionComplete,onStartDiffChange}){
   const[screen,setScreen]=useState("menu"); // menu | playing | summary
-  const engine=useGameEngine(startDiff);
+  const levelCap=startDiff===1?3:10;
+  const engine=useGameEngine(startDiff,null,levelCap);
   const summarySavedRef=useRef(false);
   const start=()=>{engine.reset();setScreen("playing");};
   const practiceSteps=[["01","Hold HOLSTER 0.8s to arm",C.text],["02","Read signal tweet first",C.text],["03","Tap TX NOW on match",C.green],["04","Traps use partial matches",C.yellow],["05","Clicking during WAIT = penalty",C.red],["06","Streaks boost PnL to x3",C.orange]];
-  useEffect(()=>{onScreenChange?.(screen);},[screen,onScreenChange]);
+  const levelOptions=[1,3,5,7,10];
   useEffect(()=>{
     if(screen==="menu"){summarySavedRef.current=false;return;}
     if(screen!=="summary"||summarySavedRef.current)return;
@@ -467,12 +469,22 @@ function PracticeMode({startDiff=1,onSessionComplete,onScreenChange}){
           </p>
           {/* Stats row */}
           <div style={{display:"flex",width:"100%",maxWidth:320,background:`linear-gradient(145deg,${C.bgCard},${C.bgAlt})`,border:`1px solid ${C.border}`,borderRadius:14,overflow:"hidden"}}>
-            {[["Lv"+startDiff,"START LEVEL",C.green],["x3","MAX MULT",C.orange],["10","LEVELS",C.cyan]].map(([val,lbl,col],i,arr)=>(
+            {[["Lv"+startDiff,"START LEVEL",C.green],["x3","MAX MULT",C.orange],[`${levelCap}`,"LEVELS",C.cyan]].map(([val,lbl,col],i,arr)=>(
               <div key={lbl} style={{flex:1,padding:"16px 0",textAlign:"center",borderRight:i<arr.length-1?`1px solid ${C.border}`:"none"}}>
                 <div style={{fontSize:20,fontWeight:900,color:col,letterSpacing:-0.5}}>{val}</div>
                 <div style={{fontSize:8,color:C.textDim,letterSpacing:1.8,marginTop:4,fontWeight:600}}>{lbl}</div>
               </div>
             ))}
+          </div>
+          <div style={{width:"100%",maxWidth:320,marginTop:14}}>
+            <div style={{fontSize:8,color:C.textDim,letterSpacing:2,marginBottom:7}}>SELECT START LEVEL</div>
+            <div style={{display:"flex",gap:6}}>
+              {levelOptions.map((d)=>{const active=startDiff===d;const col=d>=8?C.red:d>=5?C.yellow:C.green;return(
+                <button key={d} onClick={()=>onStartDiffChange?.(d)} style={{flex:1,height:30,borderRadius:7,border:`1px solid ${active?col:C.border}`,background:active?`${col}18`:C.bgCard,color:active?col:C.textDim,fontSize:10,fontWeight:active?800:600,fontFamily:"var(--mono)",cursor:"pointer",transition:"all 0.15s"}}>
+                  Lv{d}
+                </button>
+              );})}
+            </div>
           </div>
         </div>
 
@@ -884,7 +896,6 @@ function AuthScreen(){
           </div>
           <div style={{fontSize:8,color:C.textDim,letterSpacing:2.5,marginBottom:6}}>USERNAME</div>
           <input value={username} onChange={e=>setUsername(e.target.value)} placeholder="yourname" className="input-field auth-input" style={{marginBottom:8}}/>
-          <div className="auth-email-hint">{username.trim()?toInternalEmail(username):""}</div>
           <div style={{fontSize:8,color:C.textDim,letterSpacing:2.5,marginTop:12,marginBottom:6}}>PASSWORD</div>
           <input value={password} onChange={e=>setPassword(e.target.value)} onKeyDown={e=>{if(e.key==="Enter"&&!busy)submit();}} type="password" placeholder="••••••••" className="input-field auth-input" style={{marginBottom:10}}/>
           {!isLogin&&(
@@ -907,7 +918,6 @@ function AuthScreen(){
 export default function App(){
   const router=useRouter();
   const[tab,setTab]=useState("practice");
-  const[practiceScreen,setPracticeScreen]=useState("menu");
   const[entryScreen,setEntryScreen]=useState("loading"); // loading | mode-picker | app
   const[startDiff,setStartDiff]=useState(1);
   const[session,setSession]=useState(null);
@@ -1050,11 +1060,6 @@ export default function App(){
           const active=tab===key;
           return(<button key={key} onClick={()=>handleModeSelect(key)} className={`tab-btn ${active?"tab-active":""}`} style={{"--accent":accent}}>{active&&<span className="tab-dot" style={{background:accent,boxShadow:`0 0 8px ${accent}50`}}/>}{label}</button>);
         })}
-        {/* Difficulty selector in tab bar when Practice is active */}
-        {tab==="practice"&&<div style={{display:"flex",alignItems:"center",gap:3,marginLeft:14,paddingLeft:14,borderLeft:`1px solid ${C.border}`}}>
-          <span style={{fontSize:8,color:C.textDim,letterSpacing:1.5,marginRight:4}}>LVL</span>
-          {[1,3,5,7,10].map(d=>{const ac=startDiff===d;const canChange=practiceScreen==="menu";const col=d>=8?C.red:d>=5?C.yellow:C.green;return(<button key={d} onClick={()=>{if(canChange)setStartDiff(d);}} disabled={!canChange} style={{width:28,height:22,borderRadius:5,border:`1px solid ${ac?col:C.border}`,background:ac?`${col}18`:"transparent",color:ac?col:C.textGhost,fontSize:9,fontWeight:ac?800:500,fontFamily:"var(--mono)",cursor:canChange?"pointer":"not-allowed",opacity:canChange?1:0.45,transition:"all 0.15s",padding:0}}>{d}</button>);})}
-        </div>}
         <div style={{flex:1}}/>
         <div style={{display:"flex",alignItems:"center",gap:8,height:31,padding:"0 8px",border:`1px solid ${C.border}`,borderRadius:8,background:C.bgCard,marginRight:10,marginBottom:-1}}>
           <span style={{display:"flex",alignItems:"center",height:"100%",fontSize:9,lineHeight:1,color:C.textDim,maxWidth:180,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{session?.user?.user_metadata?.username||session?.user?.email?.split("@")[0]||"signed in"}</span>
@@ -1070,7 +1075,7 @@ export default function App(){
         <span style={{fontSize:8,color:C.textGhost,letterSpacing:2.5}}>v3.0</span>
       </div>
       <div style={{flex:1,overflow:"hidden",minHeight:0}}>
-        {tab==="practice"?<PracticeMode startDiff={startDiff} onSessionComplete={recordPracticeSession} onScreenChange={setPracticeScreen}/>:tab==="1v1"?<OneVOneMode onMatchComplete={recordDuelMatch}/>:<ProfileTab session={session} stats={profileStats} loading={profileLoading} msg={profileMsg} onRefresh={loadProfileStats}/>}
+        {tab==="practice"?<PracticeMode startDiff={startDiff} onSessionComplete={recordPracticeSession} onStartDiffChange={setStartDiff}/>:tab==="1v1"?<OneVOneMode onMatchComplete={recordDuelMatch}/>:<ProfileTab session={session} stats={profileStats} loading={profileLoading} msg={profileMsg} onRefresh={loadProfileStats}/>}
       </div>
       <style>{CSS}</style>
     </div>
