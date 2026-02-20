@@ -14,13 +14,11 @@ import {
   pathToMode,
 } from "./config/constants";
 import { getRank } from "./lib/rank";
-import ModePickerScreen from "./screens/ModePickerScreen";
 import OneVOneMode from "./screens/OneVOneMode";
 import PracticeMode from "./screens/PracticeMode";
 import ProfileTab from "./screens/ProfileTab";
 import { CSS } from "./styles/cssText";
 
-const ENTRY_READY_KEY="trenches:entry-ready";
 const SIDEBAR_WIDTH_KEY="trenches:sidebar-width";
 const SIDEBAR_MIN=64;
 const SIDEBAR_MAX=220;
@@ -38,10 +36,7 @@ export default function App({initialDuelCode=""}){
   const pathname=usePathname();
   const tab=pathToMode(pathname||"");
   const duelCode=(initialDuelCode||"").trim().toUpperCase().replace(/[^A-Z0-9]/g,"").slice(0,6);
-  const[entryScreen,setEntryScreen]=useState(()=>{
-    if(typeof window==="undefined")return "loading";
-    return window.sessionStorage.getItem(ENTRY_READY_KEY)==="1"?"app":"loading";
-  }); // loading | mode-picker | app
+  const[entryScreen,setEntryScreen]=useState("loading"); // loading | app
   const[startDiff,setStartDiff]=useState(1);
   const[session,setSession]=useState(null);
   const[authReady,setAuthReady]=useState(false);
@@ -49,12 +44,15 @@ export default function App({initialDuelCode=""}){
   const[matchHistory,setMatchHistory]=useState([]);
   const[profileLoading,setProfileLoading]=useState(false);
   const[profileMsg,setProfileMsg]=useState("");
+  const[showLogoutWarning,setShowLogoutWarning]=useState(false);
   const[sidebarWidth,setSidebarWidth]=useState(()=>{
     if(typeof window==="undefined")return SIDEBAR_DEFAULT;
     return clampSidebarWidth(window.localStorage.getItem(SIDEBAR_WIDTH_KEY));
   });
   const[isResizingSidebar,setIsResizingSidebar]=useState(false);
   const isResizingSidebarRef=useRef(false);
+  const logoutWarningRef=useRef(null);
+  const logoutTriggerRef=useRef(null);
   const showWideSidebar=sidebarWidth>=124;
 
   useEffect(()=>{
@@ -67,7 +65,6 @@ export default function App({initialDuelCode=""}){
         if(!nextSession){
           setProfileStats(EMPTY_PROFILE_STATS);
           setMatchHistory([]);
-          if(typeof window!=="undefined")window.sessionStorage.removeItem(ENTRY_READY_KEY);
           setEntryScreen("loading");
         }
         setAuthReady(true);
@@ -78,7 +75,6 @@ export default function App({initialDuelCode=""}){
       if(!nextSession){
         setProfileStats(EMPTY_PROFILE_STATS);
         setMatchHistory([]);
-        if(typeof window!=="undefined")window.sessionStorage.removeItem(ENTRY_READY_KEY);
         setEntryScreen("loading");
       }
     });
@@ -122,18 +118,8 @@ export default function App({initialDuelCode=""}){
     }else{
       setMatchHistory(historyData||[]);
     }
-    if(error&&resolveEntry){
-      setEntryScreen("mode-picker");
-      return;
-    }
     if(resolveEntry){
-      if(data){
-        if(typeof window!=="undefined")window.sessionStorage.setItem(ENTRY_READY_KEY,"1");
-        setEntryScreen("app");
-      }else{
-        if(typeof window!=="undefined")window.sessionStorage.removeItem(ENTRY_READY_KEY);
-        setEntryScreen("mode-picker");
-      }
+      setEntryScreen("app");
     }
   },[session]);
 
@@ -173,6 +159,18 @@ export default function App({initialDuelCode=""}){
       document.body.style.userSelect="";
     };
   },[isResizingSidebar]);
+
+  useEffect(()=>{
+    if(!showLogoutWarning||typeof window==="undefined")return;
+    const onPointerDown=(event)=>{
+      const target=event.target;
+      if(logoutWarningRef.current?.contains(target))return;
+      if(logoutTriggerRef.current?.contains(target))return;
+      setShowLogoutWarning(false);
+    };
+    window.addEventListener("mousedown",onPointerDown);
+    return()=>window.removeEventListener("mousedown",onPointerDown);
+  },[showLogoutWarning]);
 
   const updateProfileStats=useCallback(async(updater)=>{
     if(!supabase||!session?.user?.id)return;
@@ -215,13 +213,9 @@ export default function App({initialDuelCode=""}){
     await updateProfileStats((prev)=>({...prev,preferred_mode:normalized}));
   },[updateProfileStats]);
 
-  const handleModeSelect=useCallback((mode,{persist=true,openApp=false}={})=>{
+  const handleModeSelect=useCallback((mode,{persist=true}={})=>{
     const normalized=normalizeModeKey(mode);
-    if(openApp&&typeof window!=="undefined"){
-      window.sessionStorage.setItem(ENTRY_READY_KEY,"1");
-    }
     router.push(modeToPath(normalized));
-    if(openApp)setEntryScreen("app");
     if(persist)void savePreferredMode(normalized);
   },[router,savePreferredMode]);
 
@@ -278,11 +272,16 @@ export default function App({initialDuelCode=""}){
   },[updateProfileStats,insertMatchHistory]);
 
   const logOut=async()=>{if(supabase)await supabase.auth.signOut();};
+  const openLogoutWarning=()=>setShowLogoutWarning(true);
+  const cancelLogout=()=>setShowLogoutWarning(false);
+  const confirmAndLogOut=()=>{
+    setShowLogoutWarning(false);
+    void logOut();
+  };
 
   if(!authReady)return(<div className="menu-bg"><div className="grid-bg"/><div style={{position:"relative",zIndex:1,color:C.textDim,fontSize:12,letterSpacing:2}}>LOADING AUTH...</div><style>{CSS}</style></div>);
   if(!session)return(<div className="menu-bg"><div className="grid-bg"/><div style={{position:"relative",zIndex:1,color:C.textDim,fontSize:12,letterSpacing:2}}>REDIRECTING TO AUTH...</div><style>{CSS}</style></div>);
   if(entryScreen==="loading")return(<div className="menu-bg"><div className="grid-bg"/><div style={{position:"relative",zIndex:1,color:C.textDim,fontSize:12,letterSpacing:2}}>LOADING PROFILE...</div><style>{CSS}</style></div>);
-  if(entryScreen==="mode-picker")return(<><ModePickerScreen session={session} onSelect={(mode)=>handleModeSelect(mode,{persist:true,openApp:true})} onLogOut={logOut}/><style>{CSS}</style></>);
 
   const navItems = [
     { key: "practice", word: "SOLO" },
@@ -314,7 +313,28 @@ export default function App({initialDuelCode=""}){
             );
           })}
         </div>
-        <div onClick={logOut} style={{marginTop:"auto",marginBottom:32,fontSize:18,color:C.textDim,cursor:"pointer",width:showWideSidebar?"calc(100% - 16px)":56,height:40,borderRadius:8,display:"flex",alignItems:"center",justifyContent:showWideSidebar?"flex-start":"center",paddingLeft:showWideSidebar?12:0,alignSelf:showWideSidebar?"center":"auto"}} className="sidebar-item-btn">⏻</div>
+        {showLogoutWarning?(
+          <div style={{
+            position:"absolute",
+            bottom:84,
+            left:showWideSidebar?8:66,
+            width:showWideSidebar?"calc(100% - 16px)":220,
+            padding:10,
+            borderRadius:10,
+            border:`1px solid ${C.borderLight}`,
+            background:`linear-gradient(145deg, ${C.bgCard}, ${C.bgAlt})`,
+            boxShadow:"0 10px 30px rgba(0,0,0,0.45)",
+            zIndex:160,
+          }} ref={logoutWarningRef}>
+            <div style={{fontSize:10,fontWeight:800,color:C.text,letterSpacing:1,marginBottom:8}}>Log out?</div>
+            <div style={{fontSize:9,color:C.textMuted,lineHeight:1.5,marginBottom:10}}>You will need to sign in again to continue.</div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
+              <button onClick={cancelLogout} className="btn-ghost" style={{height:34,fontSize:9,padding:0}}>Cancel</button>
+              <button onClick={confirmAndLogOut} className="btn-primary btn-orange btn-static" style={{height:34,fontSize:9,letterSpacing:1.2,padding:0}}>Log out</button>
+            </div>
+          </div>
+        ):null}
+        <div ref={logoutTriggerRef} onClick={openLogoutWarning} style={{marginTop:"auto",marginBottom:32,fontSize:18,color:C.textDim,cursor:"pointer",width:showWideSidebar?"calc(100% - 16px)":56,height:40,borderRadius:8,display:"flex",alignItems:"center",justifyContent:showWideSidebar?"flex-start":"center",paddingLeft:showWideSidebar?12:0,alignSelf:showWideSidebar?"center":"auto",background:showLogoutWarning?`${C.orange}12`:"transparent"}} className="sidebar-item-btn">⏻</div>
         <div
           onMouseDown={(event)=>{event.preventDefault();setIsResizingSidebar(true);}}
           onDoubleClick={()=>setSidebarWidth(SIDEBAR_DEFAULT)}

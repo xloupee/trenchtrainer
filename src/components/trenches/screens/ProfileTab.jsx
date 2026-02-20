@@ -1,8 +1,11 @@
 import { C } from "../config/constants";
 import { formatHistoryDate } from "../lib/format";
 import { getRank } from "../lib/rank";
+import { modeToPath, normalizeModeKey } from "../config/constants";
+import { useRouter } from "next/navigation";
 
 function ProfileTab({ session, stats, history, loading, msg, onRefresh }) {
+  const router = useRouter();
   const rounds = stats.practice_rounds;
   const practiceAcc = rounds > 0 ? Math.round((stats.practice_hits / rounds) * 100) : 0;
   const duelWinRate = stats.duel_matches > 0 ? Math.round((stats.duel_wins / stats.duel_matches) * 100) : 0;
@@ -10,6 +13,17 @@ function ProfileTab({ session, stats, history, loading, msg, onRefresh }) {
   const username = session?.user?.user_metadata?.username || session?.user?.email?.split("@")[0] || "anonymous";
   const bestRT = stats.practice_best_time !== null ? `${(stats.practice_best_time / 1000).toFixed(3)}s` : "—";
   const rank = getRank(stats.practice_best_time);
+  const preferredMode = normalizeModeKey(stats?.preferred_mode);
+  const preferredModeLabel = preferredMode === "1v1" ? "1v1 Duel" : preferredMode === "profile" ? "Profile" : "Practice";
+
+  let progressText = "Complete a practice run to get ranked.";
+  if (stats.practice_best_time !== null) {
+    if (rank.tier === "CHALLENGER") progressText = "Top tier reached.";
+    if (rank.tier === "DIAMOND") progressText = `${Math.max(0, Math.ceil((stats.practice_best_time - 1250) / 10) * 10)}ms faster for Challenger.`;
+    if (rank.tier === "GOLD") progressText = `${Math.max(0, Math.ceil((stats.practice_best_time - 1800) / 10) * 10)}ms faster for Diamond.`;
+    if (rank.tier === "SILVER") progressText = `${Math.max(0, Math.ceil((stats.practice_best_time - 2400) / 10) * 10)}ms faster for Gold.`;
+    if (rank.tier === "BRONZE") progressText = `${Math.max(0, Math.ceil((stats.practice_best_time - 3000) / 10) * 10)}ms faster for Silver.`;
+  }
 
   const getOutcomeColor = (row) => {
     if (row.mode === "practice") return C.green;
@@ -26,7 +40,7 @@ function ProfileTab({ session, stats, history, loading, msg, onRefresh }) {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(520px, 1fr))", gap: 20, alignItems: "start" }}>
 
           {/* Top-left: Identity */}
-          <div className="glass-card" style={{ padding: "32px 40px", display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: `2px solid ${rank.color}`, minHeight: 210 }}>
+          <div className="glass-card" style={{ padding: "32px 40px", display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: `2px solid ${rank.color}`, minHeight: 210, gap: 24, flexWrap: "wrap" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 32 }}>
               <div style={{ 
                 width: 80, height: 80, background: "black", border: `1px solid ${C.border}`,
@@ -41,7 +55,20 @@ function ProfileTab({ session, stats, history, loading, msg, onRefresh }) {
                 <div style={{ fontSize: 12, fontWeight: 800, color: rank.color, letterSpacing: 2, marginTop: 8 }}>{rank.tier}</div>
               </div>
             </div>
-            <button onClick={onRefresh} className="btn-ghost" style={{ padding: "12px 24px", fontSize: 10, fontWeight: 800, letterSpacing: 1.5 }}>REFRESH DATA</button>
+
+            <div style={{ minWidth: 260, maxWidth: 340, width: "100%", display: "flex", flexDirection: "column", gap: 12 }}>
+              <div className="glass-card" style={{ padding: "12px 14px", background: "rgba(0,0,0,0.5)", borderRadius: 10 }}>
+                <div style={{ fontSize: 8, color: C.textDim, letterSpacing: 1.6, marginBottom: 8 }}>&gt; CONTINUE</div>
+                <button onClick={() => router.push(modeToPath(preferredMode))} className="btn-primary btn-green" style={{ width: "100%", height: 40, fontSize: 11, letterSpacing: 1.4, padding: 0 }}>
+                  Continue {preferredModeLabel}
+                </button>
+              </div>
+
+              <div className="glass-card" style={{ padding: "12px 14px", background: "rgba(0,0,0,0.5)", borderRadius: 10 }}>
+                <div style={{ fontSize: 8, color: C.textDim, letterSpacing: 1.6, marginBottom: 8 }}>&gt; RANK PROGRESS</div>
+                <div style={{ fontSize: 11, color: C.textMuted, lineHeight: 1.5 }}>{progressText}</div>
+              </div>
+            </div>
           </div>
 
           {/* Top-right: KPIs */}
@@ -110,7 +137,7 @@ function ProfileTab({ session, stats, history, loading, msg, onRefresh }) {
                 const rt = typeof row.best_time === "number" ? `${(row.best_time / 1000).toFixed(3)}s` : "N/A";
                 return (
                   <div key={row.id} style={{ 
-                    display: "grid", gridTemplateColumns: "160px 120px 1fr auto", 
+                    display: "grid", gridTemplateColumns: "160px 120px 1fr", 
                     alignItems: "center", padding: "14px 24px", borderBottom: `1px solid ${C.border}`,
                     background: "black"
                   }}>
@@ -121,7 +148,6 @@ function ProfileTab({ session, stats, history, loading, msg, onRefresh }) {
                     <div style={{ fontSize: 12, color: C.textMuted }}>
                       {isPractice ? `Reaction: ${rt} • Accuracy: ${row.accuracy_pct}%` : `Score: ${row.score} - ${row.opponent_score}`}
                     </div>
-                    <div style={{ fontSize: 10, color: C.textGhost }}>Saved</div>
                   </div>
                 );
               })}
