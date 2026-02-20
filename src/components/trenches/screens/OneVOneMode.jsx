@@ -165,10 +165,9 @@ function OneVOneMode({ onMatchComplete, initialJoinCode = "" }) {
     try {
       const { data, error } = await supabase
         .from("duel_games")
-        .select("code,host_id,host_name,best_of,created_at")
-        .eq("status", "waiting")
+        .select("code,host_id,host_name,guest_id,guest_name,status,best_of,created_at")
+        .in("status", ["waiting", "ready"])
         .eq("is_public", true)
-        .is("guest_id", null)
         .order("created_at", { ascending: false })
         .limit(20);
       if (error) throw error;
@@ -181,6 +180,8 @@ function OneVOneMode({ onMatchComplete, initialJoinCode = "" }) {
               p.code === next[i]?.code &&
               p.host_id === next[i]?.host_id &&
               p.host_name === next[i]?.host_name &&
+              p.guest_id === next[i]?.guest_id &&
+              p.status === next[i]?.status &&
               p.best_of === next[i]?.best_of,
           )
         ) {
@@ -207,8 +208,13 @@ function OneVOneMode({ onMatchComplete, initialJoinCode = "" }) {
 
     let winner = "draw";
     let tiebreakReason = "exact_draw";
+    const myForfeited = myMisses >= 999;
+    const oppForfeited = oppMisses >= 999;
 
-    if (myScore !== oppScore) {
+    if (myForfeited !== oppForfeited) {
+      winner = myForfeited ? "opp" : "me";
+      tiebreakReason = "forfeit";
+    } else if (myScore !== oppScore) {
       winner = myScore > oppScore ? "me" : "opp";
       tiebreakReason = "score";
     } else if (myHits !== oppHits) {
@@ -273,9 +279,15 @@ function OneVOneMode({ onMatchComplete, initialJoinCode = "" }) {
       if (!amHost && !amGuest) return;
       if (amHost) {
         await deleteGameAndStats(normalizedCode);
+        setPublicLobbies((prev) => prev.filter((row) => row.code !== normalizedCode));
         return;
       }
       if (amGuest) {
+        if (game.status === "finished") {
+          await deleteGameAndStats(normalizedCode);
+          setPublicLobbies((prev) => prev.filter((row) => row.code !== normalizedCode));
+          return;
+        }
         await updateGame(
           normalizedCode,
           {
@@ -287,6 +299,7 @@ function OneVOneMode({ onMatchComplete, initialJoinCode = "" }) {
           null,
         );
         await deleteStatsRow(normalizedCode, "guest");
+        setPublicLobbies((prev) => prev.filter((row) => row.code !== normalizedCode));
       }
     },
     [deleteGameAndStats, deleteStatsRow, ensureSupabase, getGame, playerId, updateGame],
@@ -307,6 +320,81 @@ function OneVOneMode({ onMatchComplete, initialJoinCode = "" }) {
     },
     [cleanupLobby, resetDuelView],
   );
+
+  const forfeitAndLeave = useCallback(async () => {
+    const activeCode = gameCodeRef.current;
+    if (!activeCode) {
+      await backToLobby();
+      return;
+    }
+    if (!ensureSupabase()) return;
+
+    const activePhase = phaseRef.current;
+    const shouldForfeit = activePhase === "playing" || activePhase === "waiting_done";
+    if (!shouldForfeit) {
+      await backToLobby();
+      return;
+    }
+
+    try {
+      const room = await getGame(activeCode);
+      if (!room) {
+        await backToLobby({ skipCleanup: true });
+        return;
+      }
+      const amHost = room.host_id === playerId;
+      const amGuest = room.guest_id === playerId;
+      if (!amHost && !amGuest) {
+        await backToLobby({ skipCleanup: true });
+        return;
+      }
+
+      const myRole = amHost ? "host" : "guest";
+      const oppRole = amHost ? "guest" : "host";
+      const [myStats, oppStats] = await Promise.all([getStats(activeCode, myRole), getStats(activeCode, oppRole)]);
+      const nowIso = new Date().toISOString();
+      await upsertStats(activeCode, myRole, {
+        score: 0,
+        streak: 0,
+        best_time: null,
+        hits: 0,
+        misses: 999,
+        last_time: null,
+        reaction_sum_ms: 0,
+        reaction_count: 0,
+        round_num: Math.max(1, asNumber(roundNumRef.current, 1)),
+        is_done: true,
+        done_at: nowIso,
+      });
+
+      await updateGame(
+        activeCode,
+        {
+          status: "finished",
+          timeout_at: null,
+        },
+        null,
+      );
+
+      const result = resolveMatchResult(
+        {
+          ...(myStats || {}),
+          score: 0,
+          hits: 0,
+          misses: 999,
+          best_time: null,
+          reaction_sum_ms: 0,
+          reaction_count: 0,
+        },
+        oppStats || null,
+      );
+      setMatchResult({ ...result, outcome: "loss", finishReason: "forfeit" });
+    } catch (e) {
+      setMsg(e?.message || "Failed to forfeit match.");
+    } finally {
+      await backToLobby({ skipCleanup: true });
+    }
+  }, [backToLobby, ensureSupabase, getGame, getStats, playerId, resolveMatchResult, updateGame, upsertStats]);
 
   const runCountdown = useCallback(() => {
     if (countdownRef.current) return;
@@ -492,6 +580,7 @@ function OneVOneMode({ onMatchComplete, initialJoinCode = "" }) {
       try {
         const game = await getGame(code);
         if (!game || game.status !== "waiting") throw new Error("Game not found or already started.");
+        if (game.guest_id) throw new Error("This room is full.");
         if (game.host_id === playerId) throw new Error("You can't join your own lobby.");
         const name = playerName || "Player 2";
         const { data, error } = await supabase
@@ -520,6 +609,13 @@ function OneVOneMode({ onMatchComplete, initialJoinCode = "" }) {
         setLocalDone(false);
         setTimeoutAt(data.timeout_at || null);
         setPhase("waiting");
+        setPublicLobbies((prev) =>
+          prev.map((row) =>
+            row.code === code
+              ? { ...row, guest_id: playerId, guest_name: name, status: "ready" }
+              : row,
+          ),
+        );
         startPolling(code);
       } catch (e) {
         setMsg(e?.message || "Failed to join room.");
@@ -549,6 +645,7 @@ function OneVOneMode({ onMatchComplete, initialJoinCode = "" }) {
         code,
         {
           status: "countdown",
+          is_public: false,
           seed,
           best_of: bestOfRef.current,
           started_at: new Date().toISOString(),
@@ -559,6 +656,7 @@ function OneVOneMode({ onMatchComplete, initialJoinCode = "" }) {
       if (!updated) throw new Error("Room is not ready to start.");
       setGameSeed(seed);
       setTimeoutAt(null);
+      setPublicLobbies((prev) => prev.filter((row) => row.code !== code));
       runCountdown();
     } catch (e) {
       setMsg(e?.message || "Failed to start match.");
@@ -749,11 +847,36 @@ function OneVOneMode({ onMatchComplete, initialJoinCode = "" }) {
                   <div key={l.code} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px", border: `1px solid ${C.border}`, borderRadius: 8, background: "black" }}>
                     <div>
                       <div style={{ fontSize: 13, fontWeight: 800, color: C.text }}>{l.host_name || "Unknown player"}</div>
-                      <div style={{ fontSize: 9, color: C.textDim, marginTop: 4 }}>Code: {l.code} • Best of {l.best_of}</div>
+                      <div style={{ fontSize: 9, color: C.textDim, marginTop: 4 }}>
+                        Code: {l.code} • Best of {l.best_of} • {(l.guest_id || l.status === "ready") ? "FULL" : "OPEN"}
+                      </div>
                     </div>
-                    <button onClick={() => joinPublicLobby(l.code)} className="btn-primary btn-green" style={{ width: "auto", padding: "8px 16px", fontSize: 10, fontWeight: 900 }}>
-                      JOIN
-                    </button>
+                    {(() => {
+                      const isFull = Boolean(l.guest_id) || l.status === "ready";
+                      return (
+                        <button
+                          onClick={() => {
+                            if (isFull) return;
+                            void joinPublicLobby(l.code);
+                          }}
+                          disabled={isFull}
+                          className={`btn-primary ${isFull ? "" : "btn-green"}`}
+                          style={{
+                            width: "auto",
+                            padding: "8px 16px",
+                            fontSize: 10,
+                            fontWeight: 900,
+                            opacity: isFull ? 0.5 : 1,
+                            cursor: isFull ? "not-allowed" : "pointer",
+                            background: isFull ? "black" : undefined,
+                            color: isFull ? C.textDim : undefined,
+                            border: isFull ? `1px solid ${C.border}` : undefined,
+                          }}
+                        >
+                          {isFull ? "FULL" : "JOIN"}
+                        </button>
+                      );
+                    })()}
                   </div>
                 ))}
               </div>
@@ -856,6 +979,7 @@ function OneVOneMode({ onMatchComplete, initialJoinCode = "" }) {
     const avgLabel = (value) => (value === null || value === undefined ? "--" : `${(value / 1000).toFixed(3)}s`);
     const bestLabel = (value) => (value === null || value === undefined ? "--" : `${(value / 1000).toFixed(3)}s`);
     const reasonMap = {
+      forfeit: `${matchResult.win ? "Opponent" : "You"} left the match and forfeited.`,
       score: `Score diff: ${matchResult.myScore}-${matchResult.oppScore}.`,
       hits: `Score tied. ${matchResult.win ? "You" : "Opponent"} won on hits (${matchResult.myHits}-${matchResult.oppHits}).`,
       avg_rt: `Score/hits tied. ${matchResult.win ? "You" : "Opponent"} won on average reaction (${avgLabel(matchResult.myAvgRt)} vs ${avgLabel(matchResult.oppAvgRt)}).`,
@@ -966,7 +1090,15 @@ function OneVOneMode({ onMatchComplete, initialJoinCode = "" }) {
     </div>
   );
 
-  return <GameView engine={engine} onExit={() => backToLobby()} rightPanel={oppPanel} />;
+  return (
+    <GameView
+      engine={engine}
+      onExit={forfeitAndLeave}
+      exitLabel="LEAVE"
+      onExitConfirmMessage="Leaving now counts as a forfeit. Continue?"
+      rightPanel={oppPanel}
+    />
+  );
 }
 
 export default OneVOneMode;

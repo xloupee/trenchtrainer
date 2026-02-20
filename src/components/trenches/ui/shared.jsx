@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { C } from "../config/constants";
 import { getRank, getRC } from "../lib/rank";
 function HudStat({label,value,color,large}){return(<div style={{display:"flex",flexDirection:"column",alignItems:"center",padding:"0 8px",gap:2}}><span style={{fontSize:7,fontWeight:500,color:C.textDim,letterSpacing:2.5,textTransform:"uppercase"}}>{label}</span><span style={{fontSize:large?20:13,fontWeight:800,color:color||C.text,fontFamily:"var(--mono)",textShadow:large?`0 0 14px ${color}25`:"none",transition:"all 0.2s"}}>{value}</span></div>);}
@@ -237,14 +237,28 @@ function useGameEngine(startDiff=1,seed=null,maxDiffCap=10){
 /* ═══════════════════════════════════════════
    GAME VIEW
 ═══════════════════════════════════════════ */
-function GameView({engine,onExit,rightPanel}){
+function GameView({engine,onExit,rightPanel,exitLabel="END",onExitConfirmMessage=null}){
   const g=engine;
   const [searchQuery,setSearchQuery]=useState("");
+  const [showExitConfirm,setShowExitConfirm]=useState(false);
   const normalizedSearch=searchQuery.trim().toLowerCase();
   const visibleFeed=normalizedSearch?g.liveFeed.filter(coin=>{
     const name=(coin?.name||"").toLowerCase();
     return name.includes(normalizedSearch);
   }):g.liveFeed;
+  const handleExit=useCallback(()=>{
+    if(!onExit)return;
+    if(onExitConfirmMessage){
+      setShowExitConfirm(true);
+      return;
+    }
+    onExit();
+  },[onExit,onExitConfirmMessage]);
+  const cancelExit=useCallback(()=>setShowExitConfirm(false),[]);
+  const confirmExit=useCallback(()=>{
+    setShowExitConfirm(false);
+    onExit?.();
+  },[onExit]);
   return(
     <div style={{height:"100%",display:"flex",flexDirection:"column",background:C.bg,fontFamily:"var(--mono)",color:C.text,overflow:"hidden",position:"relative"}} className={g.screenShake?"shake":""}>
       {g.screenFlash&&<div className="screen-flash" style={{background:g.screenFlash==="green"?`radial-gradient(ellipse at center,rgba(72,187,120,0.1) 0%,transparent 65%)`:`radial-gradient(ellipse at center,rgba(245,101,101,0.1) 0%,transparent 65%)`}}/>}
@@ -254,7 +268,7 @@ function GameView({engine,onExit,rightPanel}){
       <div style={{display:"flex",alignItems:"center",justifyContent:"center",padding:"8px 12px",gap:0,borderBottom:`1px solid ${C.border}`,background:`linear-gradient(180deg,${C.bgAlt},${C.bg})`,flexShrink:0,zIndex:10,flexWrap:"wrap",position:"relative"}}>
         <div style={{position:"absolute",bottom:0,left:"10%",right:"10%",height:1,background:`linear-gradient(90deg,transparent,${C.green}15,transparent)`,pointerEvents:"none"}}/>
         <HudStat label="SCORE" value={g.stats.score} color={C.green} large/><div className="hud-div"/><HudStat label="PNL" value={g.pnl.toLocaleString()} color={g.pnl>0?C.green:C.textMuted}/><div style={{fontSize:10,fontWeight:900,color:g.multColor,padding:"3px 8px",borderRadius:5,background:`${g.multColor}10`,border:`1px solid ${g.multColor}25`,margin:"0 4px",transition:"all 0.25s"}}>{g.multLabel}</div><div className="hud-div"/><ElapsedTimer startTime={g.timerStart} running={g.timerRunning}/><div className="hud-div"/><HudStat label="STREAK" value={g.stats.streak>0?g.stats.streak:"—"} color={g.stats.streak>=13?C.red:g.stats.streak>=8?C.orange:g.stats.streak>=4?C.yellow:C.textDim}/><div className="hud-div"/><HudStat label="BEST" value={g.stats.bestTime!==null?`${(g.stats.bestTime/1000).toFixed(2)}s`:"—"} color={C.cyan}/><div className="hud-div"/><HudStat label="LAST" value={g.stats.lastTime!==null?`${(g.stats.lastTime/1000).toFixed(2)}s`:"—"} color={C.blue}/><div className="hud-div"/><HudStat label="RND" value={g.roundNum+1} color={C.textMuted}/><div className="hud-div"/><HudStat label="DIFF" value={`Lv${g.difficulty}`} color={g.difficulty>=8?C.red:g.difficulty>=5?C.yellow:C.green}/>
-        {onExit&&<div style={{marginLeft:10}}><button onClick={onExit} className="btn-ghost">END</button></div>}
+        {onExit&&<div style={{marginLeft:10}}><button onClick={handleExit} className="btn-ghost">{exitLabel}</button></div>}
       </div>
       {/* 3 COLS */}
       <div style={{flex:1,display:"flex",overflow:"hidden",minHeight:0}}>
@@ -298,6 +312,18 @@ function GameView({engine,onExit,rightPanel}){
           {rightPanel||<PerfPanel stats={g.stats} history={g.attemptHistory}/>}
         </div>
       </div>
+      {showExitConfirm&&(
+        <div style={{position:"absolute",inset:0,zIndex:60,display:"flex",alignItems:"center",justifyContent:"center",padding:20,background:"rgba(0,0,0,0.72)"}} onClick={cancelExit}>
+          <div className="glass-card" style={{width:"100%",maxWidth:460,padding:18,border:`1px solid ${C.red}55`,boxShadow:`0 0 28px ${C.red}25`}} onClick={e=>e.stopPropagation()}>
+            <div style={{fontSize:9,fontWeight:800,letterSpacing:2.2,color:C.red,marginBottom:10}}>CONFIRM LEAVE</div>
+            <div style={{fontSize:12,lineHeight:1.6,color:C.text,marginBottom:16}}>{onExitConfirmMessage||"Are you sure you want to leave?"}</div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+              <button onClick={cancelExit} className="btn-ghost" style={{height:36,fontSize:10,letterSpacing:1.3}}>CANCEL</button>
+              <button onClick={confirmExit} className="btn-primary btn-orange btn-static" style={{height:36,fontSize:10,letterSpacing:1.3}}>LEAVE MATCH</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
