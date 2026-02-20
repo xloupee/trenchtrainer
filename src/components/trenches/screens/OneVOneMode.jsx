@@ -781,7 +781,7 @@ function OneVOneMode({ onMatchComplete, initialJoinCode = "" }) {
               <div style={{ fontSize: 8, color: C.textDim, letterSpacing: 2, marginBottom: 8 }}>DISPLAY NAME</div>
               <input value={playerName} onChange={(e) => setPlayerName(e.target.value)} placeholder="Enter your name..." className="input-field" style={{ height: 44, fontSize: 13 }} />
             </div>
-            <div style={{ marginBottom: 20, flex: 1 }}>
+            <div style={{ marginBottom: 16 }}>
               <div style={{ fontSize: 8, color: C.textDim, letterSpacing: 2, marginBottom: 8 }}>MATCH LENGTH</div>
               <div style={{ display: "flex", gap: 6 }}>
                 {[1, 3, 5, 10].map((n) => {
@@ -804,6 +804,37 @@ function OneVOneMode({ onMatchComplete, initialJoinCode = "" }) {
                       }}
                     >
                       Best of {n}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+            <div style={{ marginBottom: 20, flex: 1 }}>
+              <div style={{ fontSize: 8, color: C.textDim, letterSpacing: 2, marginBottom: 8 }}>LOBBY VISIBILITY</div>
+              <div style={{ display: "flex", gap: 6 }}>
+                {[
+                  { label: "PUBLIC", value: true },
+                  { label: "PRIVATE", value: false },
+                ].map((opt) => {
+                  const active = isPublicLobby === opt.value;
+                  return (
+                    <button
+                      key={opt.label}
+                      onClick={() => setIsPublicLobby(opt.value)}
+                      style={{
+                        flex: 1,
+                        padding: "10px 0",
+                        borderRadius: 6,
+                        border: `1px solid ${active ? C.cyan : C.border}`,
+                        background: active ? `${C.cyan}10` : "black",
+                        color: active ? C.cyan : C.textDim,
+                        fontSize: 11,
+                        fontWeight: active ? 900 : 600,
+                        fontFamily: "var(--mono)",
+                        cursor: "pointer",
+                      }}
+                    >
+                      {opt.label}
                     </button>
                   );
                 })}
@@ -848,7 +879,7 @@ function OneVOneMode({ onMatchComplete, initialJoinCode = "" }) {
                     <div>
                       <div style={{ fontSize: 13, fontWeight: 800, color: C.text }}>{l.host_name || "Unknown player"}</div>
                       <div style={{ fontSize: 9, color: C.textDim, marginTop: 4 }}>
-                        Code: {l.code} • Best of {l.best_of} • {(l.guest_id || l.status === "ready") ? "FULL" : "OPEN"}
+                        Best of {l.best_of} • {(l.guest_id || l.status === "ready") ? "FULL" : "OPEN"}
                       </div>
                     </div>
                     {(() => {
