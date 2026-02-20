@@ -14,7 +14,6 @@ import {
   pathToMode,
 } from "./config/constants";
 import { getRank } from "./lib/rank";
-import AuthScreen from "./screens/AuthScreen";
 import ModePickerScreen from "./screens/ModePickerScreen";
 import OneVOneMode from "./screens/OneVOneMode";
 import PracticeMode from "./screens/PracticeMode";
@@ -85,6 +84,12 @@ export default function App({initialDuelCode=""}){
     });
     return()=>{active=false;authListener?.subscription?.unsubscribe();};
   },[]);
+
+  useEffect(()=>{
+    if(!authReady||session)return;
+    const nextPath=typeof window!=="undefined"?`${window.location.pathname}${window.location.search}`:(pathname||"/play/practice");
+    router.replace(`/auth?next=${encodeURIComponent(nextPath)}`);
+  },[authReady,session,pathname,router]);
 
   const loadProfileStats=useCallback(async({resolveEntry=false}={})=>{
     if(!supabase||!session?.user?.id)return;
@@ -275,7 +280,7 @@ export default function App({initialDuelCode=""}){
   const logOut=async()=>{if(supabase)await supabase.auth.signOut();};
 
   if(!authReady)return(<div className="menu-bg"><div className="grid-bg"/><div style={{position:"relative",zIndex:1,color:C.textDim,fontSize:12,letterSpacing:2}}>LOADING AUTH...</div><style>{CSS}</style></div>);
-  if(!session)return(<><AuthScreen/><style>{CSS}</style></>);
+  if(!session)return(<div className="menu-bg"><div className="grid-bg"/><div style={{position:"relative",zIndex:1,color:C.textDim,fontSize:12,letterSpacing:2}}>REDIRECTING TO AUTH...</div><style>{CSS}</style></div>);
   if(entryScreen==="loading")return(<div className="menu-bg"><div className="grid-bg"/><div style={{position:"relative",zIndex:1,color:C.textDim,fontSize:12,letterSpacing:2}}>LOADING PROFILE...</div><style>{CSS}</style></div>);
   if(entryScreen==="mode-picker")return(<><ModePickerScreen session={session} onSelect={(mode)=>handleModeSelect(mode,{persist:true,openApp:true})} onLogOut={logOut}/><style>{CSS}</style></>);
 
