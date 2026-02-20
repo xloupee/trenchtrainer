@@ -206,7 +206,7 @@ function AuthScreen() {
             onClick={submit} 
             disabled={busy} 
             className={`btn-primary ${isLogin ? "btn-green" : "btn-blue"}`} 
-            style={{ marginTop: "auto", padding: "18px", fontSize: 16, fontWeight: 900, letterSpacing: 3, opacity: busy ? 0.7 : 1 }}
+            style={{ marginTop: 28, padding: "18px", fontSize: 16, fontWeight: 900, letterSpacing: 3, opacity: busy ? 0.7 : 1 }}
           >
             {busy ? "PROCESSING..." : isLogin ? "LOG IN" : "CREATE ACCOUNT"}
           </button>
