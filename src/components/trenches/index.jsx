@@ -21,12 +21,17 @@ import PracticeMode from "./screens/PracticeMode";
 import ProfileTab from "./screens/ProfileTab";
 import { CSS } from "./styles/cssText";
 
+const ENTRY_READY_KEY="trenches:entry-ready";
+
 export default function App({initialDuelCode=""}){
   const router=useRouter();
   const pathname=usePathname();
   const tab=pathToMode(pathname||"");
   const duelCode=(initialDuelCode||"").trim().toUpperCase().replace(/[^A-Z0-9]/g,"").slice(0,6);
-  const[entryScreen,setEntryScreen]=useState("loading"); // loading | mode-picker | app
+  const[entryScreen,setEntryScreen]=useState(()=>{
+    if(typeof window==="undefined")return "loading";
+    return window.sessionStorage.getItem(ENTRY_READY_KEY)==="1"?"app":"loading";
+  }); // loading | mode-picker | app
   const[startDiff,setStartDiff]=useState(1);
   const[session,setSession]=useState(null);
   const[authReady,setAuthReady]=useState(false);
@@ -45,6 +50,7 @@ export default function App({initialDuelCode=""}){
         if(!nextSession){
           setProfileStats(EMPTY_PROFILE_STATS);
           setMatchHistory([]);
+          if(typeof window!=="undefined")window.sessionStorage.removeItem(ENTRY_READY_KEY);
           setEntryScreen("loading");
         }
         setAuthReady(true);
@@ -55,6 +61,7 @@ export default function App({initialDuelCode=""}){
       if(!nextSession){
         setProfileStats(EMPTY_PROFILE_STATS);
         setMatchHistory([]);
+        if(typeof window!=="undefined")window.sessionStorage.removeItem(ENTRY_READY_KEY);
         setEntryScreen("loading");
       }
     });
@@ -98,8 +105,10 @@ export default function App({initialDuelCode=""}){
     }
     if(resolveEntry){
       if(data){
+        if(typeof window!=="undefined")window.sessionStorage.setItem(ENTRY_READY_KEY,"1");
         setEntryScreen("app");
       }else{
+        if(typeof window!=="undefined")window.sessionStorage.removeItem(ENTRY_READY_KEY);
         setEntryScreen("mode-picker");
       }
     }
@@ -160,6 +169,9 @@ export default function App({initialDuelCode=""}){
 
   const handleModeSelect=useCallback((mode,{persist=true,openApp=false}={})=>{
     const normalized=normalizeModeKey(mode);
+    if(openApp&&typeof window!=="undefined"){
+      window.sessionStorage.setItem(ENTRY_READY_KEY,"1");
+    }
     router.push(modeToPath(normalized));
     if(openApp)setEntryScreen("app");
     if(persist)void savePreferredMode(normalized);
