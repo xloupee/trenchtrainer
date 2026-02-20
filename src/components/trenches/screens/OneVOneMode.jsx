@@ -205,32 +205,32 @@ function OneVOneMode({onMatchComplete,initialJoinCode=""}){
         
         {/* HEADER */}
         <div style={{gridArea:"head",display:"flex",alignItems:"baseline",gap:16,marginBottom:12}}>
-          <h1 style={{fontSize:42,fontWeight:900,letterSpacing:-2,color:C.orange}}>COMBAT_LOBBY</h1>
-          <span style={{fontSize:10,color:C.textDim,letterSpacing:4}}>ARENA_v3.0_LIVE</span>
+          <h1 style={{fontSize:42,fontWeight:900,letterSpacing:-2,color:C.orange}}>DUEL LOBBY</h1>
+          <span style={{fontSize:10,color:C.textDim,letterSpacing:4}}>LIVE MATCHMAKING</span>
         </div>
 
         {/* AGENT CONFIG */}
         <div className="glass-card" style={{gridArea:"form",padding:28,display:"flex",flexDirection:"column",height:"100%"}}>
-          <div style={{fontSize:9,color:C.orange,letterSpacing:2,fontWeight:800,marginBottom:20}}>&gt; AGENT_CONFIG</div>
+          <div style={{fontSize:9,color:C.orange,letterSpacing:2,fontWeight:800,marginBottom:20}}>&gt; SETUP</div>
           <div style={{marginBottom:20}}>
-            <div style={{fontSize:8,color:C.textDim,letterSpacing:2,marginBottom:8}}>AGENT_NAME</div>
-            <input value={playerName} onChange={e=>setPlayerName(e.target.value)} placeholder="ENTER_CALLSIGN..." className="input-field" style={{height:44,fontSize:13}}/>
+            <div style={{fontSize:8,color:C.textDim,letterSpacing:2,marginBottom:8}}>DISPLAY NAME</div>
+            <input value={playerName} onChange={e=>setPlayerName(e.target.value)} placeholder="Enter your name..." className="input-field" style={{height:44,fontSize:13}}/>
           </div>
           <div style={{marginBottom:20,flex:1}}>
-            <div style={{fontSize:8,color:C.textDim,letterSpacing:2,marginBottom:8}}>MATCH_FORMAT</div>
+            <div style={{fontSize:8,color:C.textDim,letterSpacing:2,marginBottom:8}}>MATCH LENGTH</div>
             <div style={{display:"flex",gap:6}}>
               {[5,10,20].map(n=>{
                 const active=bestOf===n;
-                return(<button key={n} onClick={()=>setBestOf(n)} style={{flex:1,padding:"10px 0",borderRadius:6,border:`1px solid ${active?C.orange:C.border}`,background:active?`${C.orange}10`:"black",color:active?C.orange:C.textDim,fontSize:11,fontWeight:active?900:600,fontFamily:"var(--mono)",cursor:"pointer"}}>BO_{n}</button>);
+                return(<button key={n} onClick={()=>setBestOf(n)} style={{flex:1,padding:"10px 0",borderRadius:6,border:`1px solid ${active?C.orange:C.border}`,background:active?`${C.orange}10`:"black",color:active?C.orange:C.textDim,fontSize:11,fontWeight:active?900:600,fontFamily:"var(--mono)",cursor:"pointer"}}>Best of {n}</button>);
               })}
             </div>
           </div>
-          <button onClick={createGame} className="btn-primary btn-orange" style={{padding:"14px",fontSize:12,fontWeight:900,marginTop:"auto"}}>CREATE_NEW_ROOM</button>
+          <button onClick={createGame} className="btn-primary btn-orange" style={{padding:"14px",fontSize:12,fontWeight:900,marginTop:"auto"}}>CREATE ROOM</button>
         </div>
 
         {/* JOIN BY CODE */}
         <div className="glass-card" style={{gridArea:"join",padding:28,display:"flex",flexDirection:"column",justifyContent:"center",height:"100%"}}>
-          <div style={{fontSize:9,color:C.cyan,letterSpacing:2,fontWeight:800,marginBottom:20}}>&gt; DIRECT_ACCESS</div>
+          <div style={{fontSize:9,color:C.cyan,letterSpacing:2,fontWeight:800,marginBottom:20}}>&gt; JOIN BY CODE</div>
           <div style={{display:"flex",gap:10,alignItems:"stretch",marginBottom:"auto",marginTop:"auto"}}>
             <input
               value={joinCode}
@@ -242,26 +242,26 @@ function OneVOneMode({onMatchComplete,initialJoinCode=""}){
             />
             <button onClick={()=>joinGame()} className="btn-primary btn-blue" style={{width:100,padding:0,fontSize:12,fontWeight:900}}>JOIN</button>
           </div>
-          <div style={{fontSize:9,color:C.textDim,marginTop:16,textAlign:"center"}}>ENTER 6-DIGIT COMBAT CODE</div>
+          <div style={{fontSize:9,color:C.textDim,marginTop:16,textAlign:"center"}}>Enter a 6-character room code</div>
         </div>
 
         {/* PUBLIC LOBBIES */}
         <div className="glass-card" style={{gridArea:"public",padding:24}}>
           <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:20}}>
-            <div style={{fontSize:9,color:C.green,letterSpacing:2,fontWeight:800}}>&gt; ACTIVE_TRANSMISSIONS</div>
-            <button onClick={fetchPublicLobbies} className="btn-ghost" style={{fontSize:9,padding:"6px 12px"}}>SYNC_LIST</button>
+            <div style={{fontSize:9,color:C.green,letterSpacing:2,fontWeight:800}}>&gt; PUBLIC LOBBIES</div>
+            <button onClick={fetchPublicLobbies} className="btn-ghost" style={{fontSize:9,padding:"6px 12px"}}>REFRESH</button>
           </div>
           {publicLobbies.length===0 ? (
-            <div style={{padding:"40px",textAlign:"center",border:`1px dashed ${C.border}`,borderRadius:8,color:C.textGhost,fontSize:11}}>NO_ACTIVE_LOBBIES_DETECTED</div>
+            <div style={{padding:"40px",textAlign:"center",border:`1px dashed ${C.border}`,borderRadius:8,color:C.textGhost,fontSize:11}}>No public lobbies right now.</div>
           ) : (
             <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill, minmax(300px, 1fr))",gap:12,maxHeight:300,overflowY:"auto",paddingRight:4}}>
               {publicLobbies.map((l)=>(
                 <div key={l.code} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"12px 16px",border:`1px solid ${C.border}`,borderRadius:8,background:"black"}}>
                   <div>
-                    <div style={{fontSize:13,fontWeight:800,color:C.text}}>{l.host_name||"UNKNOWN_AGENT"}</div>
-                    <div style={{fontSize:9,color:C.textDim,marginTop:4}}>CODE: {l.code} • BO_{l.best_of}</div>
+                    <div style={{fontSize:13,fontWeight:800,color:C.text}}>{l.host_name||"Unknown player"}</div>
+                    <div style={{fontSize:9,color:C.textDim,marginTop:4}}>Code: {l.code} • Best of {l.best_of}</div>
                   </div>
-                  <button onClick={()=>joinPublicLobby(l.code)} className="btn-primary btn-green" style={{width:"auto",padding:"8px 16px",fontSize:10,fontWeight:900}}>ENGAGE</button>
+                  <button onClick={()=>joinPublicLobby(l.code)} className="btn-primary btn-green" style={{width:"auto",padding:"8px 16px",fontSize:10,fontWeight:900}}>JOIN</button>
                 </div>
               ))}
             </div>
@@ -274,49 +274,49 @@ function OneVOneMode({onMatchComplete,initialJoinCode=""}){
   if(phase==="waiting")return(
     <div className="menu-bg prac-page"><div className="grid-bg"/>
       <div className="prac-shell" style={{maxWidth:600,width:"100%",display:"flex",flexDirection:"column",alignItems:"center",position:"relative",zIndex:1}}>
-        <div style={{fontSize:11,color:C.orange,letterSpacing:6,fontWeight:800,marginBottom:32}}>// STANDBY_MODE</div>
+        <div style={{fontSize:11,color:C.orange,letterSpacing:6,fontWeight:800,marginBottom:32}}>WAITING ROOM</div>
         <div className="glass-card" style={{width:"100%",padding:40,textAlign:"center",marginBottom:24}}>
-          <div style={{fontSize:10,color:C.textDim,letterSpacing:3,marginBottom:16}}>ACCESS_CODE</div>
+          <div style={{fontSize:10,color:C.textDim,letterSpacing:3,marginBottom:16}}>ROOM CODE</div>
           <div style={{fontSize:64,fontWeight:900,letterSpacing:12,color:C.orange,lineHeight:1}}>{gameCode}</div>
-          <div style={{fontSize:11,color:C.textMuted,marginTop:24}}>TRANSMIT THIS CODE TO YOUR OPPONENT</div>
+          <div style={{fontSize:11,color:C.textMuted,marginTop:24}}>Share this code with your opponent.</div>
         </div>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,width:"100%",marginBottom:32}}>
           <div className="glass-card" style={{padding:24,textAlign:"center",borderColor:`${C.green}44`}}>
-            <div style={{fontSize:8,color:C.green,letterSpacing:2,marginBottom:8}}>LOCAL_AGENT</div>
+            <div style={{fontSize:8,color:C.green,letterSpacing:2,marginBottom:8}}>YOU</div>
             <div style={{fontSize:16,fontWeight:900}}>{playerName||"YOU"}</div>
-            <div style={{fontSize:10,color:C.green,marginTop:8}}>READY_ONLINE</div>
+            <div style={{fontSize:10,color:C.green,marginTop:8}}>Ready</div>
           </div>
           <div className="glass-card" style={{padding:24,textAlign:"center",borderColor:opponentName?`${C.green}44`:`${C.red}44`}}>
-            <div style={{fontSize:8,color:opponentName?C.green:C.red,letterSpacing:2,marginBottom:8}}>REMOTE_AGENT</div>
+            <div style={{fontSize:8,color:opponentName?C.green:C.red,letterSpacing:2,marginBottom:8}}>OPPONENT</div>
             <div style={{fontSize:16,fontWeight:900}}>{opponentName||"SEARCHING..."}</div>
-            <div style={{fontSize:10,color:opponentName?C.green:C.red,marginTop:8}}>{opponentName?"LINK_ESTABLISHED":"WAITING_FOR_SIGNAL"}</div>
+            <div style={{fontSize:10,color:opponentName?C.green:C.red,marginTop:8}}>{opponentName?"Connected":"Waiting to join"}</div>
           </div>
         </div>
-        {isHost&&opponentName&&<button onClick={startMatch} className="btn-primary btn-orange" style={{padding:"20px",fontSize:16,fontWeight:900,letterSpacing:4,width:"100%"}}>ENGAGE_COMBAT_&gt;</button>}
-        <button onClick={backToLobby} className="btn-ghost" style={{marginTop:24}}>ABORT_MISSION</button>
+        {isHost&&opponentName&&<button onClick={startMatch} className="btn-primary btn-orange" style={{padding:"20px",fontSize:16,fontWeight:900,letterSpacing:4,width:"100%"}}>START MATCH &gt;</button>}
+        <button onClick={backToLobby} className="btn-ghost" style={{marginTop:24}}>LEAVE ROOM</button>
       </div>
     </div>);
 
   if(phase==="results"&&matchResult)return(
     <div className="menu-bg prac-page"><div className="grid-bg"/>
       <div className="prac-shell" style={{maxWidth:600,width:"100%",display:"flex",flexDirection:"column",alignItems:"center",position:"relative",zIndex:1}}>
-        <div style={{fontSize:11,color:matchResult.win?C.green:C.red,letterSpacing:6,fontWeight:800,marginBottom:32}}>// POST_COMBAT_REPORT</div>
+        <div style={{fontSize:11,color:matchResult.win?C.green:C.red,letterSpacing:6,fontWeight:800,marginBottom:32}}>MATCH RESULTS</div>
         <div style={{fontSize:80,marginBottom:20}}>{matchResult.win?"🏆":"💀"}</div>
-        <h2 style={{fontSize:48,fontWeight:900,color:matchResult.win?C.green:C.red,letterSpacing:-2,marginBottom:8}}>{matchResult.win?"VICTORY":"DEFEAT"}</h2>
-        <div style={{fontSize:11,color:C.textDim,letterSpacing:4,marginBottom:40}}>MISSION_OBJECTIVE_COMPLETED</div>
+        <h2 style={{fontSize:48,fontWeight:900,color:matchResult.win?C.green:C.red,letterSpacing:-2,marginBottom:8}}>{matchResult.win?"Victory":"Defeat"}</h2>
+        <div style={{fontSize:11,color:C.textDim,letterSpacing:4,marginBottom:40}}>Match complete.</div>
         
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,width:"100%",marginBottom:40}}>
           <div className="glass-card" style={{padding:32,textAlign:"center"}}>
-            <div style={{fontSize:8,color:C.textDim,letterSpacing:2,marginBottom:8}}>LOCAL_SCORE</div>
+            <div style={{fontSize:8,color:C.textDim,letterSpacing:2,marginBottom:8}}>YOUR SCORE</div>
             <div style={{fontSize:42,fontWeight:900,color:C.text}}>{matchResult.myScore}</div>
           </div>
           <div className="glass-card" style={{padding:32,textAlign:"center"}}>
-            <div style={{fontSize:8,color:C.textDim,letterSpacing:2,marginBottom:8}}>REMOTE_SCORE</div>
+            <div style={{fontSize:8,color:C.textDim,letterSpacing:2,marginBottom:8}}>OPPONENT SCORE</div>
             <div style={{fontSize:42,fontWeight:900,color:C.text}}>{matchResult.oppScore}</div>
           </div>
         </div>
         
-        <button onClick={backToLobby} className="btn-primary btn-green" style={{padding:"20px",fontSize:14,fontWeight:900,letterSpacing:2,width:"100%"}}>RETURN_TO_LOBBY</button>
+        <button onClick={backToLobby} className="btn-primary btn-green" style={{padding:"20px",fontSize:14,fontWeight:900,letterSpacing:2,width:"100%"}}>BACK TO LOBBY</button>
       </div>
     </div>);
 
