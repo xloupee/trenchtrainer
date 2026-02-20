@@ -1,8 +1,10 @@
-import { C } from "../config/constants";
+import { C, modeToPath, normalizeModeKey } from "../config/constants";
 import { formatHistoryDate } from "../lib/format";
 import { getRank } from "../lib/rank";
+import { useRouter } from "next/navigation";
 
 function ProfileTab({ session, stats, history, loading, msg, onRefresh }) {
+  const router = useRouter();
   const rounds = stats.practice_rounds;
   const practiceAcc = rounds > 0 ? Math.round((stats.practice_hits / rounds) * 100) : 0;
   const duelWinRate = stats.duel_matches > 0 ? Math.round((stats.duel_wins / stats.duel_matches) * 100) : 0;
@@ -11,6 +13,17 @@ function ProfileTab({ session, stats, history, loading, msg, onRefresh }) {
   const bestRT = stats.practice_best_time !== null ? `${(stats.practice_best_time / 1000).toFixed(3)}s` : "—";
   const rank = getRank(stats.practice_best_time);
   const isHistoryLoading = loading && history.length === 0;
+  const preferredMode = normalizeModeKey(stats.preferred_mode);
+  const preferredModeLabel = preferredMode === "1v1" ? "1V1 DUEL" : preferredMode === "profile" ? "PROFILE" : "PRACTICE";
+  const latest = history[0] || null;
+  const latestWhen = latest?.created_at ? formatHistoryDate(latest.created_at || "").toUpperCase() : "NO_RUNS_YET";
+  const latestSummary = !latest
+    ? "NO_SESSIONS_LOGGED"
+    : latest.mode === "practice"
+    ? `PRACTICE // ${(typeof latest.best_time === "number" ? `${(latest.best_time / 1000).toFixed(3)}s` : "N/A")} // ${latest.accuracy_pct ?? 0}% ACC`
+    : `1V1 // ${latest.outcome?.toUpperCase() || "UNKNOWN"} // ${latest.score ?? 0}-${latest.opponent_score ?? 0}`;
+  const latestColor = !latest ? C.textDim : latest.mode === "practice" ? C.cyan : latest.outcome === "win" ? C.green : latest.outcome === "loss" ? C.red : C.orange;
+  const duelRecord = `${stats.duel_wins}-${stats.duel_losses}${stats.duel_draws ? `-${stats.duel_draws}` : ""}`;
 
   const getOutcomeColor = (row) => {
     if (row.mode === "practice") return C.green;
@@ -23,11 +36,11 @@ function ProfileTab({ session, stats, history, loading, msg, onRefresh }) {
     <div className="menu-bg prac-page" style={{ justifyContent: "flex-start", paddingTop: 40, overflowY: "auto" }}>
       <div className="grid-bg" />
       
-      <div className="prac-shell" style={{ maxWidth: 1100, width: "100%", padding: "0 20px" }}>
+      <div style={{ position: "relative", zIndex: 1, maxWidth: 1100, width: "100%", padding: "0 20px", display: "flex", flexDirection: "column" }}>
         
         {/* ── HEADER: IDENTITY ── */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 48 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
+        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 24, marginBottom: 48, flexWrap: "wrap" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 24, flexShrink: 0 }}>
             <div style={{ 
               width: 64, height: 64, background: "black", border: `1px solid ${C.border}`,
               display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28,
@@ -41,7 +54,42 @@ function ProfileTab({ session, stats, history, loading, msg, onRefresh }) {
               <div style={{ fontSize: 10, color: rank.color, letterSpacing: 3, fontWeight: 800 }}>RANK // {rank.tier}</div>
             </div>
           </div>
-          <button onClick={onRefresh} className="btn-ghost" style={{ fontSize: 9, padding: "10px 20px" }}>SYNC_SESSION_DATA</button>
+
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))", gap: 14, flex: 1, minWidth: 320 }}>
+            <div className="glass-card" style={{ padding: 16, minHeight: 118 }}>
+              <div style={{ fontSize: 9, color: C.textDim, letterSpacing: 2, fontWeight: 800, marginBottom: 12 }}>&gt; QUICK_STATS</div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10 }}>
+                  <span style={{ color: C.textMuted }}>BEST_RT</span>
+                  <span style={{ color: C.cyan, fontWeight: 800 }}>{bestRT}</span>
+                </div>
+                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10 }}>
+                  <span style={{ color: C.textMuted }}>PRACTICE_ACC</span>
+                  <span style={{ color: C.green, fontWeight: 800 }}>{practiceAcc}%</span>
+                </div>
+                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10 }}>
+                  <span style={{ color: C.textMuted }}>1V1_W-L(-D)</span>
+                  <span style={{ color: C.orange, fontWeight: 800 }}>{duelRecord}</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="glass-card" style={{ padding: 16, minHeight: 118, display: "flex", flexDirection: "column" }}>
+              <div style={{ fontSize: 9, color: C.textDim, letterSpacing: 2, fontWeight: 800, marginBottom: 10 }}>&gt; CONTINUE</div>
+              <div style={{ fontSize: 11, color: C.text, fontWeight: 800, marginBottom: 6 }}>CONTINUE: {preferredModeLabel}</div>
+              <div style={{ fontSize: 9, color: C.textMuted, marginBottom: 14 }}>JUMP_BACK_TO_YOUR_DEFAULT_MODE</div>
+              <div style={{ display: "flex", gap: 8, marginTop: "auto" }}>
+                <button onClick={() => router.push(modeToPath(preferredMode))} className="btn-primary btn-green" style={{ height: 34, fontSize: 9, letterSpacing: 1.5, padding: "0 12px" }}>CONTINUE</button>
+                <button onClick={() => router.push(modeToPath("practice"))} className="btn-ghost" style={{ height: 34, fontSize: 9, letterSpacing: 1.2, padding: "0 10px" }}>CHOOSE_MODE</button>
+              </div>
+            </div>
+
+            <div className="glass-card" style={{ padding: 16, minHeight: 118 }}>
+              <div style={{ fontSize: 9, color: C.textDim, letterSpacing: 2, fontWeight: 800, marginBottom: 10 }}>&gt; RECENT_ACTIVITY</div>
+              <div style={{ fontSize: 9, color: C.textGhost, marginBottom: 6 }}>{latestWhen}</div>
+              <div style={{ fontSize: 10, color: latestColor, fontWeight: 800, lineHeight: 1.45 }}>{latestSummary}</div>
+            </div>
+          </div>
         </div>
 
         {/* ── PRIMARY KPI BAR (Full Width) ── */}
