@@ -73,7 +73,13 @@ export const PROFILE_SELECT_LEGACY =
   "user_id,preferred_mode,practice_sessions,practice_rounds,practice_hits,practice_misses,practice_penalties,practice_best_time,practice_best_streak,duel_matches,duel_wins,duel_losses,duel_draws,duel_score_for,duel_score_against,duel_best_score";
 
 export const HISTORY_SELECT =
+  "id,user_id,mode,outcome,score,opponent_score,rounds,accuracy_pct,best_time,best_streak,rating_before,rating_after,rating_delta,created_at";
+
+export const HISTORY_SELECT_LEGACY =
   "id,user_id,mode,outcome,score,opponent_score,rounds,accuracy_pct,best_time,best_streak,created_at";
+
+export const HISTORY_SELECT_MINIMAL =
+  "id,user_id,mode,outcome,score,opponent_score,created_at";
 
 export const normalizeProfileStats = (raw = {}) => ({
   ...EMPTY_PROFILE_STATS,

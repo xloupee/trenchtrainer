@@ -30,6 +30,14 @@ function ProfileTab({ session, stats, history, loading, msg, onRefresh }) {
     if (row.outcome === "loss") return C.red;
     return C.orange;
   };
+  const getDeltaColor = (delta) => {
+    if (!Number.isFinite(delta) || delta === 0) return C.textDim;
+    return delta > 0 ? C.green : C.red;
+  };
+  const formatDelta = (delta) => {
+    if (!Number.isFinite(delta) || delta === 0) return "RP ±0";
+    return delta > 0 ? `RP +${delta}` : `RP ${delta}`;
+  };
   const filteredHistory = history.filter((row) => {
     if (historyFilter === "practice") return row.mode === "practice";
     if (historyFilter === "duel") return row.mode === "1v1";
@@ -175,9 +183,10 @@ function ProfileTab({ session, stats, history, loading, msg, onRefresh }) {
               ) : filteredHistory.slice(0, 10).map((row) => {
                 const isPractice = row.mode === "practice";
                 const rt = typeof row.best_time === "number" ? `${(row.best_time / 1000).toFixed(3)}s` : "N/A";
+                const delta = Number(row.rating_delta);
                 return (
                   <div key={row.id} style={{ 
-                    display: "grid", gridTemplateColumns: "160px 120px 1fr", 
+                    display: "grid", gridTemplateColumns: "160px 120px 1fr auto", 
                     alignItems: "center", padding: "14px 24px", borderBottom: `1px solid ${C.border}`,
                     background: "black"
                   }}>
@@ -187,6 +196,9 @@ function ProfileTab({ session, stats, history, loading, msg, onRefresh }) {
                     </div>
                     <div style={{ fontSize: 12, color: C.textMuted }}>
                       {isPractice ? `Reaction: ${rt} • Accuracy: ${row.accuracy_pct}%` : `Score: ${row.score} - ${row.opponent_score}`}
+                    </div>
+                    <div style={{ fontSize: 11, fontWeight: 800, color: getDeltaColor(delta), fontFamily: "monospace", paddingLeft: 16 }}>
+                      {formatDelta(delta)}
                     </div>
                   </div>
                 );

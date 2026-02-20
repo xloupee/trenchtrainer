@@ -66,7 +66,7 @@ function PracticeMode({startDiff=1,onSessionComplete,onStartDiffChange,onOpenPro
       setScreen("summary");
     }
   },[screen,levelCap,engine.roundNum]);
-  if(screen==="summary")return <SessionSummary rankImpact={rankImpact} stats={engine.stats} history={engine.attemptHistory} onBack={()=>{engine.reset();setScreen("menu");}} onProfile={onOpenProfile}/>;
+  if(screen==="summary")return <SessionSummary rankImpact={rankImpact} stats={engine.stats} history={engine.attemptHistory} onBack={()=>{engine.reset();setScreen("menu");}} onPlayAgain={start} onProfile={onOpenProfile}/>;
   if(screen==="menu")return(
     <div className="menu-bg prac-page" style={{minHeight:"100%",height:"100%",justifyContent:"flex-start",overflowY:"auto",overflowX:"hidden",paddingTop:28,paddingBottom:120}}><div className="grid-bg"/>
       <div className="prac-shell" style={{maxWidth:1000,width:"100%",display:"flex",flexDirection:"column",alignItems:"center",position:"relative",zIndex:1}}>
