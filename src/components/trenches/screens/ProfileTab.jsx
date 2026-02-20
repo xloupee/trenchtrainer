@@ -5,11 +5,10 @@ import { getDuelNextTier, getDuelTier } from "../lib/duelRank";
 import { getPracticeNextTier, getPracticeTier } from "../lib/practiceRank";
 import RankInfoModal from "./RankInfoModal";
 
-function ProfileTab({ session, stats, history, loading, msg, onRefresh }) {
+function ProfileTab({ session, stats, history }) {
   const [historyFilter, setHistoryFilter] = useState("all");
   const [showRankInfo, setShowRankInfo] = useState(false);
   const isSoloMode = (mode) => mode === "solo" || mode === "practice";
-  const rounds = stats.practice_rounds;
   const duelWinRate = stats.duel_matches > 0 ? Math.round((stats.duel_wins / stats.duel_matches) * 100) : 0;
   const avgDuelFor = stats.duel_matches > 0 ? (stats.duel_score_for / stats.duel_matches).toFixed(1) : "0.0";
   const username = session?.user?.user_metadata?.username || session?.user?.email?.split("@")[0] || "anonymous";
@@ -17,13 +16,6 @@ function ProfileTab({ session, stats, history, loading, msg, onRefresh }) {
   const duelRank = getDuelTier(stats.duel_rating);
   const practiceProgress = getPracticeNextTier(stats.practice_rating);
   const duelProgress = getDuelNextTier(stats.duel_rating);
-
-  const practiceProgressText = practiceProgress.next
-    ? `${practiceProgress.pointsToNext} RP to ${practiceProgress.next.tier}.`
-    : "Top solo tier reached.";
-  const duelProgressText = duelProgress.next
-    ? `${duelProgress.pointsToNext} RP to ${duelProgress.next.tier}.`
-    : "Top duel tier reached.";
 
   const getOutcomeColor = (row) => {
     if (isSoloMode(row.mode)) return C.green;

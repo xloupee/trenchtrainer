@@ -313,7 +313,7 @@ export default function App({initialDuelCode=""}){
   const[profileHydrated,setProfileHydrated]=useState(()=>profileBootstrapCache.loaded);
   const[showLogoutWarning,setShowLogoutWarning]=useState(false);
   const[hoveredSidebarKey,setHoveredSidebarKey]=useState(null);
-  const[duelIconVariant,setDuelIconVariant]=useState(()=>{
+  const[duelIconVariant]=useState(()=>{
     if(typeof window==="undefined")return "swords";
     const saved=window.localStorage.getItem(DUEL_ICON_VARIANT_KEY);
     return DUEL_ICON_VARIANTS.includes(saved)?saved:"swords";
