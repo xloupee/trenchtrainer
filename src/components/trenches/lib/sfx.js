@@ -17,7 +17,9 @@ export const SFX = (() => {
       g.connect(c.destination);
       o.start(c.currentTime);
       o.stop(c.currentTime + dur);
-    } catch {}
+    } catch {
+      // Audio can fail when autoplay/user-gesture policies block context usage.
+    }
   };
 
   return {

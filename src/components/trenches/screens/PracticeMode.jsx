@@ -49,9 +49,9 @@ function PracticeMode({startDiff=1,onSessionComplete,onStartDiffChange,onOpenPro
     const maybePromise=onSessionCompleteRef.current?.(latest);
     if(maybePromise&&typeof maybePromise.then==="function"){
       maybePromise
-        .then((impact)=>{if(impact?.mode==="practice")setRankImpact(impact);})
+        .then((impact)=>{if(impact?.mode==="solo")setRankImpact(impact);})
         .catch(()=>{});
-    }else if(maybePromise?.mode==="practice"){
+    }else if(maybePromise?.mode==="solo"){
       setRankImpact(maybePromise);
     }
   };
@@ -66,14 +66,14 @@ function PracticeMode({startDiff=1,onSessionComplete,onStartDiffChange,onOpenPro
       setScreen("summary");
     }
   },[screen,levelCap,engine.roundNum]);
-  if(screen==="summary")return <SessionSummary rankImpact={rankImpact} stats={engine.stats} history={engine.attemptHistory} onBack={()=>{engine.reset();setScreen("menu");}} onPlayAgain={start} onProfile={onOpenProfile}/>;
+  if(screen==="summary")return <SessionSummary rankImpact={rankImpact} stats={engine.stats} onBack={()=>{engine.reset();setScreen("menu");}} onPlayAgain={start} onProfile={onOpenProfile}/>;
   if(screen==="menu")return(
     <div className="menu-bg prac-page" style={{minHeight:"100%",height:"100%",justifyContent:"flex-start",overflowY:"auto",overflowX:"hidden",paddingTop:28,paddingBottom:120}}><div className="grid-bg"/>
       <div className="prac-shell" style={{maxWidth:1000,width:"100%",display:"flex",flexDirection:"column",alignItems:"center",position:"relative",zIndex:1}}>
         
         {/* HEADER BLOCK */}
         <div style={{textAlign:"center",marginBottom:44,opacity:0,animation:"slideUp 0.6s ease forwards"}}>
-          <div style={{fontSize:10,color:C.green,letterSpacing:5,fontWeight:800,marginBottom:10}}>PRACTICE MODE</div>
+          <div style={{fontSize:10,color:C.green,letterSpacing:5,fontWeight:800,marginBottom:10}}>SOLO MODE</div>
           <h1 style={{fontSize:68,fontWeight:900,letterSpacing:-4,lineHeight:0.85,color:C.text}}>TRENCHES<br/><span style={{color:C.green}}>TRAINER</span></h1>
           <p style={{fontSize:13,color:C.textMuted,marginTop:18,letterSpacing:1,maxWidth:440,margin:"18px auto 0",lineHeight:1.6}}>Sharpen your reflexes. Read the signal. Tap fast.</p>
         </div>

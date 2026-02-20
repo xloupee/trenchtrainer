@@ -1,5 +1,5 @@
-import TrenchesTrainer from "../../../components/TrenchesTrainer";
+import { redirect } from "next/navigation";
 
 export default function PracticePage() {
-  return <TrenchesTrainer />;
+  redirect("/play/solo");
 }

@@ -143,7 +143,7 @@ function OneVOneMode({ onMatchComplete, initialJoinCode = "" }) {
       const message = String(e?.message || "");
       const missingReactionCols = message.includes("reaction_sum_ms") || message.includes("reaction_count");
       if (!missingReactionCols) throw e;
-      const { reaction_sum_ms, reaction_count, ...fallbackPayload } = payload;
+      const { reaction_sum_ms: _reactionSumMs, reaction_count: _reactionCount, ...fallbackPayload } = payload;
       return await doUpsert(fallbackPayload);
     }
   }, []);

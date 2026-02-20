@@ -7,7 +7,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint src --max-warnings=0",
     "recover:profiles": "node scripts/recover-profile-stats-from-history.mjs"
   },
   "dependencies": {

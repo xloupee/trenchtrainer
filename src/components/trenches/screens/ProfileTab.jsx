@@ -5,10 +5,10 @@ import { getDuelNextTier, getDuelTier } from "../lib/duelRank";
 import { getPracticeNextTier, getPracticeTier } from "../lib/practiceRank";
 import RankInfoModal from "./RankInfoModal";
 
-function ProfileTab({ session, stats, history, loading, msg, onRefresh }) {
+function ProfileTab({ session, stats, history }) {
   const [historyFilter, setHistoryFilter] = useState("all");
   const [showRankInfo, setShowRankInfo] = useState(false);
-  const rounds = stats.practice_rounds;
+  const isSoloMode = (mode) => mode === "solo" || mode === "practice";
   const duelWinRate = stats.duel_matches > 0 ? Math.round((stats.duel_wins / stats.duel_matches) * 100) : 0;
   const avgDuelFor = stats.duel_matches > 0 ? (stats.duel_score_for / stats.duel_matches).toFixed(1) : "0.0";
   const username = session?.user?.user_metadata?.username || session?.user?.email?.split("@")[0] || "anonymous";
@@ -17,15 +17,8 @@ function ProfileTab({ session, stats, history, loading, msg, onRefresh }) {
   const practiceProgress = getPracticeNextTier(stats.practice_rating);
   const duelProgress = getDuelNextTier(stats.duel_rating);
 
-  const practiceProgressText = practiceProgress.next
-    ? `${practiceProgress.pointsToNext} RP to ${practiceProgress.next.tier}.`
-    : "Top practice tier reached.";
-  const duelProgressText = duelProgress.next
-    ? `${duelProgress.pointsToNext} RP to ${duelProgress.next.tier}.`
-    : "Top duel tier reached.";
-
   const getOutcomeColor = (row) => {
-    if (row.mode === "practice") return C.green;
+    if (isSoloMode(row.mode)) return C.green;
     if (row.outcome === "win") return C.green;
     if (row.outcome === "loss") return C.red;
     return C.orange;
@@ -39,7 +32,7 @@ function ProfileTab({ session, stats, history, loading, msg, onRefresh }) {
     return delta > 0 ? `RP +${delta}` : `RP ${delta}`;
   };
   const filteredHistory = history.filter((row) => {
-    if (historyFilter === "practice") return row.mode === "practice";
+    if (historyFilter === "solo") return isSoloMode(row.mode);
     if (historyFilter === "duel") return row.mode === "1v1";
     return true;
   });
@@ -65,7 +58,7 @@ function ProfileTab({ session, stats, history, loading, msg, onRefresh }) {
                 <div style={{ fontSize: 10, color: C.textDim, letterSpacing: 4, marginBottom: 8, fontWeight: 800 }}>USERNAME</div>
                 <h1 style={{ fontSize: 42, fontWeight: 900, letterSpacing: -2, color: C.text, lineHeight: 1 }}>{username.toUpperCase()}</h1>
                 <div style={{ fontSize: 11, fontWeight: 800, color: practiceRank.color, letterSpacing: 2, marginTop: 8 }}>
-                  PRACTICE {practiceRank.tier} • {stats.practice_rating} RP
+                  SOLO {practiceRank.tier} • {stats.practice_rating} RP
                 </div>
                 <div style={{ fontSize: 11, fontWeight: 800, color: duelRank.color, letterSpacing: 2, marginTop: 4 }}>
                   DUEL {duelRank.tier} • {stats.duel_rating} RP
@@ -74,16 +67,33 @@ function ProfileTab({ session, stats, history, loading, msg, onRefresh }) {
             </div>
 
             <div style={{ width: "100%" }}>
-              <div className="glass-card" style={{ padding: "18px 16px", background: "rgba(0,0,0,0.5)", borderRadius: 10, minHeight: 164, display: "flex", flexDirection: "column", justifyContent: "center" }}>
-                <div style={{ fontSize: 10, color: C.textDim, letterSpacing: 1.6, marginBottom: 10 }}>&gt; RANK PROGRESS</div>
-                <div style={{ fontSize: 12, color: practiceRank.color, lineHeight: 1.55, marginBottom: 6, fontWeight: 700 }}>
-                  Practice: {practiceProgressText}
+              <div className="glass-card" style={{ padding: "24px", background: "rgba(0,0,0,0.5)", borderRadius: 10, minHeight: 164, display: "flex", flexDirection: "column", justifyContent: "center" }}>
+                <div style={{ fontSize: 10, color: C.textDim, letterSpacing: 1.6, marginBottom: 20 }}>&gt; RANK_PROGRESS</div>
+                
+                {/* Solo Progress */}
+                <div style={{ marginBottom: 16 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 8 }}>
+                    <div style={{ fontSize: 9, color: C.textMuted, fontWeight: 800 }}>SOLO_TIER_PROGRESS</div>
+                    <div style={{ fontSize: 10, color: practiceRank.color, fontWeight: 800 }}>{practiceProgress.next ? `${practiceProgress.pointsToNext} RP TO ${practiceProgress.next.tier}` : "MAX_TIER_REACHED"}</div>
+                  </div>
+                  <div style={{ height: 4, background: "rgba(255,255,255,0.05)", borderRadius: 2, overflow: "hidden", border: `1px solid ${C.border}` }}>
+                    <div style={{ width: `${practiceProgress.progressPercent}%`, height: "100%", background: practiceRank.color, boxShadow: `0 0 10px ${practiceRank.color}`, transition: "width 1s ease-out" }} />
+                  </div>
                 </div>
-                <div style={{ fontSize: 12, color: duelRank.color, lineHeight: 1.55, fontWeight: 700 }}>
-                  Duel: {duelProgressText}
+
+                {/* Duel Progress */}
+                <div style={{ marginBottom: 20 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 8 }}>
+                    <div style={{ fontSize: 9, color: C.textMuted, fontWeight: 800 }}>DUEL_TIER_PROGRESS</div>
+                    <div style={{ fontSize: 10, color: duelRank.color, fontWeight: 800 }}>{duelProgress.next ? `${duelProgress.pointsToNext} RP TO ${duelProgress.next.tier}` : "MAX_TIER_REACHED"}</div>
+                  </div>
+                  <div style={{ height: 4, background: "rgba(255,255,255,0.05)", borderRadius: 2, overflow: "hidden", border: `1px solid ${C.border}` }}>
+                    <div style={{ width: `${duelProgress.progressPercent}%`, height: "100%", background: duelRank.color, boxShadow: `0 0 10px ${duelRank.color}`, transition: "width 1s ease-out" }} />
+                  </div>
                 </div>
-                <button onClick={() => setShowRankInfo(true)} className="btn-ghost" style={{ marginTop: 12, fontSize: 10, letterSpacing: 1.2, alignSelf: "flex-start", padding: "7px 12px" }}>
-                  HOW RANKING WORKS
+
+                <button onClick={() => setShowRankInfo(true)} className="btn-ghost" style={{ fontSize: 9, letterSpacing: 1.2, alignSelf: "flex-start", padding: "6px 12px" }}>
+                  HOW_RANKING_WORKS
                 </button>
               </div>
             </div>
@@ -92,7 +102,7 @@ function ProfileTab({ session, stats, history, loading, msg, onRefresh }) {
           {/* Top-right: KPIs */}
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))", gap: 16, minHeight: 210 }}>
             {[
-              { l: "PRACTICE RP", v: stats.practice_rating, c: practiceRank.color },
+              { l: "SOLO RP", v: stats.practice_rating, c: practiceRank.color },
               { l: "DUEL RP", v: stats.duel_rating, c: duelRank.color },
               { l: "WIN RATE", v: `${duelWinRate}%`, c: C.orange },
               { l: "SESSIONS", v: stats.practice_sessions, c: C.textMuted }
@@ -104,10 +114,10 @@ function ProfileTab({ session, stats, history, loading, msg, onRefresh }) {
             ))}
           </div>
 
-          {/* Bottom-left: Practice + Duel stats */}
+          {/* Bottom-left: Solo + Duel stats */}
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 16 }}>
             <div className="glass-card" style={{ padding: 24, minHeight: 300 }}>
-              <div style={{ fontSize: 9, color: C.textDim, letterSpacing: 2, fontWeight: 800, marginBottom: 24 }}>&gt; PRACTICE STATS</div>
+              <div style={{ fontSize: 9, color: C.textDim, letterSpacing: 2, fontWeight: 800, marginBottom: 24 }}>&gt; SOLO STATS</div>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
                 {[
                   { l: "TOTAL ROUNDS", v: stats.practice_rounds },
@@ -152,7 +162,7 @@ function ProfileTab({ session, stats, history, loading, msg, onRefresh }) {
               <div style={{ display: "flex", gap: 8 }}>
                 {[
                   { key: "all", label: "All" },
-                  { key: "practice", label: "Practice" },
+                  { key: "solo", label: "Solo" },
                   { key: "duel", label: "Duel" },
                 ].map((opt) => {
                   const active = historyFilter === opt.key;
@@ -181,7 +191,7 @@ function ProfileTab({ session, stats, history, loading, msg, onRefresh }) {
               {filteredHistory.length === 0 ? (
                 <div style={{ padding: 60, textAlign: "center", color: C.textGhost, fontSize: 11 }}>No activity yet.</div>
               ) : filteredHistory.slice(0, 10).map((row) => {
-                const isPractice = row.mode === "practice";
+                const isPractice = isSoloMode(row.mode);
                 const rt = typeof row.best_time === "number" ? `${(row.best_time / 1000).toFixed(3)}s` : "N/A";
                 const delta = Number(row.rating_delta);
                 return (
@@ -192,7 +202,7 @@ function ProfileTab({ session, stats, history, loading, msg, onRefresh }) {
                   }}>
                     <div style={{ fontSize: 9, color: C.textDim, fontFamily: "monospace" }}>[{formatHistoryDate(row.created_at || "").toUpperCase()}]</div>
                     <div style={{ fontSize: 10, fontWeight: 900, color: getOutcomeColor(row), letterSpacing: 1.5 }}>
-                      {isPractice ? "Practice" : "Duel"}
+                      {isPractice ? "Solo" : "Duel"}
                     </div>
                     <div style={{ fontSize: 12, color: C.textMuted }}>
                       {isPractice ? `Reaction: ${rt} • Accuracy: ${row.accuracy_pct}%` : `Score: ${row.score} - ${row.opponent_score}`}

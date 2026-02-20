@@ -14,7 +14,7 @@ const HISTORY_SELECT_LEGACY =
 const HISTORY_SELECT_MINIMAL = "id,user_id,mode,outcome,score,opponent_score,created_at";
 
 const EMPTY_PROFILE_STATS = {
-  preferred_mode: "practice",
+  preferred_mode: "solo",
   practice_sessions: 0,
   practice_rounds: 0,
   practice_hits: 0,
@@ -62,7 +62,12 @@ const asNumber = (value, fallback = 0) => {
 const normalizeProfileStats = (raw = {}) => ({
   ...EMPTY_PROFILE_STATS,
   ...raw,
-  preferred_mode: typeof raw?.preferred_mode === "string" && raw.preferred_mode ? raw.preferred_mode : "practice",
+  preferred_mode:
+    raw?.preferred_mode === "practice"
+      ? "solo"
+      : typeof raw?.preferred_mode === "string" && raw.preferred_mode
+      ? raw.preferred_mode
+      : "solo",
   practice_sessions: asNumber(raw?.practice_sessions, 0),
   practice_rounds: asNumber(raw?.practice_rounds, 0),
   practice_hits: asNumber(raw?.practice_hits, 0),
@@ -95,6 +100,7 @@ const hasProfileProgress = (stats = {}) =>
 
 const getPracticeTier = (rating) => {
   const value = Math.max(0, Math.round(asNumber(rating, 0)));
+  if (value >= 1000) return "CHALLENGER";
   if (value >= 850) return "DIAMOND";
   if (value >= 700) return "PLATINUM";
   if (value >= 550) return "GOLD";
@@ -105,6 +111,7 @@ const getPracticeTier = (rating) => {
 
 const getDuelTier = (rating) => {
   const value = Math.max(100, Math.round(asNumber(rating, 1000)));
+  if (value >= 1700) return "CHALLENGER";
   if (value >= 1500) return "DIAMOND";
   if (value >= 1300) return "PLATINUM";
   if (value >= 1100) return "GOLD";
@@ -130,6 +137,7 @@ const stripRankFields = (payload = {}) => {
   delete next.duel_tier;
   return next;
 };
+const isSoloHistoryMode = (mode) => mode === "solo" || mode === "practice";
 
 const deriveStatsFromHistory = (rows = [], seedStats = EMPTY_PROFILE_STATS) => {
   const historyRows = Array.isArray(rows) ? rows : [];
@@ -158,7 +166,7 @@ const deriveStatsFromHistory = (rows = [], seedStats = EMPTY_PROFILE_STATS) => {
   let sawDuelRating = false;
 
   historyRows.forEach((row) => {
-    if (row?.mode === "practice") {
+    if (isSoloHistoryMode(row?.mode)) {
       practiceSessions += 1;
       const rounds = Math.max(0, Math.round(asNumber(row?.rounds, 0)));
       const hits = Math.max(0, Math.round(asNumber(row?.score, 0)));

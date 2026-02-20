@@ -76,13 +76,13 @@ function RankInfoModal({ open, onClose }) {
         <div style={{ fontSize: 12, color: C.textMuted, lineHeight: 1.7, marginBottom: 14 }}>
           You have two separate ranks:
           <br />
-          <span style={{ color: C.green }}>Practice RP</span> for solo sessions and <span style={{ color: C.blue }}>Duel RP</span> for 1v1 matches.
+          <span style={{ color: C.green }}>Solo RP</span> for solo sessions and <span style={{ color: C.blue }}>Duel RP</span> for 1v1 matches.
         </div>
 
         <div className="glass-card" style={{ padding: 14, marginBottom: 12 }}>
-          <div style={{ fontSize: 10, color: C.green, letterSpacing: 2, marginBottom: 6 }}>&gt; PRACTICE RANK</div>
+          <div style={{ fontSize: 10, color: C.green, letterSpacing: 2, marginBottom: 6 }}>&gt; SOLO RANK</div>
           <div style={{ fontSize: 11, color: C.textMuted, lineHeight: 1.6 }}>
-            Practice RP is based on three things:
+            Solo RP is based on three things:
             <br />1. Faster average reaction time
             <br />2. Better accuracy
             <br />3. Better consistency (best vs average)
@@ -90,7 +90,7 @@ function RankInfoModal({ open, onClose }) {
             <br />
             Your new RP is smoothed, so one run won’t swing rank too hard.
           </div>
-          <TierTable title="Practice tiers" rows={PRACTICE_TIERS} />
+          <TierTable title="Solo tiers" rows={PRACTICE_TIERS} />
         </div>
 
         <div className="glass-card" style={{ padding: 14, marginBottom: 12 }}>
@@ -107,11 +107,11 @@ function RankInfoModal({ open, onClose }) {
         <div className="glass-card" style={{ padding: 14, marginBottom: 12 }}>
           <div style={{ fontSize: 10, color: C.orange, letterSpacing: 2, marginBottom: 6 }}>&gt; QUICK EXAMPLES</div>
           <div style={{ fontSize: 11, color: C.textMuted, lineHeight: 1.6 }}>
-            Example A: You improve from 80% to 92% accuracy with faster reactions in Practice, your RP should rise.
+            Example A: You improve from 80% to 92% accuracy with faster reactions in Solo, your RP should rise.
             <br />
             Example B: You beat a stronger Duel opponent, you usually gain more RP than a normal win.
             <br />
-            Example C: You can track progress to next tier from the Practice summary and this Profile page.
+            Example C: You can track progress to next tier from the Solo summary and this Profile page.
           </div>
         </div>
 

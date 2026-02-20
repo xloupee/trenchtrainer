@@ -1,6 +1,7 @@
 const PRACTICE_BASE_RATING = 0;
 
 const PRACTICE_TIERS = [
+  { tier: "CHALLENGER", min: 1000, color: "#ff3366", icon: "♛" },
   { tier: "DIAMOND", min: 850, color: "#63b3ed", icon: "◆" },
   { tier: "PLATINUM", min: 700, color: "#5dffc3", icon: "⬢" },
   { tier: "GOLD", min: 550, color: "#ecc94b", icon: "★" },
@@ -98,7 +99,8 @@ export const getPracticePerformanceBand = (sessionScore) => {
 
 export const getExpectedBandFromRating = (rating) => {
   const tier = getPracticeTier(rating).tier;
-  if (tier === "DIAMOND") return "CHALLENGER";
+  if (tier === "CHALLENGER") return "CHALLENGER";
+  if (tier === "DIAMOND") return "PLAT";
   if (tier === "PLATINUM") return "PLAT";
   if (tier === "GOLD") return "GOLD";
   if (tier === "SILVER") return "SILVER";

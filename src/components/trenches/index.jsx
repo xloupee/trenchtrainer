@@ -76,6 +76,7 @@ const stripHistoryRatingFieldsFromPayload=(payload)=>{
   HISTORY_RATING_FIELDS.forEach((field)=>{delete next[field];});
   return next;
 };
+const isSoloHistoryMode=(mode)=>mode==="solo"||mode==="practice";
 const hasRankFieldsInRow=(row)=>Boolean(row)&&RANK_PROFILE_FIELDS.some((field)=>Object.prototype.hasOwnProperty.call(row,field));
 const hasCoreProfileFields=(row)=>Boolean(row)&&CORE_PROFILE_FIELDS.every((field)=>Object.prototype.hasOwnProperty.call(row,field));
 const hasProfileProgress=(stats={})=>(
@@ -122,7 +123,7 @@ const deriveProfileStatsFromHistory=(rows=[],seedStats=EMPTY_PROFILE_STATS)=>{
   let sawDuelRating=false;
 
   list.forEach((row)=>{
-    if(row?.mode==="practice"){
+    if(isSoloHistoryMode(row?.mode)){
       practiceSessions+=1;
       const rounds=Math.max(0,Math.round(asNumber(row?.rounds,0)));
       const hits=Math.max(0,Math.round(asNumber(row?.score,0)));
@@ -311,7 +312,8 @@ export default function App({initialDuelCode=""}){
   const[profileMsg,setProfileMsg]=useState(()=>profileBootstrapCache.loaded?profileBootstrapCache.msg:"");
   const[profileHydrated,setProfileHydrated]=useState(()=>profileBootstrapCache.loaded);
   const[showLogoutWarning,setShowLogoutWarning]=useState(false);
-  const[duelIconVariant,setDuelIconVariant]=useState(()=>{
+  const[hoveredSidebarKey,setHoveredSidebarKey]=useState(null);
+  const[duelIconVariant]=useState(()=>{
     if(typeof window==="undefined")return "swords";
     const saved=window.localStorage.getItem(DUEL_ICON_VARIANT_KEY);
     return DUEL_ICON_VARIANTS.includes(saved)?saved:"swords";
@@ -396,7 +398,7 @@ export default function App({initialDuelCode=""}){
 
   useEffect(()=>{
     if(!authReady||session)return;
-    const nextPath=typeof window!=="undefined"?`${window.location.pathname}${window.location.search}`:(pathname||"/play/practice");
+    const nextPath=typeof window!=="undefined"?`${window.location.pathname}${window.location.search}`:(pathname||"/play/solo");
     router.replace(`/auth?next=${encodeURIComponent(nextPath)}`);
   },[authReady,session,pathname,router]);
 
@@ -640,7 +642,7 @@ export default function App({initialDuelCode=""}){
     if(error&&isMissingHistoryRatingColumnsError(error)){
       const minimalPayload={
         user_id:userId,
-        mode:entry?.mode||"practice",
+        mode:entry?.mode||"solo",
         outcome:entry?.outcome||"session",
         score:Number(entry?.score||0),
         opponent_score:entry?.opponent_score??null,
@@ -727,7 +729,7 @@ export default function App({initialDuelCode=""}){
     const afterRating=Math.max(0,Math.round(Number(nextProfile?.practice_rating||beforeRating)));
     const delta=afterRating-beforeRating;
     await insertMatchHistory({
-      mode:"practice",
+      mode:"solo",
       outcome:"session",
       score:practiceStats.hits||0,
       opponent_score:null,
@@ -743,7 +745,7 @@ export default function App({initialDuelCode=""}){
     const afterTier=getPracticeTier(afterRating).tier;
     const nextTierInfo=getPracticeNextTier(afterRating);
     return{
-      mode:"practice",
+      mode:"solo",
       beforeRating,
       afterRating,
       delta,
@@ -817,7 +819,7 @@ export default function App({initialDuelCode=""}){
   if(entryScreen==="loading")return(<div className="menu-bg"><div className="grid-bg"/><div style={{position:"relative",zIndex:1,color:C.textDim,fontSize:12,letterSpacing:2}}>LOADING PROFILE...</div><style>{CSS}</style></div>);
 
   const navItems = [
-    { key: "practice", word: "SOLO", compactIcon: "/practice-icon.png" },
+    { key: "solo", word: "SOLO", compactIcon: "/practice-icon.png" },
     { key: "1v1", word: "DUEL", compactIconNode: (color)=><CompactDuelIcon color={color} variant={duelIconVariant}/> },
     { key: "profile", word: "STATS", compactIconNode: (color)=><CompactProfileIcon color={color}/> },
   ];
@@ -834,11 +836,16 @@ export default function App({initialDuelCode=""}){
             const active = tab === item.key;
             const useCompactIcon = Boolean(item.compactIcon || item.compactIconNode) && !showWideSidebar;
             return (
-              <div key={item.key} onClick={()=>handleModeSelect(item.key)} title={item.word} style={{ 
+              <div
+                key={item.key}
+                onClick={()=>handleModeSelect(item.key)}
+                onMouseEnter={()=>setHoveredSidebarKey(item.key)}
+                onMouseLeave={()=>setHoveredSidebarKey((prev)=>prev===item.key?null:prev)}
+                style={{ 
                 color: active ? C.green : C.textMuted, cursor: "pointer",
                 transition: "all 0.2s", width: showWideSidebar?"100%":56, height: 40, display: "flex", 
                 alignItems: "center", justifyContent: showWideSidebar?"flex-start":"center", borderRadius: 8,
-                background: active ? `${C.green}10` : "transparent"
+                background: active ? `${C.green}10` : "transparent", position:"relative", overflow:"visible"
               }} className="sidebar-item-btn">
                 {useCompactIcon ? (
                   item.compactIconNode ? item.compactIconNode(active ? C.green : C.textMuted) : (
@@ -858,6 +865,28 @@ export default function App({initialDuelCode=""}){
                   <span style={{fontSize:10,fontWeight:900,letterSpacing:1.2,lineHeight:1,paddingLeft:showWideSidebar?12:0}}>
                     {getSidebarWord(item.word,sidebarWidth)}
                   </span>
+                )}
+                {!showWideSidebar&&hoveredSidebarKey===item.key&&(
+                  <div style={{
+                    position:"absolute",
+                    left:62,
+                    top:"50%",
+                    transform:"translateY(-50%)",
+                    background:`linear-gradient(145deg,${C.bgCard},${C.bgAlt})`,
+                    color:C.text,
+                    border:`1px solid ${C.borderLight}`,
+                    borderRadius:8,
+                    padding:"6px 10px",
+                    fontSize:9,
+                    fontWeight:800,
+                    letterSpacing:1.1,
+                    whiteSpace:"nowrap",
+                    zIndex:220,
+                    boxShadow:"0 8px 20px rgba(0,0,0,0.4)",
+                    pointerEvents:"none",
+                  }}>
+                    {item.word}
+                  </div>
                 )}
               </div>
             );
@@ -884,7 +913,38 @@ export default function App({initialDuelCode=""}){
             </div>
           </div>
         ):null}
-        <div ref={logoutTriggerRef} onClick={openLogoutWarning} style={{marginTop:"auto",marginBottom:32,fontSize:18,color:C.textDim,cursor:"pointer",width:showWideSidebar?"calc(100% - 16px)":56,height:40,borderRadius:8,display:"flex",alignItems:"center",justifyContent:showWideSidebar?"flex-start":"center",paddingLeft:showWideSidebar?12:0,alignSelf:showWideSidebar?"center":"auto",background:showLogoutWarning?`${C.orange}12`:"transparent"}} className="sidebar-item-btn">⏻</div>
+        <div
+          ref={logoutTriggerRef}
+          onClick={openLogoutWarning}
+          onMouseEnter={()=>setHoveredSidebarKey("logout")}
+          onMouseLeave={()=>setHoveredSidebarKey((prev)=>prev==="logout"?null:prev)}
+          style={{marginTop:"auto",marginBottom:32,fontSize:18,color:C.textDim,cursor:"pointer",width:showWideSidebar?"calc(100% - 16px)":56,height:40,borderRadius:8,display:"flex",alignItems:"center",justifyContent:showWideSidebar?"flex-start":"center",paddingLeft:showWideSidebar?12:0,alignSelf:showWideSidebar?"center":"auto",background:showLogoutWarning?`${C.orange}12`:"transparent",position:"relative",overflow:"visible"}}
+          className="sidebar-item-btn"
+        >
+          ⏻
+          {!showWideSidebar&&hoveredSidebarKey==="logout"&&(
+            <div style={{
+              position:"absolute",
+              left:62,
+              top:"50%",
+              transform:"translateY(-50%)",
+              background:`linear-gradient(145deg,${C.bgCard},${C.bgAlt})`,
+              color:C.text,
+              border:`1px solid ${C.borderLight}`,
+              borderRadius:8,
+              padding:"6px 10px",
+              fontSize:9,
+              fontWeight:800,
+              letterSpacing:1.1,
+              whiteSpace:"nowrap",
+              zIndex:220,
+              boxShadow:"0 8px 20px rgba(0,0,0,0.4)",
+              pointerEvents:"none",
+            }}>
+              LOG OUT
+            </div>
+          )}
+        </div>
         <div
           onMouseDown={(event)=>{event.preventDefault();setIsResizingSidebar(true);}}
           onDoubleClick={()=>setSidebarWidth(SIDEBAR_DEFAULT)}
@@ -898,14 +958,14 @@ export default function App({initialDuelCode=""}){
         <div style={{width:"100%",height:32,background:"black",borderBottom:`1px solid ${C.border}`,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",whiteSpace:"nowrap",fontSize:10,fontWeight:700,letterSpacing:1.5,flexShrink:0}}>
           <div style={{display:"flex",alignItems:"center",gap:"clamp(24px, 4vw, 60px)"}}>
             <span style={{color:C.textMuted}}>USER: {session?.user?.user_metadata?.username || "ANONYMOUS"}</span>
-            <span style={{color:C.cyan}}>PRACTICE: {profileStats.practice_tier} {profileStats.practice_rating}</span>
+            <span style={{color:C.cyan}}>SOLO: {profileStats.practice_tier} {profileStats.practice_rating}</span>
             <span style={{color:C.blue}}>DUEL: {profileStats.duel_tier} {profileStats.duel_rating}</span>
             <span style={{color:C.orange}}>SESSIONS: {profileStats.practice_sessions}</span>
           </div>
         </div>
 
         <div style={{flex:1,overflow:"hidden",minHeight:0,position:"relative"}}>
-          {tab==="practice"?<PracticeMode startDiff={startDiff} onSessionComplete={recordPracticeSession} onStartDiffChange={setStartDiff} onOpenProfile={()=>handleModeSelect("profile")}/>:tab==="1v1"?<OneVOneMode onMatchComplete={recordDuelMatch} initialJoinCode={duelCode}/>:<ProfileTab session={session} stats={profileStats} history={matchHistory} loading={profileLoading} msg={profileMsg} onRefresh={loadProfileStats}/>}
+          {tab==="solo"?<PracticeMode startDiff={startDiff} onSessionComplete={recordPracticeSession} onStartDiffChange={setStartDiff} onOpenProfile={()=>handleModeSelect("profile")}/>:tab==="1v1"?<OneVOneMode onMatchComplete={recordDuelMatch} initialJoinCode={duelCode}/>:<ProfileTab session={session} stats={profileStats} history={matchHistory} loading={profileLoading} msg={profileMsg} onRefresh={loadProfileStats}/>}
         </div>
       </main>
       <style>{CSS}</style>
