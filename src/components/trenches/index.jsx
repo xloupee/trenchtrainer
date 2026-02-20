@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { supabase } from "../../lib/supabaseClient";
 import {
@@ -14,7 +14,6 @@ import {
   pathToMode,
 } from "./config/constants";
 import { getRank } from "./lib/rank";
-import AuthScreen from "./screens/AuthScreen";
 import ModePickerScreen from "./screens/ModePickerScreen";
 import OneVOneMode from "./screens/OneVOneMode";
 import PracticeMode from "./screens/PracticeMode";
@@ -22,6 +21,17 @@ import ProfileTab from "./screens/ProfileTab";
 import { CSS } from "./styles/cssText";
 
 const ENTRY_READY_KEY="trenches:entry-ready";
+const SIDEBAR_WIDTH_KEY="trenches:sidebar-width";
+const SIDEBAR_MIN=64;
+const SIDEBAR_MAX=220;
+const SIDEBAR_DEFAULT=72;
+const clampSidebarWidth=(value)=>Math.max(SIDEBAR_MIN,Math.min(SIDEBAR_MAX,Number(value)||SIDEBAR_DEFAULT));
+const getSidebarWord=(word,width)=>{
+  if(width>=156)return word;
+  if(width>=128)return word.slice(0,Math.max(3,Math.min(4,word.length)));
+  if(width>=100)return word.slice(0,Math.max(2,Math.min(3,word.length)));
+  return word.slice(0,1);
+};
 
 export default function App({initialDuelCode=""}){
   const router=useRouter();
@@ -39,6 +49,13 @@ export default function App({initialDuelCode=""}){
   const[matchHistory,setMatchHistory]=useState([]);
   const[profileLoading,setProfileLoading]=useState(false);
   const[profileMsg,setProfileMsg]=useState("");
+  const[sidebarWidth,setSidebarWidth]=useState(()=>{
+    if(typeof window==="undefined")return SIDEBAR_DEFAULT;
+    return clampSidebarWidth(window.localStorage.getItem(SIDEBAR_WIDTH_KEY));
+  });
+  const[isResizingSidebar,setIsResizingSidebar]=useState(false);
+  const isResizingSidebarRef=useRef(false);
+  const showWideSidebar=sidebarWidth>=124;
 
   useEffect(()=>{
     let active=true;
@@ -67,6 +84,12 @@ export default function App({initialDuelCode=""}){
     });
     return()=>{active=false;authListener?.subscription?.unsubscribe();};
   },[]);
+
+  useEffect(()=>{
+    if(!authReady||session)return;
+    const nextPath=typeof window!=="undefined"?`${window.location.pathname}${window.location.search}`:(pathname||"/play/practice");
+    router.replace(`/auth?next=${encodeURIComponent(nextPath)}`);
+  },[authReady,session,pathname,router]);
 
   const loadProfileStats=useCallback(async({resolveEntry=false}={})=>{
     if(!supabase||!session?.user?.id)return;
@@ -125,6 +148,31 @@ export default function App({initialDuelCode=""}){
     const delayedRefresh=setTimeout(()=>{void loadProfileStats();},1200);
     return()=>clearTimeout(delayedRefresh);
   },[entryScreen,tab,session,loadProfileStats]);
+
+  useEffect(()=>{
+    if(typeof window==="undefined")return;
+    window.localStorage.setItem(SIDEBAR_WIDTH_KEY,String(sidebarWidth));
+  },[sidebarWidth]);
+
+  useEffect(()=>{
+    isResizingSidebarRef.current=isResizingSidebar;
+    if(!isResizingSidebar)return;
+    const onMouseMove=(event)=>{
+      if(!isResizingSidebarRef.current)return;
+      setSidebarWidth(clampSidebarWidth(event.clientX));
+    };
+    const onMouseUp=()=>setIsResizingSidebar(false);
+    window.addEventListener("mousemove",onMouseMove);
+    window.addEventListener("mouseup",onMouseUp);
+    document.body.style.cursor="col-resize";
+    document.body.style.userSelect="none";
+    return()=>{
+      window.removeEventListener("mousemove",onMouseMove);
+      window.removeEventListener("mouseup",onMouseUp);
+      document.body.style.cursor="";
+      document.body.style.userSelect="";
+    };
+  },[isResizingSidebar]);
 
   const updateProfileStats=useCallback(async(updater)=>{
     if(!supabase||!session?.user?.id)return;
@@ -232,39 +280,47 @@ export default function App({initialDuelCode=""}){
   const logOut=async()=>{if(supabase)await supabase.auth.signOut();};
 
   if(!authReady)return(<div className="menu-bg"><div className="grid-bg"/><div style={{position:"relative",zIndex:1,color:C.textDim,fontSize:12,letterSpacing:2}}>LOADING AUTH...</div><style>{CSS}</style></div>);
-  if(!session)return(<><AuthScreen/><style>{CSS}</style></>);
+  if(!session)return(<div className="menu-bg"><div className="grid-bg"/><div style={{position:"relative",zIndex:1,color:C.textDim,fontSize:12,letterSpacing:2}}>REDIRECTING TO AUTH...</div><style>{CSS}</style></div>);
   if(entryScreen==="loading")return(<div className="menu-bg"><div className="grid-bg"/><div style={{position:"relative",zIndex:1,color:C.textDim,fontSize:12,letterSpacing:2}}>LOADING PROFILE...</div><style>{CSS}</style></div>);
   if(entryScreen==="mode-picker")return(<><ModePickerScreen session={session} onSelect={(mode)=>handleModeSelect(mode,{persist:true,openApp:true})} onLogOut={logOut}/><style>{CSS}</style></>);
 
   const navItems = [
-    { key: "practice", icon: "⌘", label: "Solo" },
-    { key: "1v1", icon: "⚔", label: "Duel" },
-    { key: "profile", icon: "📊", label: "Stats" },
+    { key: "practice", word: "SOLO" },
+    { key: "1v1", word: "DUEL" },
+    { key: "profile", word: "STATS" },
   ];
 
   return(
     <div style={{height:"100vh",display:"flex",background:C.bg,fontFamily:"var(--mono)",overflow:"hidden"}}>
       {/* GLOBAL SIDEBAR */}
-      <aside style={{width:72,borderRight:`1px solid ${C.border}`,display:"flex",flexDirection:"column",alignItems:"center",background:C.bg,flexShrink:0,zIndex:100}}>
+      <aside style={{width:sidebarWidth,borderRight:`1px solid ${C.border}`,display:"flex",flexDirection:"column",alignItems:showWideSidebar?"stretch":"center",background:C.bg,flexShrink:0,zIndex:100,position:"relative"}}>
         <div onClick={()=>router.push("/")} style={{height:72,display:"flex",alignItems:"center",justifyContent:"center",borderBottom:`1px solid ${C.border}`,width:"100%",cursor:"pointer"}}>
           <img src="/logo.png" alt="L" style={{width:32,height:"auto"}} />
         </div>
-        <div style={{display:"flex",flexDirection:"column",gap:32,marginTop:40}}>
+        <div style={{display:"flex",flexDirection:"column",gap:20,marginTop:28,padding:showWideSidebar?"0 8px":"0"}}>
           {navItems.map((item) => {
             const active = tab === item.key;
             return (
-              <div key={item.key} onClick={()=>handleModeSelect(item.key)} style={{ 
-                fontSize: 18, color: active ? C.green : C.textMuted, cursor: "pointer",
-                transition: "all 0.2s", width: 40, height: 40, display: "flex", 
-                alignItems: "center", justifyContent: "center", borderRadius: 8,
+              <div key={item.key} onClick={()=>handleModeSelect(item.key)} title={item.word} style={{ 
+                color: active ? C.green : C.textMuted, cursor: "pointer",
+                transition: "all 0.2s", width: showWideSidebar?"100%":56, height: 40, display: "flex", 
+                alignItems: "center", justifyContent: showWideSidebar?"flex-start":"center", borderRadius: 8,
                 background: active ? `${C.green}10` : "transparent"
               }} className="sidebar-item-btn">
-                {item.icon}
+                <span style={{fontSize:10,fontWeight:900,letterSpacing:1.2,lineHeight:1,paddingLeft:showWideSidebar?12:0}}>
+                  {getSidebarWord(item.word,sidebarWidth)}
+                </span>
               </div>
             );
           })}
         </div>
-        <div onClick={logOut} style={{marginTop:"auto",paddingBottom:32,fontSize:18,color:C.textDim,cursor:"pointer"}} className="sidebar-item-btn">⏻</div>
+        <div onClick={logOut} style={{marginTop:"auto",marginBottom:32,fontSize:18,color:C.textDim,cursor:"pointer",width:showWideSidebar?"calc(100% - 16px)":56,height:40,borderRadius:8,display:"flex",alignItems:"center",justifyContent:showWideSidebar?"flex-start":"center",paddingLeft:showWideSidebar?12:0,alignSelf:showWideSidebar?"center":"auto"}} className="sidebar-item-btn">⏻</div>
+        <div
+          onMouseDown={(event)=>{event.preventDefault();setIsResizingSidebar(true);}}
+          onDoubleClick={()=>setSidebarWidth(SIDEBAR_DEFAULT)}
+          title="Drag to resize sidebar"
+          style={{position:"absolute",top:0,right:-3,width:6,height:"100%",cursor:"col-resize",zIndex:140,background:isResizingSidebar?`${C.green}30`:"transparent",transition:"background 0.2s"}}
+        />
       </aside>
 
       <main style={{flex:1,display:"flex",flexDirection:"column",minWidth:0,position:"relative"}}>

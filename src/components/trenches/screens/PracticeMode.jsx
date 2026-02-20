@@ -49,24 +49,24 @@ function PracticeMode({startDiff=1,onSessionComplete,onStartDiffChange,onOpenPro
         
         {/* HEADER BLOCK */}
         <div style={{textAlign:"center",marginBottom:44,opacity:0,animation:"slideUp 0.6s ease forwards"}}>
-          <div style={{fontSize:10,color:C.green,letterSpacing:5,fontWeight:800,marginBottom:10}}>MISSION // SOLO_SIMULATION</div>
+          <div style={{fontSize:10,color:C.green,letterSpacing:5,fontWeight:800,marginBottom:10}}>PRACTICE MODE</div>
           <h1 style={{fontSize:68,fontWeight:900,letterSpacing:-4,lineHeight:0.85,color:C.text}}>TRENCHES<br/><span style={{color:C.green}}>TRAINER</span></h1>
-          <p style={{fontSize:13,color:C.textMuted,marginTop:18,letterSpacing:1,maxWidth:440,margin:"18px auto 0",lineHeight:1.6}}>SHARPEN_REFLEXES. PARSE_SIGNAL. SNIPE_TARGET.</p>
+          <p style={{fontSize:13,color:C.textMuted,marginTop:18,letterSpacing:1,maxWidth:440,margin:"18px auto 0",lineHeight:1.6}}>Sharpen your reflexes. Read the signal. Tap fast.</p>
         </div>
 
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:30,width:"100%",marginBottom:44}}>
           {/* OPERATIONAL PROTOCOL */}
           <div className="glass-card" style={{padding:30,background:"rgba(0,0,0,0.6)",display:"flex",flexDirection:"column",opacity:0,animation:"slideUp 0.6s ease 0.1s forwards",height:"100%"}}>
-            <div style={{fontSize:9,color:C.textDim,letterSpacing:3,fontWeight:800,marginBottom:24}}>&gt; OPERATIONAL_PROTOCOL</div>
+            <div style={{fontSize:12,color:C.textDim,letterSpacing:3,fontWeight:800,marginBottom:24}}>&gt; HOW TO PLAY</div>
             <div style={{display:"flex",flexDirection:"column",gap:14,flex:1}}>
               {practiceSteps.map(([n,t,c],i)=>(
                 <div key={i} style={{display:"flex",gap:14,alignItems:"center"}}>
-                  <div style={{width:28,height:28,border:`1px solid ${c}44`,borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",fontSize:9,color:c,fontWeight:900,flexShrink:0}}>{n}</div>
-                  <div style={{fontSize:11,color:C.textMuted,fontWeight:500}}>{t.toUpperCase()}</div>
+                  <div style={{width:34,height:34,border:`1px solid ${c}44`,borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,color:c,fontWeight:900,flexShrink:0}}>{n}</div>
+                  <div style={{fontSize:14,color:C.textMuted,fontWeight:600}}>{t}</div>
                 </div>
               ))}
             </div>
-            <div style={{marginTop:22,paddingTop:18,borderTop:`1px solid ${C.border}`,fontSize:9,color:C.textDim,letterSpacing:3,textAlign:"center"}}>SPEED_BEATS_HESITATION</div>
+            <div style={{marginTop:22,paddingTop:18,borderTop:`1px solid ${C.border}`,fontSize:11,color:C.textDim,letterSpacing:3,textAlign:"center"}}>Speed beats hesitation.</div>
           </div>
 
           {/* SYSTEM CONFIG */}

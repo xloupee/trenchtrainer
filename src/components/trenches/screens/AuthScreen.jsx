@@ -1,99 +1,217 @@
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { supabase } from "../../../lib/supabaseClient";
 import { C } from "../config/constants";
-function AuthScreen(){
-  const[mode,setMode]=useState("login");
-  const[username,setUsername]=useState("");
-  const[password,setPassword]=useState("");
-  const[accessCode,setAccessCode]=useState("");
-  const[busy,setBusy]=useState(false);
-  const[msg,setMsg]=useState("");
-  const isLogin=mode==="login";
 
-  const toInternalEmail=(raw)=>{
-    const clean=(raw||"").trim().toLowerCase().replace(/[^a-z0-9_]/g,"");
-    return clean?`${clean}@trenchestrainer.app`:"";
+function AuthScreen() {
+  const router = useRouter();
+  const [mode, setMode] = useState("login");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [accessCode, setAccessCode] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState("");
+  const isLogin = mode === "login";
+
+  const toInternalEmail = (raw) => {
+    const clean = (raw || "").trim().toLowerCase().replace(/[^a-z0-9_]/g, "");
+    return clean ? `${clean}@trenchestrainer.app` : "";
   };
 
-  const submit=async()=>{
-    if(!supabase){setMsg("Supabase is not configured in .env.local.");return;}
-    const email=toInternalEmail(username);
-    if(!email||!password){setMsg("Username and password are required.");return;}
-    if(username.trim().length<3){setMsg("Username must be at least 3 characters.");return;}
-    const normalizedAccessCode=accessCode.trim().toUpperCase();
-    if(!isLogin&&!normalizedAccessCode){setMsg("Access code is required to create an account.");return;}
-    setBusy(true);setMsg("");
-    try{
-      if(isLogin){
-        const{error}=await supabase.auth.signInWithPassword({email,password});
-        if(error)throw error;
-      }else{
+  const submit = async () => {
+    if (!supabase) {
+      setMsg("Supabase is not configured.");
+      return;
+    }
+    const email = toInternalEmail(username);
+    if (!email || !password) {
+      setMsg("Username and password are required.");
+      return;
+    }
+    if (username.trim().length < 3) {
+      setMsg("Username must be at least 3 characters.");
+      return;
+    }
+    const normalizedAccessCode = accessCode.trim().toUpperCase();
+    if (!isLogin && !normalizedAccessCode) {
+      setMsg("Access code is required for sign up.");
+      return;
+    }
+    setBusy(true);
+    setMsg("Signing you in...");
+    try {
+      if (isLogin) {
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+      } else {
         const { data: codeAvailable, error: checkError } = await supabase.rpc("check_signup_access_code", { input_code: normalizedAccessCode });
-        if(checkError)throw checkError;
-        if(!codeAvailable)throw new Error("Invalid or already used access code.");
-        const{error}=await supabase.auth.signUp({
+        if (checkError) throw checkError;
+        if (!codeAvailable) throw new Error("Invalid or used access code.");
+        const { error } = await supabase.auth.signUp({
           email,
           password,
-          options:{
-            data:{
-              username:username.trim(),
-              access_code:normalizedAccessCode,
+          options: {
+            data: {
+              username: username.trim(),
+              access_code: normalizedAccessCode,
             },
           },
         });
-        if(error)throw error;
-        setMsg("Account created.");
+        if (error) throw error;
+        setMsg("Account created successfully.");
         setAccessCode("");
       }
-    }catch(e){
-      const message=e?.message||"Auth request failed.";
-      if(message==="Database error saving new user"){
-        setMsg("Signup failed. Access code may be invalid/used, or auth trigger is missing on this Supabase project.");
-      }else{
-        setMsg(message);
-      }
+    } catch (e) {
+      const message = e?.message || "Authentication failed.";
+      setMsg(message);
+    } finally {
+      setBusy(false);
     }
-    finally{setBusy(false);}
   };
 
-  return(
-    <div className="menu-bg auth-page">
-      <div className="grid-bg"/>
-      <div className="menu-glow-orb green"/>
-      <div className="auth-shell">
-        <div className="auth-brand-card">
-          <div className="auth-lock"><img src="/logo.png" alt="Trenches logo" style={{height:56,width:"auto",display:"block"}}/></div>
-          <h1 className="title-text auth-title" style={{color:C.greenBright}}>TRENCHES TRAINER</h1>
-          <div className="auth-subtitle">Sharpen your reaction time. Compete head-to-head. Climb the ranks.</div>
-          <div className="auth-points">
-            <div className="auth-point"><span>⚡</span>Millisecond-precise reaction training</div>
-            <div className="auth-point"><span>📊</span>Track sessions, streaks, and accuracy</div>
-            <div className="auth-point"><span>⚔️</span>1v1 duels against real opponents</div>
+  const successMsg = msg.toLowerCase().includes("success");
+
+  return (
+    <div className="menu-bg auth-page" style={{ justifyContent: "center", padding: "40px 20px" }}>
+      <div className="grid-bg" />
+
+      <div style={{ width: "100%", maxWidth: 1000, position: "relative", zIndex: 1, marginBottom: 14 }}>
+        <button onClick={() => router.push("/")} className="btn-ghost" style={{ fontSize: 11, padding: "8px 14px" }}>
+          ← Back
+        </button>
+      </div>
+      
+      <div className="auth-shell" style={{ 
+        maxWidth: 1000, width: "100%", display: "grid", 
+        gridTemplateColumns: "1.1fr 0.9fr", gap: 20, 
+        position: "relative", zIndex: 1 
+      }}>
+        
+        {/* ── LEFT: SYSTEM BRANDING ── */}
+        <div className="glass-card" style={{ padding: 48, display: "flex", flexDirection: "column", justifyContent: "center" }}>
+          <div style={{ 
+            width: 64, height: 64, background: C.green, borderRadius: 12, 
+            display: "flex", alignItems: "center", justifyContent: "center", 
+            marginBottom: 32, boxShadow: `0 0 30px ${C.green}40` 
+          }}>
+            <img src="/logo.png" alt="L" style={{ width: 40, height: "auto", filter: "brightness(0)" }} />
+          </div>
+          
+          <div style={{ fontSize: 14, color: C.green, letterSpacing: 6, fontWeight: 800, marginBottom: 12 }}>
+            TRENCHES TRAINER
+          </div>
+          <p style={{ fontSize: 17, color: C.textMuted, lineHeight: 1.7, marginBottom: 40, maxWidth: 400 }}>
+            Enter the simulation. Master the reaction gap. Cut through the noise.
+          </p>
+
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            {[
+              ["⚡", "Millisecond reaction tracking"],
+              ["⚔", "Real-time 1v1 duels"],
+              ["📊", "Detailed performance stats"]
+            ].map(([icon, text]) => (
+              <div key={text} style={{ 
+                display: "flex", alignItems: "center", gap: 16, padding: "16px 20px", 
+                background: "rgba(0,0,0,0.3)", border: `1px solid ${C.border}`, borderRadius: 8 
+              }}>
+                <span style={{ fontSize: 18, color: C.green }}>{icon}</span>
+                <span style={{ fontSize: 12, fontWeight: 800, letterSpacing: 0.6, color: C.textDim }}>{text}</span>
+              </div>
+            ))}
           </div>
         </div>
-        <div className="auth-form-card">
-          <div className="auth-form-head">
-            <div style={{fontSize:11,color:C.textDim,letterSpacing:3,fontWeight:700}}>ACCOUNT ACCESS</div>
-            <div style={{fontSize:9,color:C.textGhost,letterSpacing:1.5}}>{isLogin?"PASSWORD LOGIN":"SIGNUP CODE REQUIRED"}</div>
+
+        {/* ── RIGHT: ACCESS TERMINAL ── */}
+        <div className="glass-card" style={{ padding: 40, display: "flex", flexDirection: "column", borderTop: `4px solid ${isLogin ? C.green : C.blue}` }}>
+          <div style={{ fontSize: 12, color: C.textDim, letterSpacing: 3, fontWeight: 800, marginBottom: 32 }}>
+            &gt; {isLogin ? "ACCOUNT ACCESS" : "CREATE ACCOUNT"}
           </div>
-          <div className="auth-mode-switch">
-            <button onClick={()=>setMode("login")} className="auth-mode-btn" style={{background:isLogin?`linear-gradient(135deg,${C.green},${C.greenDim})`:"transparent",color:isLogin?C.bg:C.textDim,borderColor:isLogin?"transparent":C.border}}>Login</button>
-            <button onClick={()=>setMode("signup")} className="auth-mode-btn" style={{background:!isLogin?`linear-gradient(135deg,${C.blue},${C.cyan})`:"transparent",color:!isLogin?C.bg:C.textDim,borderColor:!isLogin?"transparent":C.border}}>Sign Up</button>
+
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 32 }}>
+            <button 
+              onClick={() => setMode("login")} 
+              style={{ 
+                padding: "14px", borderRadius: 6, border: `1px solid ${isLogin ? C.green : C.border}`,
+                background: isLogin ? `${C.green}10` : "black", color: isLogin ? C.green : C.textDim,
+                fontSize: 13, fontWeight: 900, cursor: "pointer", fontFamily: "var(--mono)"
+              }}
+            >
+              LOG IN
+            </button>
+            <button 
+              onClick={() => setMode("signup")} 
+              style={{ 
+                padding: "14px", borderRadius: 6, border: `1px solid ${!isLogin ? C.blue : C.border}`,
+                background: !isLogin ? `${C.blue}10` : "black", color: !isLogin ? C.blue : C.textDim,
+                fontSize: 13, fontWeight: 900, cursor: "pointer", fontFamily: "var(--mono)"
+              }}
+            >
+              SIGN UP
+            </button>
           </div>
-          <div style={{fontSize:8,color:C.textDim,letterSpacing:2.5,marginBottom:6}}>USERNAME</div>
-          <input value={username} onChange={e=>setUsername(e.target.value)} placeholder="yourname" className="input-field auth-input" style={{marginBottom:8}}/>
-          <div style={{fontSize:8,color:C.textDim,letterSpacing:2.5,marginTop:12,marginBottom:6}}>PASSWORD</div>
-          <input value={password} onChange={e=>setPassword(e.target.value)} onKeyDown={e=>{if(e.key==="Enter"&&!busy)submit();}} type="password" placeholder="••••••••" className="input-field auth-input" style={{marginBottom:10}}/>
-          {!isLogin&&<>
-            <div style={{fontSize:8,color:C.textDim,letterSpacing:2.5,marginTop:2,marginBottom:6}}>ACCESS CODE</div>
-            <input value={accessCode} onChange={e=>setAccessCode(e.target.value.toUpperCase())} onKeyDown={e=>{if(e.key==="Enter"&&!busy)submit();}} placeholder="ALPHA001" className="input-field auth-input" style={{marginBottom:10,textTransform:"uppercase"}}/>
-          </>}
-          <div style={{fontSize:9,color:C.textGhost,marginBottom:12}}>Use letters, numbers, and underscore in username.</div>
-          {msg&&<div className="auth-msg" style={{color:msg.toLowerCase().includes("failed")||msg.toLowerCase().includes("required")||msg.toLowerCase().includes("invalid")||msg.toLowerCase().includes("already used")?C.red:C.green,borderColor:msg.toLowerCase().includes("failed")||msg.toLowerCase().includes("required")||msg.toLowerCase().includes("invalid")||msg.toLowerCase().includes("already used")?`${C.red}35`:`${C.green}35`,background:msg.toLowerCase().includes("failed")||msg.toLowerCase().includes("required")||msg.toLowerCase().includes("invalid")||msg.toLowerCase().includes("already used")?`${C.red}10`:`${C.green}10`}}>{msg}</div>}
-          <button onClick={submit} disabled={busy} className={`btn-primary ${isLogin?"btn-green":"btn-blue"}`} style={{opacity:busy?0.7:1,cursor:busy?"default":"pointer",marginTop:msg?0:4}}>
-            {busy?"Submitting...":isLogin?"Login":"Create Account"}
+
+          <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+            <div>
+              <div style={{ fontSize: 10, color: C.textDim, letterSpacing: 2, marginBottom: 8 }}>USERNAME</div>
+              <input 
+                value={username} 
+                onChange={e => setUsername(e.target.value)} 
+                placeholder="your_username" 
+                className="input-field" 
+                style={{ height: 52, background: "black", fontSize: 15 }} 
+              />
+            </div>
+
+            <div>
+              <div style={{ fontSize: 10, color: C.textDim, letterSpacing: 2, marginBottom: 8 }}>PASSWORD</div>
+              <input 
+                type="password" 
+                value={password} 
+                onChange={e => setPassword(e.target.value)} 
+                onKeyDown={e => { if (e.key === "Enter" && !busy) submit(); }}
+                placeholder="••••••••••••" 
+                className="input-field" 
+                style={{ height: 52, background: "black", fontSize: 15 }} 
+              />
+            </div>
+
+            {!isLogin && (
+              <div>
+                <div style={{ fontSize: 10, color: C.textDim, letterSpacing: 2, marginBottom: 8 }}>ACCESS_CODE</div>
+                <input 
+                  value={accessCode} 
+                  onChange={e => setAccessCode(e.target.value.toUpperCase())} 
+                  onKeyDown={e => { if (e.key === "Enter" && !busy) submit(); }}
+                  placeholder="Enter access code" 
+                  className="input-field" 
+                  style={{ height: 52, background: "black", textTransform: "uppercase", fontSize: 15 }} 
+                />
+              </div>
+            )}
+          </div>
+
+          {msg && (
+            <div style={{ 
+              marginTop: 24, padding: "12px 16px", borderRadius: 6, 
+              background: `${successMsg ? C.green : C.red}10`,
+              border: `1px solid ${successMsg ? C.green : C.red}33`,
+              color: successMsg ? C.green : C.red,
+              fontSize: 12, fontWeight: 800, textAlign: "center", letterSpacing: 1
+            }}>
+              &gt; {msg}
+            </div>
+          )}
+
+          <button 
+            onClick={submit} 
+            disabled={busy} 
+            className={`btn-primary ${isLogin ? "btn-green" : "btn-blue"}`} 
+            style={{ marginTop: 28, padding: "18px", fontSize: 16, fontWeight: 900, letterSpacing: 3, opacity: busy ? 0.7 : 1 }}
+          >
+            {busy ? "PROCESSING..." : isLogin ? "LOG IN" : "CREATE ACCOUNT"}
           </button>
         </div>
+
       </div>
     </div>
   );
