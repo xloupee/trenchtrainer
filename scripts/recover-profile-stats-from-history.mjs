@@ -100,6 +100,7 @@ const hasProfileProgress = (stats = {}) =>
 
 const getPracticeTier = (rating) => {
   const value = Math.max(0, Math.round(asNumber(rating, 0)));
+  if (value >= 1000) return "CHALLENGER";
   if (value >= 850) return "DIAMOND";
   if (value >= 700) return "PLATINUM";
   if (value >= 550) return "GOLD";
@@ -110,6 +111,7 @@ const getPracticeTier = (rating) => {
 
 const getDuelTier = (rating) => {
   const value = Math.max(100, Math.round(asNumber(rating, 1000)));
+  if (value >= 1700) return "CHALLENGER";
   if (value >= 1500) return "DIAMOND";
   if (value >= 1300) return "PLATINUM";
   if (value >= 1100) return "GOLD";

@@ -2,6 +2,7 @@ const MIN_DUEL_RATING = 100;
 const DUEL_BASE_RATING = 1000;
 
 const DUEL_TIERS = [
+  { tier: "CHALLENGER", min: 1700, color: "#ff3366", icon: "♛" },
   { tier: "DIAMOND", min: 1500, color: "#63b3ed", icon: "◆" },
   { tier: "PLATINUM", min: 1300, color: "#5dffc3", icon: "⬢" },
   { tier: "GOLD", min: 1100, color: "#ecc94b", icon: "★" },
