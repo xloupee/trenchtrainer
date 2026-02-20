@@ -152,7 +152,7 @@ function PerfPanel({stats,history}){const avg=stats.times.length>0?stats.times.r
 /* ═══════════════════════════════════════════
    SESSION SUMMARY
 ═══════════════════════════════════════════ */
-function SessionSummary({stats,history,onBack,onProfile}){
+function SessionSummary({stats,history,onBack,onProfile,rankImpact=null}){
   const avg=stats.times.length>0?stats.times.reduce((a,b)=>a+b,0)/stats.times.length:null;const rank=getRank(avg);
   const acc=(stats.hits+stats.misses+stats.penalties)>0?Math.round((stats.hits/(stats.hits+stats.misses+stats.penalties))*100):0;
   const slowest=stats.times.length>0?Math.max(...stats.times):null;
@@ -165,6 +165,31 @@ function SessionSummary({stats,history,onBack,onProfile}){
     <div style={{display:"flex",justifyContent:"center",marginBottom:20}}><div style={{display:"flex",alignItems:"center",gap:12,padding:"12px 24px",borderRadius:12,background:`linear-gradient(145deg,${C.bgCard},${C.bgElevated})`,border:`1px solid ${rank.color}20`,boxShadow:rank.glow}}><span style={{fontSize:28,color:rank.color}}>{rank.icon}</span><div><div style={{fontSize:14,fontWeight:900,color:rank.color,letterSpacing:2}}>{rank.tier}</div><div style={{fontSize:9,color:C.textDim,marginTop:2}}>{avg!==null?`avg ${(avg/1000).toFixed(3)}s`:"—"}</div></div></div></div>
     <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8,marginBottom:20}}>
       {[["SCORE",stats.score,C.green],["ACCURACY",`${acc}%`,acc>=80?C.green:acc>=50?C.yellow:C.red],["BEST STREAK",stats.bestStreak,C.orange],["FASTEST",stats.bestTime!==null?`${(stats.bestTime/1000).toFixed(3)}s`:"—",C.cyan],["SLOWEST",slowest!==null?`${(slowest/1000).toFixed(2)}s`:"—",C.red],["MISSES",stats.misses+stats.penalties,C.red]].map(([l,v,c])=>(<div key={l} className="glass-card" style={{padding:"10px 12px",textAlign:"center"}}><div style={{fontSize:7,color:C.textDim,letterSpacing:2,marginBottom:4}}>{l}</div><div style={{fontSize:16,fontWeight:900,color:c,fontFamily:"var(--mono)"}}>{v}</div></div>))}
+    </div>
+    <div className="glass-card" style={{marginBottom:20,padding:"12px 14px"}}>
+      <div style={{fontSize:8,color:C.textDim,letterSpacing:2,marginBottom:8}}>RANK IMPACT</div>
+      {!rankImpact?(<div style={{fontSize:10,color:C.textMuted}}>Calculating rank progress...</div>):(<>
+        <div style={{display:"grid",gridTemplateColumns:"1fr auto 1fr",gap:8,alignItems:"center",marginBottom:8}}>
+          <div style={{fontSize:13,fontWeight:800,color:C.text}}>RP {rankImpact.beforeRating}</div>
+          <div style={{fontSize:10,fontWeight:900,color:rankImpact.delta>=0?C.green:C.red,fontFamily:"var(--mono)"}}>{rankImpact.delta>=0?`+${rankImpact.delta}`:`${rankImpact.delta}`}</div>
+          <div style={{fontSize:13,fontWeight:800,color:C.text,textAlign:"right"}}>RP {rankImpact.afterRating}</div>
+        </div>
+        <div style={{display:"flex",justifyContent:"space-between",fontSize:9,color:C.textDim}}>
+          <span>{rankImpact.beforeTier}</span>
+          <span style={{color:rankImpact.afterTier!==rankImpact.beforeTier?C.green:C.textDim}}>{rankImpact.afterTier}</span>
+        </div>
+        <div style={{marginTop:6,fontSize:9,color:C.textMuted}}>
+          {rankImpact.nextTier?`${rankImpact.pointsToNext} RP to ${rankImpact.nextTier}`:"Top tier reached"}
+        </div>
+        <div style={{marginTop:8}}>
+          <div style={{height:8,borderRadius:999,background:C.border,overflow:"hidden"}}>
+            <div style={{height:"100%",width:`${Math.max(0,Math.min(100,Number(rankImpact.progressPercent)||0))}%`,background:`linear-gradient(90deg,${C.green},${C.greenBright})`,transition:"width 0.35s ease"}}/>
+          </div>
+          <div style={{marginTop:5,fontSize:8,color:C.textDim,textAlign:"right"}}>
+            {Math.round(Math.max(0,Math.min(100,Number(rankImpact.progressPercent)||0)))}% to next tier
+          </div>
+        </div>
+      </>)}
     </div>
     <div className="glass-card" style={{marginBottom:20}}><div style={{fontSize:8,color:C.textDim,letterSpacing:2,marginBottom:12}}>RT DISTRIBUTION</div><div style={{display:"flex",alignItems:"flex-end",gap:6,height:80}}>{bc.map(b=>(<div key={b.l} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:4}}><span style={{fontSize:9,fontWeight:700,color:b.c,fontFamily:"var(--mono)"}}>{b.n}</span><div style={{width:"100%",height:`${Math.max(4,(b.n/mx)*60)}px`,borderRadius:4,background:`linear-gradient(180deg,${b.c},${b.c}60)`}}/><span style={{fontSize:7.5,color:C.textDim}}>{b.l}</span></div>))}</div></div>
     <div style={{display:"flex",gap:10}}>

@@ -5,15 +5,17 @@ import { usePathname, useRouter } from "next/navigation";
 import { supabase } from "../../lib/supabaseClient";
 import {
   C,
-  EMPTY_PROFILE_STATS,
   HISTORY_SELECT,
+  EMPTY_PROFILE_STATS,
   PROFILE_SELECT,
+  PROFILE_SELECT_LEGACY,
   modeToPath,
   normalizeModeKey,
   normalizeProfileStats,
   pathToMode,
 } from "./config/constants";
-import { getRank } from "./lib/rank";
+import { computeDuelRating, getDuelTier } from "./lib/duelRank";
+import { computePracticeRating, computePracticeSessionScore, getPracticeNextTier, getPracticeTier } from "./lib/practiceRank";
 import OneVOneMode from "./screens/OneVOneMode";
 import PracticeMode from "./screens/PracticeMode";
 import ProfileTab from "./screens/ProfileTab";
@@ -25,6 +27,33 @@ const SIDEBAR_MAX=220;
 const SIDEBAR_DEFAULT=72;
 const DUEL_ICON_VARIANT_KEY="trenches:duel-icon-variant-v5";
 const DUEL_ICON_VARIANTS=["swords","vsMonogram","splitShields","glovesClash"];
+const RANK_PROFILE_FIELDS=[
+  "practice_rating",
+  "practice_peak_rating",
+  "practice_tier",
+  "duel_rating",
+  "duel_peak_rating",
+  "duel_tier",
+];
+const isMissingRankColumnsError=(error)=>{
+  const message=String(error?.message||"").toLowerCase();
+  return RANK_PROFILE_FIELDS.some((field)=>message.includes(field));
+};
+const hasRankFieldsInRow=(row)=>Boolean(row)&&RANK_PROFILE_FIELDS.some((field)=>Object.prototype.hasOwnProperty.call(row,field));
+const mergeRankFields=(target,source)=>{
+  const next={...target};
+  RANK_PROFILE_FIELDS.forEach((field)=>{
+    if(source&&source[field]!==undefined&&source[field]!==null){
+      next[field]=source[field];
+    }
+  });
+  return next;
+};
+const stripRankFieldsFromProfilePayload=(payload)=>{
+  const next={...payload};
+  RANK_PROFILE_FIELDS.forEach((field)=>{delete next[field];});
+  return next;
+};
 const authBootstrapCache={
   ready:false,
   session:null,
@@ -220,28 +249,39 @@ export default function App({initialDuelCode=""}){
     const userId=session.user.id;
     setProfileLoading(true);
     setProfileMsg("");
-    const [{ data, error }, { data: historyData, error: historyError }] = await Promise.all([
-      supabase
+    const historyPromise=supabase
+      .from("player_match_history")
+      .select(HISTORY_SELECT)
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false })
+      .limit(30);
+    let { data, error } = await supabase
+      .from("player_profiles")
+      .select(PROFILE_SELECT)
+      .eq("user_id", userId)
+      .maybeSingle();
+    if(error&&isMissingRankColumnsError(error)){
+      const legacyRes=await supabase
         .from("player_profiles")
-        .select(PROFILE_SELECT)
+        .select(PROFILE_SELECT_LEGACY)
         .eq("user_id", userId)
-        .maybeSingle(),
-      supabase
-        .from("player_match_history")
-        .select(HISTORY_SELECT)
-        .eq("user_id", userId)
-        .order("created_at", { ascending: false })
-        .limit(30),
-    ]);
+        .maybeSingle();
+      data=legacyRes.data;
+      error=legacyRes.error;
+    }
+    const { data: historyData, error: historyError } = await historyPromise;
     setProfileLoading(false);
-    const nextStats=normalizeProfileStats(data||{});
-    const finalStats=error?EMPTY_PROFILE_STATS:nextStats;
+    const rawHasRankFields=hasRankFieldsInRow(data);
+    const nextStatsBase=normalizeProfileStats(data||{});
+    const nextStats=rawHasRankFields?nextStatsBase:mergeRankFields(nextStatsBase,profileStats);
+    const fallbackStats=hasCachedProfile(userId)?profileBootstrapCache.stats:normalizeProfileStats(profileStats||{});
+    const finalStats=error?fallbackStats:nextStats;
     const finalHistory=historyError?[]:(historyData||[]);
     const finalMsg=error
       ?(historyError?"Could not load profile stats or match history.":"Could not load profile stats.")
       :(historyError?"Could not load full match history.":"");
     if(error){
-      setProfileStats(EMPTY_PROFILE_STATS);
+      setProfileStats(finalStats);
       setProfileMsg(finalMsg);
     }else{
       setProfileStats(nextStats);
@@ -256,7 +296,7 @@ export default function App({initialDuelCode=""}){
     if(resolveEntry){
       setEntryScreen("app");
     }
-  },[session]);
+  },[profileStats,session]);
 
   useEffect(()=>{
     if(!session?.user?.id)return;
@@ -315,17 +355,36 @@ export default function App({initialDuelCode=""}){
     if(!supabase||!session?.user?.id)return;
     setProfileMsg("");
     const userId=session.user.id;
-    const { data: current, error: fetchError } = await supabase
+    let { data: current, error: fetchError } = await supabase
       .from("player_profiles")
       .select(PROFILE_SELECT)
       .eq("user_id", userId)
       .maybeSingle();
+    if(fetchError&&isMissingRankColumnsError(fetchError)){
+      const legacyRes=await supabase
+        .from("player_profiles")
+        .select(PROFILE_SELECT_LEGACY)
+        .eq("user_id", userId)
+        .maybeSingle();
+      current=legacyRes.data;
+      fetchError=legacyRes.error;
+    }
     if(fetchError){setProfileMsg("Could not save profile stats.");return;}
-    const next=normalizeProfileStats(updater(normalizeProfileStats(current||{})));
+    const baseStats=hasRankFieldsInRow(current)
+      ?normalizeProfileStats(current||{})
+      :mergeRankFields(normalizeProfileStats(current||{}),profileStats);
+    const next=normalizeProfileStats(updater(baseStats));
     const payload={user_id:userId,...next};
-    const { error: writeError } = await supabase
+    let { error: writeError } = await supabase
       .from("player_profiles")
       .upsert(payload,{onConflict:"user_id"});
+    if(writeError&&isMissingRankColumnsError(writeError)){
+      const legacyPayload=stripRankFieldsFromProfilePayload(payload);
+      const legacyWriteRes=await supabase
+        .from("player_profiles")
+        .upsert(legacyPayload,{onConflict:"user_id"});
+      writeError=legacyWriteRes.error;
+    }
     if(writeError){setProfileMsg("Could not save profile stats.");return;}
     setProfileStats(next);
     if(profileBootstrapCache.userId===userId){
@@ -333,7 +392,8 @@ export default function App({initialDuelCode=""}){
       profileBootstrapCache.msg="";
       profileBootstrapCache.loaded=true;
     }
-  },[session]);
+    return next;
+  },[profileStats,session]);
 
   const insertMatchHistory=useCallback(async(entry)=>{
     if(!supabase||!session?.user?.id)return;
@@ -362,8 +422,9 @@ export default function App({initialDuelCode=""}){
 
   const savePreferredMode=useCallback(async(mode)=>{
     const normalized=normalizeModeKey(mode);
+    if(normalizeModeKey(profileStats.preferred_mode)===normalized)return;
     await updateProfileStats((prev)=>({...prev,preferred_mode:normalized}));
-  },[updateProfileStats]);
+  },[profileStats.preferred_mode,updateProfileStats]);
 
   const handleModeSelect=useCallback((mode,{persist=true}={})=>{
     const normalized=normalizeModeKey(mode);
@@ -375,16 +436,34 @@ export default function App({initialDuelCode=""}){
     const rounds=practiceStats.hits+practiceStats.misses+practiceStats.penalties;
     if(rounds<=0)return;
     const accuracy=Math.round((practiceStats.hits/rounds)*100);
-    await updateProfileStats((prev)=>({
-      ...prev,
-      practice_sessions:prev.practice_sessions+1,
-      practice_rounds:prev.practice_rounds+rounds,
-      practice_hits:prev.practice_hits+practiceStats.hits,
-      practice_misses:prev.practice_misses+practiceStats.misses,
-      practice_penalties:prev.practice_penalties+practiceStats.penalties,
-      practice_best_time:practiceStats.bestTime===null?prev.practice_best_time:prev.practice_best_time===null?practiceStats.bestTime:Math.min(prev.practice_best_time,practiceStats.bestTime),
-      practice_best_streak:Math.max(prev.practice_best_streak,practiceStats.bestStreak||0),
-    }));
+    const times=Array.isArray(practiceStats?.times)?practiceStats.times.filter((value)=>Number.isFinite(value)&&value>0):[];
+    const avgRtMs=times.length>0?times.reduce((sum,value)=>sum+value,0)/times.length:null;
+    const sessionScore=computePracticeSessionScore({
+      avgRtMs,
+      accuracyPct:accuracy,
+      bestRtMs:practiceStats.bestTime,
+      hits:practiceStats.hits,
+      rounds,
+    });
+    const nextProfile=await updateProfileStats((prev)=>{
+      const nextPracticeRating=computePracticeRating({
+        currentRating:prev.practice_rating,
+        sessionScore,
+      });
+      return{
+        ...prev,
+        practice_sessions:prev.practice_sessions+1,
+        practice_rounds:prev.practice_rounds+rounds,
+        practice_hits:prev.practice_hits+practiceStats.hits,
+        practice_misses:prev.practice_misses+practiceStats.misses,
+        practice_penalties:prev.practice_penalties+practiceStats.penalties,
+        practice_best_time:practiceStats.bestTime===null?prev.practice_best_time:prev.practice_best_time===null?practiceStats.bestTime:Math.min(prev.practice_best_time,practiceStats.bestTime),
+        practice_best_streak:Math.max(prev.practice_best_streak,practiceStats.bestStreak||0),
+        practice_rating:nextPracticeRating,
+        practice_peak_rating:Math.max(prev.practice_peak_rating||0,nextPracticeRating),
+        practice_tier:getPracticeTier(nextPracticeRating).tier,
+      };
+    });
     await insertMatchHistory({
       mode:"practice",
       outcome:"session",
@@ -395,27 +474,60 @@ export default function App({initialDuelCode=""}){
       best_time:practiceStats.bestTime??null,
       best_streak:practiceStats.bestStreak||0,
     });
-  },[updateProfileStats,insertMatchHistory]);
+    const beforeRating=Math.max(0,Math.round(Number(profileStats.practice_rating)||0));
+    const afterRating=Math.max(0,Math.round(Number(nextProfile?.practice_rating||beforeRating)));
+    const beforeTier=getPracticeTier(beforeRating).tier;
+    const afterTier=getPracticeTier(afterRating).tier;
+    const nextTierInfo=getPracticeNextTier(afterRating);
+    return{
+      mode:"practice",
+      beforeRating,
+      afterRating,
+      delta:afterRating-beforeRating,
+      beforeTier,
+      afterTier,
+      peak:Math.max(Number(nextProfile?.practice_peak_rating||0),afterRating),
+      pointsToNext:nextTierInfo?.pointsToNext||0,
+      nextTier:nextTierInfo?.next?.tier||null,
+      progressPercent:typeof nextTierInfo?.progressPercent==="number"?nextTierInfo.progressPercent:0,
+      sessionScore,
+    };
+  },[insertMatchHistory,profileStats.practice_rating,updateProfileStats]);
 
   const recordDuelMatch=useCallback(async(result)=>{
     const outcome=result?.outcome==="win"||result?.outcome==="loss"||result?.outcome==="draw"?result.outcome:"draw";
     const isDraw=outcome==="draw";
     const isWin=outcome==="win";
-    await updateProfileStats((prev)=>({
-      ...prev,
-      duel_matches:prev.duel_matches+1,
-      duel_wins:prev.duel_wins+(isWin?1:0),
-      duel_losses:prev.duel_losses+(!isWin&&!isDraw?1:0),
-      duel_draws:prev.duel_draws+(isDraw?1:0),
-      duel_score_for:prev.duel_score_for+result.myScore,
-      duel_score_against:prev.duel_score_against+result.oppScore,
-      duel_best_score:Math.max(prev.duel_best_score,result.myScore),
-    }));
+    const myScore=Number(result?.myScore||0);
+    const oppScore=Number(result?.oppScore||0);
+    await updateProfileStats((prev)=>{
+      const oppEstimated=Number(result?.oppEstimatedRating);
+      const opponentRating=Number.isFinite(oppEstimated)&&oppEstimated>0?oppEstimated:Math.max(1000,Number(prev.duel_rating||1000));
+      const nextDuelRating=computeDuelRating({
+        currentRating:prev.duel_rating,
+        opponentRating,
+        outcome,
+        matchesPlayed:prev.duel_matches,
+      }).nextRating;
+      return{
+        ...prev,
+        duel_matches:prev.duel_matches+1,
+        duel_wins:prev.duel_wins+(isWin?1:0),
+        duel_losses:prev.duel_losses+(!isWin&&!isDraw?1:0),
+        duel_draws:prev.duel_draws+(isDraw?1:0),
+        duel_score_for:prev.duel_score_for+myScore,
+        duel_score_against:prev.duel_score_against+oppScore,
+        duel_best_score:Math.max(prev.duel_best_score,myScore),
+        duel_rating:nextDuelRating,
+        duel_peak_rating:Math.max(prev.duel_peak_rating||1000,nextDuelRating),
+        duel_tier:getDuelTier(nextDuelRating).tier,
+      };
+    });
     await insertMatchHistory({
       mode:"1v1",
       outcome,
-      score:result.myScore||0,
-      opponent_score:result.oppScore||0,
+      score:myScore,
+      opponent_score:oppScore,
       rounds:null,
       accuracy_pct:null,
       best_time:null,
@@ -516,9 +628,9 @@ export default function App({initialDuelCode=""}){
         {/* GLOBAL TICKER */}
         <div style={{width:"100%",height:32,background:"black",borderBottom:`1px solid ${C.border}`,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",whiteSpace:"nowrap",fontSize:10,fontWeight:700,letterSpacing:1.5,flexShrink:0}}>
           <div style={{display:"flex",alignItems:"center",gap:"clamp(24px, 4vw, 60px)"}}>
-            <span style={{color:C.green}}>&gt; CONNECTION: ESTABLISHED</span>
             <span style={{color:C.textMuted}}>USER: {session?.user?.user_metadata?.username || "ANONYMOUS"}</span>
-            <span style={{color:C.cyan}}>RANK: {getRank(profileStats.practice_best_time).tier}</span>
+            <span style={{color:C.cyan}}>PRACTICE: {profileStats.practice_tier} {profileStats.practice_rating}</span>
+            <span style={{color:C.blue}}>DUEL: {profileStats.duel_tier} {profileStats.duel_rating}</span>
             <span style={{color:C.orange}}>SESSIONS: {profileStats.practice_sessions}</span>
           </div>
         </div>
