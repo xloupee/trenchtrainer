@@ -20,12 +20,13 @@ const C = {
 };
 
 const ranks = [
-  { label: 'UNRANKED',   color: C.textDim,  threshold: null },
-  { label: 'BRONZE',     color: '#cd7f32',  threshold: '>= 3.0s' },
-  { label: 'SILVER',     color: '#a8a9ad',  threshold: '< 3.0s' },
-  { label: 'GOLD',       color: '#ffd700',  threshold: '< 2.4s' },
-  { label: 'DIAMOND',    color: '#b9f2ff',  threshold: '< 1.8s' },
-  { label: 'CHALLENGER', color: '#ff6bff',  threshold: '< 1.25s' },
+  { label: 'UNRANKED',   color: C.textDim,  threshold: '0 RP',      icon: '—'  },
+  { label: 'BRONZE',     color: '#cd7f32',  threshold: '1+ RP',     icon: '🥉' },
+  { label: 'SILVER',     color: '#a8a9ad',  threshold: '400+ RP',   icon: '🥈' },
+  { label: 'GOLD',       color: '#ffd700',  threshold: '550+ RP',   icon: '🥇' },
+  { label: 'PLATINUM',   color: '#5dffc3',  threshold: '700+ RP',   icon: '⬢'  },
+  { label: 'DIAMOND',    color: '#63b3ed',  threshold: '850+ RP',   icon: '💎' },
+  { label: 'CHALLENGER', color: '#ff3366',  threshold: '1000+ RP',  icon: '♛'  },
 ];
 
 const steps = [
@@ -369,7 +370,7 @@ export default function LandingPage() {
               <div className="hero-stats" style={{ display: 'flex', gap: 40, flexWrap: 'wrap' }}>
                 {[
                   { label: 'AVG REACTION TIME',   value: '~280ms',  color: C.green   },
-                  { label: 'TOP RANK THRESHOLD',  value: '< 200ms', color: '#ff6bff' },
+                  { label: 'CHALLENGER SOLO TIER', value: '1000 RP', color: '#ff3366' },
                   { label: 'DIFFICULTY LEVELS',   value: '10',      color: C.orange  },
                 ].map(stat => (
                   <div key={stat.label}>
@@ -462,10 +463,10 @@ export default function LandingPage() {
               <div>
                 <div style={{ fontSize: 11, letterSpacing: 3, color: C.orange, fontWeight: 700, marginBottom: 8 }}>COMPETITIVE</div>
                 <h3 style={{ fontSize: 22, fontWeight: 900, letterSpacing: -0.5, marginBottom: 12 }}>1v1 Duel</h3>
-                <p style={{ fontSize: 13, color: C.textMuted, lineHeight: 1.8 }}>Face off against another player on identical rounds. Same seed, same tokens — pure reaction speed and accuracy. Best of 5, 10, or 20.</p>
+                <p style={{ fontSize: 13, color: C.textMuted, lineHeight: 1.8 }}>Face off against another player on identical rounds. Same seed, same tokens — pure reaction speed and accuracy. Best of 1, 3, 5, or 10.</p>
               </div>
               <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 8 }}>
-                {['Synchronized identical rounds','Private codes or public lobbies','Best of 5 / 10 / 20','Win/loss record tracking'].map(f => (
+                {['Synchronized identical rounds','Private codes or public lobbies','Best of 1 / 3 / 5 / 10','Win/loss record tracking'].map(f => (
                   <li key={f} style={{ fontSize: 12, color: C.textMuted, display: 'flex', gap: 8, alignItems: 'center' }}>
                     <span style={{ color: C.orange }}>›</span> {f}
                   </li>
@@ -488,7 +489,7 @@ export default function LandingPage() {
           <div className="reveal" data-reveal data-reveal-order="0" style={{ textAlign: 'center', marginBottom: 64 }}>
             <div style={{ fontSize: 10, letterSpacing: 4, color: '#ff6bff', fontWeight: 700, marginBottom: 12 }}>WHERE DO YOU LAND?</div>
             <h2 style={{ fontSize: 36, fontWeight: 900, letterSpacing: -1 }}>Rank Tiers</h2>
-            <p style={{ color: C.textMuted, fontSize: 13, marginTop: 12, lineHeight: 1.8 }}>After each solo session, your average reaction time determines your rank.</p>
+            <p style={{ color: C.textMuted, fontSize: 13, marginTop: 12, lineHeight: 1.8 }}>After each solo session, your Solo RP updates based on speed, accuracy, and consistency.</p>
           </div>
           <GlassCard className="reveal" data-reveal data-reveal-order="90" style={{ padding: '40px 48px' }}>
             <div className="ranks-row" style={{ display: 'flex', justifyContent: 'space-between', gap: 16 }}>
@@ -501,10 +502,10 @@ export default function LandingPage() {
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     margin: '0 auto 12px', fontSize: 18,
                   }}>
-                    {['—','🥉','🥈','🥇','💎','👑'][i]}
+                    {r.icon}
                   </div>
                   <div style={{ fontSize: 9, fontWeight: 900, letterSpacing: 1.5, color: r.color, marginBottom: 4 }}>{r.label}</div>
-                  <div style={{ fontSize: 10, color: C.textDim, fontWeight: 600 }}>{r.threshold || '—'}</div>
+                  <div style={{ fontSize: 10, color: C.textDim, fontWeight: 600 }}>{r.threshold}</div>
                 </div>
               ))}
             </div>
