@@ -9,6 +9,19 @@ import { GameView, PerfPanel } from "../ui/shared";
 const POLL_MS = 800;
 const STATS_PUSH_MS = 500;
 const MATCH_TIMEOUT_MS = 60_000;
+const EPSILON = 0.0001;
+
+const asNumber = (value, fallback = 0) => {
+  const n = Number(value);
+  return Number.isFinite(n) ? n : fallback;
+};
+
+const avgFromRow = (row) => {
+  const count = asNumber(row?.reaction_count, 0);
+  const sum = asNumber(row?.reaction_sum_ms, 0);
+  if (count <= 0) return null;
+  return sum / count;
+};
 
 function OneVOneMode({ onMatchComplete, initialJoinCode = "" }) {
   const [phase, setPhase] = useState("lobby");
@@ -18,6 +31,7 @@ function OneVOneMode({ onMatchComplete, initialJoinCode = "" }) {
   const [playerName, setPlayerName] = useState("");
   const [opponentName, setOpponentName] = useState("");
   const [opponentStats, setOpponentStats] = useState(null);
+  const [myStatsRow, setMyStatsRow] = useState(null);
   const [matchResult, setMatchResult] = useState(null);
   const [bestOf, setBestOf] = useState(10);
   const [gameSeed, setGameSeed] = useState(null);
@@ -113,13 +127,25 @@ function OneVOneMode({ onMatchComplete, initialJoinCode = "" }) {
   }, []);
 
   const upsertStats = useCallback(async (code, role, patch) => {
-    const { data, error } = await supabase
-      .from("duel_game_stats")
-      .upsert({ game_code: code, player_role: role, ...patch }, { onConflict: "game_code,player_role" })
-      .select("*")
-      .single();
-    if (error) throw new Error(error.message || "Failed to sync duel stats.");
-    return data;
+    const payload = { game_code: code, player_role: role, ...patch };
+    const doUpsert = async (nextPayload) => {
+      const { data, error } = await supabase
+        .from("duel_game_stats")
+        .upsert(nextPayload, { onConflict: "game_code,player_role" })
+        .select("*")
+        .single();
+      if (error) throw new Error(error.message || "Failed to sync duel stats.");
+      return data;
+    };
+    try {
+      return await doUpsert(payload);
+    } catch (e) {
+      const message = String(e?.message || "");
+      const missingReactionCols = message.includes("reaction_sum_ms") || message.includes("reaction_count");
+      if (!missingReactionCols) throw e;
+      const { reaction_sum_ms, reaction_count, ...fallbackPayload } = payload;
+      return await doUpsert(fallbackPayload);
+    }
   }, []);
 
   const deleteGameAndStats = useCallback(async (code) => {
@@ -167,13 +193,52 @@ function OneVOneMode({ onMatchComplete, initialJoinCode = "" }) {
     }
   }, [ensureSupabase, playerId]);
 
-  const computeResult = useCallback((myScore, oppScore) => {
-    const safeMy = Number(myScore || 0);
-    const safeOpp = Number(oppScore || 0);
+  const resolveMatchResult = useCallback((myRow, oppRow) => {
+    const myScore = asNumber(myRow?.score, 0);
+    const oppScore = asNumber(oppRow?.score, 0);
+    const myHits = asNumber(myRow?.hits, 0);
+    const oppHits = asNumber(oppRow?.hits, 0);
+    const myMisses = asNumber(myRow?.misses, 0);
+    const oppMisses = asNumber(oppRow?.misses, 0);
+    const myBestRt = myRow?.best_time ?? null;
+    const oppBestRt = oppRow?.best_time ?? null;
+    const myAvgRt = avgFromRow(myRow);
+    const oppAvgRt = avgFromRow(oppRow);
+
+    let winner = "draw";
+    let tiebreakReason = "exact_draw";
+
+    if (myScore !== oppScore) {
+      winner = myScore > oppScore ? "me" : "opp";
+      tiebreakReason = "score";
+    } else if (myHits !== oppHits) {
+      winner = myHits > oppHits ? "me" : "opp";
+      tiebreakReason = "hits";
+    } else if (myAvgRt !== null && oppAvgRt !== null && Math.abs(myAvgRt - oppAvgRt) > EPSILON) {
+      winner = myAvgRt < oppAvgRt ? "me" : "opp";
+      tiebreakReason = "avg_rt";
+    } else if (myBestRt !== null && oppBestRt !== null && myBestRt !== oppBestRt) {
+      winner = myBestRt < oppBestRt ? "me" : "opp";
+      tiebreakReason = "best_rt";
+    }
+
+    const draw = winner === "draw";
+    const win = winner === "me";
     return {
-      myScore: safeMy,
-      oppScore: safeOpp,
-      win: safeMy > safeOpp,
+      myScore,
+      oppScore,
+      myHits,
+      oppHits,
+      myMisses,
+      oppMisses,
+      myAvgRt,
+      oppAvgRt,
+      myBestRt,
+      oppBestRt,
+      win,
+      draw,
+      outcome: draw ? "draw" : win ? "win" : "loss",
+      tiebreakReason,
     };
   }, []);
 
@@ -186,6 +251,7 @@ function OneVOneMode({ onMatchComplete, initialJoinCode = "" }) {
     setJoinCode("");
     setOpponentName("");
     setOpponentStats(null);
+    setMyStatsRow(null);
     setMatchResult(null);
     setCountdown(null);
     setGameSeed(null);
@@ -277,14 +343,15 @@ function OneVOneMode({ onMatchComplete, initialJoinCode = "" }) {
       const myRole = amHost ? "host" : "guest";
       const oppRole = amHost ? "guest" : "host";
       const [myStats, oppStats] = await Promise.all([getStats(code, myRole), fallbackOppStats ? Promise.resolve(fallbackOppStats) : getStats(code, oppRole)]);
-      const result = computeResult(myStats?.score, oppStats?.score);
+      const result = resolveMatchResult(myStats, oppStats);
+      setMyStatsRow(myStats || null);
       setOpponentStats(oppStats || null);
       setMatchResult(result);
       setPhase("results");
       clearInterval(pollRef.current);
       return result;
     },
-    [computeResult, getStats],
+    [getStats, resolveMatchResult],
   );
 
   const startPolling = useCallback(
@@ -315,19 +382,26 @@ function OneVOneMode({ onMatchComplete, initialJoinCode = "" }) {
           const myRole = amHost ? "host" : "guest";
           const oppRole = amHost ? "guest" : "host";
           const [myStats, oppStats] = await Promise.all([getStats(code, myRole), getStats(code, oppRole)]);
+          setMyStatsRow(myStats || null);
           if (oppStats) setOpponentStats(oppStats);
           if (myStats?.is_done) {
             setLocalDone(true);
             localDoneRef.current = true;
+            if (phaseRef.current === "playing") {
+              setPhase("waiting_done");
+              setMsg("You finished your rounds. Waiting for opponent...");
+            }
           }
 
-          if (game.status === "countdown" && !countdownRef.current && phaseRef.current !== "playing") {
+          if (game.status === "countdown" && !countdownRef.current && phaseRef.current !== "playing" && !myStats?.is_done) {
             runCountdown();
-          } else if (game.status === "playing" && phaseRef.current !== "playing" && !countdownRef.current) {
+          } else if (game.status === "playing" && phaseRef.current !== "playing" && phaseRef.current !== "waiting_done" && !countdownRef.current && !myStats?.is_done) {
             setPhase("playing");
             setLocalDone(false);
             localDoneRef.current = false;
             engine.reset();
+          } else if (game.status === "playing" && myStats?.is_done && phaseRef.current !== "waiting_done") {
+            setPhase("waiting_done");
           }
 
           if (game.status === "finished") {
@@ -495,8 +569,13 @@ function OneVOneMode({ onMatchComplete, initialJoinCode = "" }) {
     if (phase !== "playing" || !gameCode) return;
     const iv = setInterval(async () => {
       if (!ensureSupabase()) return;
+      const code = gameCodeRef.current;
+      if (!code || code.length !== 6) return;
       const role = isHostRef.current ? "host" : "guest";
       const stats = engineStatsRef.current;
+      const reactionTimes = Array.isArray(stats?.times) ? stats.times : [];
+      const reactionSumMs = reactionTimes.reduce((sum, value) => sum + asNumber(value, 0), 0);
+      const reactionCount = reactionTimes.length;
       const roundNum = roundNumRef.current;
       const reachedCap = roundNum >= bestOfRef.current;
       const doneNow = localDoneRef.current || reachedCap;
@@ -504,25 +583,36 @@ function OneVOneMode({ onMatchComplete, initialJoinCode = "" }) {
         localDoneRef.current = true;
         setLocalDone(true);
         setMsg("You finished your rounds. Waiting for opponent...");
+        setPhase("waiting_done");
       }
       try {
-        await upsertStats(gameCodeRef.current, role, {
+        const nextStats = await upsertStats(code, role, {
           score: stats?.score || 0,
           streak: stats?.streak || 0,
           best_time: stats?.bestTime ?? null,
           hits: stats?.hits || 0,
           misses: stats?.misses || 0,
           last_time: stats?.lastTime ?? null,
+          reaction_sum_ms: reactionSumMs,
+          reaction_count: reactionCount,
           round_num: roundNum || 1,
           is_done: doneNow,
           done_at: doneNow ? new Date().toISOString() : null,
         });
+        setMyStatsRow(nextStats || null);
       } catch (e) {
-        setMsg(e?.message || "Failed to sync your duel stats.");
+        const message = e?.message || "Failed to sync your duel stats.";
+        if (message.toLowerCase().includes("duel_game_stats_game_code_fkey")) {
+          setMsg("Room was closed. Returning to duel lobby.");
+          clearInterval(iv);
+          void backToLobby({ skipCleanup: true });
+          return;
+        }
+        setMsg(message);
       }
     }, STATS_PUSH_MS);
     return () => clearInterval(iv);
-  }, [bestOf, ensureSupabase, phase, gameCode, upsertStats]);
+  }, [bestOf, ensureSupabase, phase, gameCode, upsertStats, backToLobby]);
 
   useEffect(() => {
     if (phase !== "lobby") {
@@ -596,7 +686,7 @@ function OneVOneMode({ onMatchComplete, initialJoinCode = "" }) {
             <div style={{ marginBottom: 20, flex: 1 }}>
               <div style={{ fontSize: 8, color: C.textDim, letterSpacing: 2, marginBottom: 8 }}>MATCH LENGTH</div>
               <div style={{ display: "flex", gap: 6 }}>
-                {[5, 10, 20].map((n) => {
+                {[1, 3, 5, 10].map((n) => {
                   const active = bestOf === n;
                   return (
                     <button
@@ -714,28 +804,129 @@ function OneVOneMode({ onMatchComplete, initialJoinCode = "" }) {
     );
   }
 
-  if (phase === "results" && matchResult) {
+  if (phase === "waiting_done") {
+    const myScore = myStatsRow?.score ?? engine.stats.score ?? 0;
+    const myRound = myStatsRow?.round_num ?? engine.roundNum ?? 0;
+    const oppScore = opponentStats?.score ?? 0;
+    const oppRound = opponentStats?.round_num ?? 0;
+    const timeoutRemainingMs = timeoutAt ? new Date(timeoutAt).getTime() - Date.now() : null;
+    const timeoutLabel = timeoutRemainingMs !== null && timeoutRemainingMs > 0 ? `${Math.ceil(timeoutRemainingMs / 1000)}s` : null;
     return (
       <div className="menu-bg prac-page">
         <div className="grid-bg" />
-        <div className="prac-shell" style={{ maxWidth: 600, width: "100%", display: "flex", flexDirection: "column", alignItems: "center", position: "relative", zIndex: 1 }}>
-          <div style={{ fontSize: 11, color: matchResult.win ? C.green : C.red, letterSpacing: 6, fontWeight: 800, marginBottom: 32 }}>MATCH RESULTS</div>
-          <div style={{ fontSize: 80, marginBottom: 20 }}>{matchResult.win ? "🏆" : "💀"}</div>
-          <h2 style={{ fontSize: 48, fontWeight: 900, color: matchResult.win ? C.green : C.red, letterSpacing: -2, marginBottom: 8 }}>{matchResult.win ? "Victory" : "Defeat"}</h2>
-          <div style={{ fontSize: 11, color: C.textDim, letterSpacing: 4, marginBottom: 40 }}>Match complete.</div>
+        <div className="prac-shell" style={{ maxWidth: 560, width: "100%", display: "flex", flexDirection: "column", alignItems: "center", position: "relative", zIndex: 1 }}>
+          <div style={{ fontSize: 10, color: C.cyan, letterSpacing: 4, fontWeight: 800, marginBottom: 18 }}>WAITING FOR OPPONENT</div>
+          <h2 style={{ fontSize: 30, fontWeight: 900, color: C.text, letterSpacing: -1, marginBottom: 8 }}>Rounds Complete</h2>
+          <div style={{ fontSize: 11, color: C.textMuted, marginBottom: 24, textAlign: "center" }}>
+            You finished {bestOf} rounds. Match will finalize when your opponent finishes.
+          </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, width: "100%", marginBottom: 40 }}>
-            <div className="glass-card" style={{ padding: 32, textAlign: "center" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, width: "100%", marginBottom: 18 }}>
+            <div className="glass-card" style={{ padding: 20, textAlign: "center" }}>
               <div style={{ fontSize: 8, color: C.textDim, letterSpacing: 2, marginBottom: 8 }}>YOUR SCORE</div>
-              <div style={{ fontSize: 42, fontWeight: 900, color: C.text }}>{matchResult.myScore}</div>
+              <div style={{ fontSize: 32, fontWeight: 900, color: C.green }}>{myScore}</div>
+              <div style={{ marginTop: 8, fontSize: 9, color: C.textMuted }}>
+                ROUND {Math.min(myRound, bestOf)} / {bestOf}
+              </div>
             </div>
-            <div className="glass-card" style={{ padding: 32, textAlign: "center" }}>
-              <div style={{ fontSize: 8, color: C.textDim, letterSpacing: 2, marginBottom: 8 }}>OPPONENT SCORE</div>
-              <div style={{ fontSize: 42, fontWeight: 900, color: C.text }}>{matchResult.oppScore}</div>
+            <div className="glass-card" style={{ padding: 20, textAlign: "center" }}>
+              <div style={{ fontSize: 8, color: C.textDim, letterSpacing: 2, marginBottom: 8 }}>OPPONENT</div>
+              <div style={{ fontSize: 32, fontWeight: 900, color: C.orange }}>{oppScore}</div>
+              <div style={{ marginTop: 8, fontSize: 9, color: C.textMuted }}>
+                ROUND {Math.min(oppRound, bestOf)} / {bestOf}
+              </div>
             </div>
           </div>
 
-          <button onClick={backToLobby} className="btn-primary btn-green" style={{ padding: "20px", fontSize: 14, fontWeight: 900, letterSpacing: 2, width: "100%" }}>
+          {timeoutLabel ? <div style={{ marginBottom: 12, fontSize: 10, color: C.yellow }}>Auto-finish in {timeoutLabel}</div> : null}
+          {msg ? <div style={{ marginBottom: 12, fontSize: 10, color: C.red, textAlign: "center" }}>{msg}</div> : null}
+          <button onClick={() => backToLobby()} className="btn-ghost">
+            LEAVE ROOM
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (phase === "results" && matchResult) {
+    const isDraw = Boolean(matchResult.draw);
+    const headingColor = isDraw ? C.yellow : matchResult.win ? C.green : C.red;
+    const headingText = isDraw ? "Draw" : matchResult.win ? "Victory" : "Defeat";
+    const headingIcon = isDraw ? "⚖️" : matchResult.win ? "🏆" : "💀";
+    const avgLabel = (value) => (value === null || value === undefined ? "--" : `${(value / 1000).toFixed(3)}s`);
+    const bestLabel = (value) => (value === null || value === undefined ? "--" : `${(value / 1000).toFixed(3)}s`);
+    const reasonMap = {
+      score: `Score diff: ${matchResult.myScore}-${matchResult.oppScore}.`,
+      hits: `Score tied. ${matchResult.win ? "You" : "Opponent"} won on hits (${matchResult.myHits}-${matchResult.oppHits}).`,
+      avg_rt: `Score/hits tied. ${matchResult.win ? "You" : "Opponent"} won on average reaction (${avgLabel(matchResult.myAvgRt)} vs ${avgLabel(matchResult.oppAvgRt)}).`,
+      best_rt: `Score/hits/avg tied. ${matchResult.win ? "You" : "Opponent"} won on best reaction (${bestLabel(matchResult.myBestRt)} vs ${bestLabel(matchResult.oppBestRt)}).`,
+      exact_draw: "Exact tie across score, hits, average reaction, and best reaction.",
+    };
+    const detailText = reasonMap[matchResult.tiebreakReason] || "Result resolved.";
+    const getColors = (metric) => {
+      const green = C.green;
+      const white = C.text;
+      switch (metric) {
+        case "SCORE": {
+          if (matchResult.myScore === matchResult.oppScore) return { me: white, opp: white };
+          return matchResult.myScore > matchResult.oppScore ? { me: green, opp: white } : { me: white, opp: green };
+        }
+        case "HITS": {
+          if (matchResult.myHits === matchResult.oppHits) return { me: white, opp: white };
+          return matchResult.myHits > matchResult.oppHits ? { me: green, opp: white } : { me: white, opp: green };
+        }
+        case "MISSES": {
+          if (matchResult.myMisses === matchResult.oppMisses) return { me: white, opp: white };
+          return matchResult.myMisses < matchResult.oppMisses ? { me: green, opp: white } : { me: white, opp: green };
+        }
+        case "AVG RT": {
+          if (matchResult.myAvgRt === null || matchResult.oppAvgRt === null || Math.abs(matchResult.myAvgRt - matchResult.oppAvgRt) <= EPSILON) {
+            return { me: white, opp: white };
+          }
+          return matchResult.myAvgRt < matchResult.oppAvgRt ? { me: green, opp: white } : { me: white, opp: green };
+        }
+        case "BEST RT": {
+          if (matchResult.myBestRt === null || matchResult.oppBestRt === null || matchResult.myBestRt === matchResult.oppBestRt) {
+            return { me: white, opp: white };
+          }
+          return matchResult.myBestRt < matchResult.oppBestRt ? { me: green, opp: white } : { me: white, opp: green };
+        }
+        default:
+          return { me: white, opp: white };
+      }
+    };
+    const rows = [
+      { label: "SCORE", me: matchResult.myScore, opp: matchResult.oppScore, colors: getColors("SCORE") },
+      { label: "HITS", me: matchResult.myHits, opp: matchResult.oppHits, colors: getColors("HITS") },
+      { label: "MISSES", me: matchResult.myMisses, opp: matchResult.oppMisses, colors: getColors("MISSES") },
+      { label: "AVG RT", me: avgLabel(matchResult.myAvgRt), opp: avgLabel(matchResult.oppAvgRt), colors: getColors("AVG RT") },
+      { label: "BEST RT", me: bestLabel(matchResult.myBestRt), opp: bestLabel(matchResult.oppBestRt), colors: getColors("BEST RT") },
+    ];
+    return (
+      <div className="menu-bg prac-page" style={{ minHeight: "100%", height: "100%", justifyContent: "flex-start", overflowY: "auto", overflowX: "hidden", paddingTop: 18, paddingBottom: 64 }}>
+        <div className="grid-bg" />
+        <div className="prac-shell" style={{ maxWidth: 520, width: "100%", display: "flex", flexDirection: "column", alignItems: "center", position: "relative", zIndex: 1 }}>
+          <div style={{ fontSize: 10, color: headingColor, letterSpacing: 4, fontWeight: 800, marginBottom: 12 }}>MATCH RESULTS</div>
+          <div style={{ fontSize: 54, marginBottom: 8 }}>{headingIcon}</div>
+          <h2 style={{ fontSize: 34, fontWeight: 900, color: headingColor, letterSpacing: -1, marginBottom: 4 }}>{headingText}</h2>
+          <div style={{ fontSize: 10, color: C.textDim, letterSpacing: 1.2, marginBottom: 12, textAlign: "center", lineHeight: 1.5 }}>{detailText}</div>
+
+          <div className="glass-card" style={{ width: "100%", padding: 14, marginBottom: 16 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", gap: 8, alignItems: "center", marginBottom: 8 }}>
+              <div style={{ fontSize: 9, color: C.textDim, letterSpacing: 2 }}>YOU</div>
+              <div style={{ fontSize: 9, color: C.textGhost, letterSpacing: 2 }}>METRIC</div>
+              <div style={{ fontSize: 9, color: C.textDim, letterSpacing: 2, textAlign: "right" }}>OPPONENT</div>
+            </div>
+            {rows.map((row) => (
+              <div key={row.label} style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", gap: 8, alignItems: "center", padding: "8px 0", borderTop: `1px solid ${C.border}` }}>
+                <div style={{ fontSize: 15, fontWeight: 800, color: row.colors.me }}>{row.me}</div>
+                <div style={{ fontSize: 8, color: C.textDim, letterSpacing: 1.6 }}>{row.label}</div>
+                <div style={{ fontSize: 15, fontWeight: 800, color: row.colors.opp, textAlign: "right" }}>{row.opp}</div>
+              </div>
+            ))}
+          </div>
+
+          <button onClick={backToLobby} className="btn-primary btn-green" style={{ padding: "14px", fontSize: 12, fontWeight: 900, letterSpacing: 1.5, width: "100%" }}>
             BACK TO LOBBY
           </button>
         </div>

@@ -246,9 +246,9 @@ export default function App({initialDuelCode=""}){
   },[updateProfileStats,insertMatchHistory]);
 
   const recordDuelMatch=useCallback(async(result)=>{
-    const isDraw=result.myScore===result.oppScore;
-    const isWin=result.myScore>result.oppScore;
-    const outcome=isDraw?"draw":isWin?"win":"loss";
+    const outcome=result?.outcome==="win"||result?.outcome==="loss"||result?.outcome==="draw"?result.outcome:"draw";
+    const isDraw=outcome==="draw";
+    const isWin=outcome==="win";
     await updateProfileStats((prev)=>({
       ...prev,
       duel_matches:prev.duel_matches+1,
@@ -285,7 +285,7 @@ export default function App({initialDuelCode=""}){
 
   const navItems = [
     { key: "practice", word: "SOLO" },
-    { key: "1v1", word: "DUEL" },
+    { key: "1v1", word: "DUEL", compactIcon: "/duel-icon.png" },
     { key: "profile", word: "STATS" },
   ];
 
@@ -299,6 +299,7 @@ export default function App({initialDuelCode=""}){
         <div style={{display:"flex",flexDirection:"column",gap:20,marginTop:28,padding:showWideSidebar?"0 8px":"0"}}>
           {navItems.map((item) => {
             const active = tab === item.key;
+            const useCompactIcon = Boolean(item.compactIcon) && !showWideSidebar;
             return (
               <div key={item.key} onClick={()=>handleModeSelect(item.key)} title={item.word} style={{ 
                 color: active ? C.green : C.textMuted, cursor: "pointer",
@@ -306,9 +307,23 @@ export default function App({initialDuelCode=""}){
                 alignItems: "center", justifyContent: showWideSidebar?"flex-start":"center", borderRadius: 8,
                 background: active ? `${C.green}10` : "transparent"
               }} className="sidebar-item-btn">
-                <span style={{fontSize:10,fontWeight:900,letterSpacing:1.2,lineHeight:1,paddingLeft:showWideSidebar?12:0}}>
-                  {getSidebarWord(item.word,sidebarWidth)}
-                </span>
+                {useCompactIcon ? (
+                  <img
+                    src={item.compactIcon}
+                    alt={item.word}
+                    style={{
+                      width: 120,
+                      height: 120,
+                      objectFit: "contain",
+                      opacity: active ? 1 : 0.74,
+                      filter: active ? "drop-shadow(0 0 4px rgba(0,255,157,0.35))" : "none",
+                    }}
+                  />
+                ) : (
+                  <span style={{fontSize:10,fontWeight:900,letterSpacing:1.2,lineHeight:1,paddingLeft:showWideSidebar?12:0}}>
+                    {getSidebarWord(item.word,sidebarWidth)}
+                  </span>
+                )}
               </div>
             );
           })}
