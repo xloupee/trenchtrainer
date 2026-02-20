@@ -152,22 +152,49 @@ function PerfPanel({stats,history}){const avg=stats.times.length>0?stats.times.r
 /* ═══════════════════════════════════════════
    SESSION SUMMARY
 ═══════════════════════════════════════════ */
-function SessionSummary({stats,history,onBack,onProfile}){
+function SessionSummary({stats,history,onBack,onProfile,onPlayAgain,rankImpact=null}){
   const avg=stats.times.length>0?stats.times.reduce((a,b)=>a+b,0)/stats.times.length:null;const rank=getRank(avg);
   const acc=(stats.hits+stats.misses+stats.penalties)>0?Math.round((stats.hits/(stats.hits+stats.misses+stats.penalties))*100):0;
   const slowest=stats.times.length>0?Math.max(...stats.times):null;
   const buckets=[{l:"<0.5s",min:0,max:500,c:C.green},{l:"0.5-1s",min:500,max:1000,c:C.greenBright},{l:"1-2s",min:1000,max:2000,c:C.yellow},{l:"2-3s",min:2000,max:3000,c:C.orange},{l:">3s",min:3000,max:Infinity,c:C.red}];
   const bc=buckets.map(b=>({...b,n:stats.times.filter(t=>t>=b.min&&t<b.max).length}));const mx=Math.max(...bc.map(b=>b.n),1);
   return(<div className="menu-bg"><div className="grid-bg"/><div className="menu-inner" style={{maxWidth:500}}>
-    <div style={{fontSize:36,marginBottom:8}}>📊</div>
     <h2 style={{fontSize:28,fontWeight:900,color:C.text,marginBottom:6,letterSpacing:-1}}>SESSION COMPLETE</h2>
     <div style={{fontSize:10,color:C.textDim,letterSpacing:4,marginBottom:24}}>{stats.hits+stats.misses+stats.penalties} ROUNDS PLAYED</div>
-    <div style={{display:"flex",justifyContent:"center",marginBottom:20}}><div style={{display:"flex",alignItems:"center",gap:12,padding:"12px 24px",borderRadius:12,background:`linear-gradient(145deg,${C.bgCard},${C.bgElevated})`,border:`1px solid ${rank.color}20`,boxShadow:rank.glow}}><span style={{fontSize:28,color:rank.color}}>{rank.icon}</span><div><div style={{fontSize:14,fontWeight:900,color:rank.color,letterSpacing:2}}>{rank.tier}</div><div style={{fontSize:9,color:C.textDim,marginTop:2}}>{avg!==null?`avg ${(avg/1000).toFixed(3)}s`:"—"}</div></div></div></div>
+    <div style={{display:"flex",justifyContent:"center",marginBottom:20}}><div style={{display:"flex",alignItems:"center",gap:12,padding:"12px 24px",borderRadius:12,background:`linear-gradient(145deg,${C.bgCard},${C.bgElevated})`,border:`1px solid ${rank.color}20`,boxShadow:rank.glow}}><div><div style={{fontSize:14,fontWeight:900,color:rank.color,letterSpacing:2}}>{rank.tier}</div><div style={{fontSize:9,color:C.textDim,marginTop:2}}>{avg!==null?`avg ${(avg/1000).toFixed(3)}s`:"—"}</div></div></div></div>
     <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8,marginBottom:20}}>
       {[["SCORE",stats.score,C.green],["ACCURACY",`${acc}%`,acc>=80?C.green:acc>=50?C.yellow:C.red],["BEST STREAK",stats.bestStreak,C.orange],["FASTEST",stats.bestTime!==null?`${(stats.bestTime/1000).toFixed(3)}s`:"—",C.cyan],["SLOWEST",slowest!==null?`${(slowest/1000).toFixed(2)}s`:"—",C.red],["MISSES",stats.misses+stats.penalties,C.red]].map(([l,v,c])=>(<div key={l} className="glass-card" style={{padding:"10px 12px",textAlign:"center"}}><div style={{fontSize:7,color:C.textDim,letterSpacing:2,marginBottom:4}}>{l}</div><div style={{fontSize:16,fontWeight:900,color:c,fontFamily:"var(--mono)"}}>{v}</div></div>))}
     </div>
+    <div className="glass-card" style={{marginBottom:20,padding:"12px 14px"}}>
+      <div style={{fontSize:8,color:C.textDim,letterSpacing:2,marginBottom:8}}>RANK IMPACT</div>
+      {!rankImpact?(<div style={{fontSize:10,color:C.textMuted}}>Calculating rank progress...</div>):(<>
+        <div style={{display:"grid",gridTemplateColumns:"1fr auto 1fr",gap:8,alignItems:"center",marginBottom:8}}>
+          <div style={{display:"flex",flexDirection:"column",gap:3,alignItems:"flex-start"}}>
+            <div style={{fontSize:10,fontWeight:900,color:C.textDim,letterSpacing:1.5}}>{rankImpact.beforeTier}</div>
+            <div style={{fontSize:13,fontWeight:800,color:C.text}}>RP {rankImpact.beforeRating}</div>
+          </div>
+          <div style={{fontSize:10,fontWeight:900,color:rankImpact.delta>=0?C.green:C.red,fontFamily:"var(--mono)"}}>{rankImpact.delta>=0?`+${rankImpact.delta}`:`${rankImpact.delta}`}</div>
+          <div style={{display:"flex",flexDirection:"column",gap:3,alignItems:"flex-end",textAlign:"right"}}>
+            <div style={{fontSize:10,fontWeight:900,color:rankImpact.afterTier!==rankImpact.beforeTier?C.green:C.textDim,letterSpacing:1.5}}>{rankImpact.afterTier}</div>
+            <div style={{fontSize:13,fontWeight:800,color:C.text}}>RP {rankImpact.afterRating}</div>
+          </div>
+        </div>
+        <div style={{marginTop:6,fontSize:9,color:C.textMuted}}>
+          {rankImpact.nextTier?`${rankImpact.pointsToNext} RP to ${rankImpact.nextTier}`:"Top tier reached"}
+        </div>
+        <div style={{marginTop:8}}>
+          <div style={{height:8,borderRadius:999,background:C.border,overflow:"hidden"}}>
+            <div style={{height:"100%",width:`${Math.max(0,Math.min(100,Number(rankImpact.progressPercent)||0))}%`,background:`linear-gradient(90deg,${C.green},${C.greenBright})`,transition:"width 0.35s ease"}}/>
+          </div>
+          <div style={{marginTop:5,fontSize:8,color:C.textDim,textAlign:"right"}}>
+            {Math.round(Math.max(0,Math.min(100,Number(rankImpact.progressPercent)||0)))}% to next tier
+          </div>
+        </div>
+      </>)}
+    </div>
     <div className="glass-card" style={{marginBottom:20}}><div style={{fontSize:8,color:C.textDim,letterSpacing:2,marginBottom:12}}>RT DISTRIBUTION</div><div style={{display:"flex",alignItems:"flex-end",gap:6,height:80}}>{bc.map(b=>(<div key={b.l} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:4}}><span style={{fontSize:9,fontWeight:700,color:b.c,fontFamily:"var(--mono)"}}>{b.n}</span><div style={{width:"100%",height:`${Math.max(4,(b.n/mx)*60)}px`,borderRadius:4,background:`linear-gradient(180deg,${b.c},${b.c}60)`}}/><span style={{fontSize:7.5,color:C.textDim}}>{b.l}</span></div>))}</div></div>
     <div style={{display:"flex",gap:10}}>
+      {onPlayAgain&&<button onClick={onPlayAgain} className="btn-primary btn-green" style={{flex:1}}>Play Again</button>}
       <button onClick={onBack} className="btn-primary btn-green" style={{flex:1}}>Back to Menu</button>
       {onProfile&&<button onClick={onProfile} className="btn-primary btn-blue" style={{flex:1}}>Profile</button>}
     </div>
@@ -242,8 +269,8 @@ function GameView({engine,onExit,rightPanel,exitLabel="END",onExitConfirmMessage
   const [searchQuery,setSearchQuery]=useState("");
   const [showExitConfirm,setShowExitConfirm]=useState(false);
   const normalizedSearch=searchQuery.trim().toLowerCase();
-  const visibleFeed=normalizedSearch?g.liveFeed.filter(coin=>{
-    const name=(coin?.name||"").toLowerCase();
+  const visibleFeed=normalizedSearch?g.liveFeed.filter((coin)=>{
+    const name=String(coin?.name??"").toLowerCase();
     return name.includes(normalizedSearch);
   }):g.liveFeed;
   const handleExit=useCallback(()=>{

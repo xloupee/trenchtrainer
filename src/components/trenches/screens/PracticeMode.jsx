@@ -2,10 +2,27 @@ import { useEffect, useRef, useState } from "react";
 import { C } from "../config/constants";
 import useGameEngine from "../hooks/useGameEngine";
 import { GameView, SessionSummary } from "../ui/shared";
+
+const SOLO_DIFFICULTY_SETTINGS={
+  1:{roundCap:3,maxMultiplier:2.0},
+  3:{roundCap:5,maxMultiplier:2.25},
+  5:{roundCap:7,maxMultiplier:2.5},
+  7:{roundCap:9,maxMultiplier:2.75},
+  10:{roundCap:12,maxMultiplier:3.0},
+};
+const formatMultiplier=(value)=>{
+  if(Number.isInteger(value))return `x${value.toFixed(1)}`;
+  const text=value.toFixed(2).replace(/0+$/,"").replace(/\.$/,"");
+  return `x${text}`;
+};
+
 function PracticeMode({startDiff=1,onSessionComplete,onStartDiffChange,onOpenProfile}){
   const[screen,setScreen]=useState("menu"); // menu | playing | summary
-  const levelCap=startDiff===1?3:10;
-  const engine=useGameEngine(startDiff,null,levelCap);
+  const[rankImpact,setRankImpact]=useState(null);
+  const levelConfig=SOLO_DIFFICULTY_SETTINGS[startDiff]||SOLO_DIFFICULTY_SETTINGS[1];
+  const levelCap=levelConfig.roundCap;
+  const maxMultiplier=levelConfig.maxMultiplier;
+  const engine=useGameEngine(startDiff,null,levelCap,maxMultiplier);
   const summarySavedRef=useRef(false);
   const latestStatsRef=useRef(engine.stats);
   const latestScreenRef=useRef(screen);
@@ -17,7 +34,7 @@ function PracticeMode({startDiff=1,onSessionComplete,onStartDiffChange,onOpenPro
     ["03","Tap TX NOW on match",C.green],
     ["04","Traps use partial matches",C.yellow],
     ["05","Any wrong click = miss",C.red],
-    ["06","Streaks boost PnL to x3",C.orange]
+    ["06","Streaks boost PnL based on level",C.orange]
   ];
   const levelOptions=[1,3,5,7,10];
   useEffect(()=>{latestStatsRef.current=engine.stats;},[engine.stats]);
@@ -29,20 +46,27 @@ function PracticeMode({startDiff=1,onSessionComplete,onStartDiffChange,onOpenPro
     const rounds=(latest?.hits||0)+(latest?.misses||0)+(latest?.penalties||0);
     if(rounds<=0)return;
     summarySavedRef.current=true;
-    onSessionCompleteRef.current?.(latest);
+    const maybePromise=onSessionCompleteRef.current?.(latest);
+    if(maybePromise&&typeof maybePromise.then==="function"){
+      maybePromise
+        .then((impact)=>{if(impact?.mode==="practice")setRankImpact(impact);})
+        .catch(()=>{});
+    }else if(maybePromise?.mode==="practice"){
+      setRankImpact(maybePromise);
+    }
   };
   useEffect(()=>{
-    if(screen==="menu"){summarySavedRef.current=false;return;}
+    if(screen==="menu"){summarySavedRef.current=false;setRankImpact(null);return;}
     if(screen!=="summary"||summarySavedRef.current)return;
     persistSessionIfNeeded();
   },[screen,engine.stats,onSessionComplete]);
   useEffect(()=>()=>{if(latestScreenRef.current==="playing"||latestScreenRef.current==="summary")persistSessionIfNeeded();},[]);
   useEffect(()=>{
-    if(screen==="playing"&&levelCap===3&&engine.roundNum>=3){
+    if(screen==="playing"&&engine.roundNum>=levelCap){
       setScreen("summary");
     }
   },[screen,levelCap,engine.roundNum]);
-  if(screen==="summary")return <SessionSummary stats={engine.stats} history={engine.attemptHistory} onBack={()=>{engine.reset();setScreen("menu");}} onProfile={onOpenProfile}/>;
+  if(screen==="summary")return <SessionSummary rankImpact={rankImpact} stats={engine.stats} history={engine.attemptHistory} onBack={()=>{engine.reset();setScreen("menu");}} onPlayAgain={start} onProfile={onOpenProfile}/>;
   if(screen==="menu")return(
     <div className="menu-bg prac-page" style={{minHeight:"100%",height:"100%",justifyContent:"flex-start",overflowY:"auto",overflowX:"hidden",paddingTop:28,paddingBottom:120}}><div className="grid-bg"/>
       <div className="prac-shell" style={{maxWidth:1000,width:"100%",display:"flex",flexDirection:"column",alignItems:"center",position:"relative",zIndex:1}}>
@@ -87,7 +111,7 @@ function PracticeMode({startDiff=1,onSessionComplete,onStartDiffChange,onOpenPro
               <div style={{display:"flex",gap:28,justifyContent:"center",width:"100%"}}>
                 <div>
                   <div style={{fontSize:10,color:C.textDim,letterSpacing:2,marginBottom:4}}>MULTIPLIER</div>
-                  <div style={{fontSize:28,fontWeight:900,color:C.orange}}>x3.0</div>
+                  <div style={{fontSize:28,fontWeight:900,color:C.orange}}>{formatMultiplier(maxMultiplier)}</div>
                 </div>
                 <div>
                   <div style={{fontSize:10,color:C.textDim,letterSpacing:2,marginBottom:4}}>ROUND_CAP</div>
