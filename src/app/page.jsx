@@ -445,7 +445,7 @@ export default function LandingPage() {
             <GlassCard className="reveal" data-reveal data-reveal-order="80" style={{ flex: 1, padding: 40, display: 'flex', flexDirection: 'column', gap: 20 }}>
               <div>
                 <div style={{ fontSize: 11, letterSpacing: 3, color: C.green, fontWeight: 700, marginBottom: 8 }}>SOLO</div>
-                <h3 style={{ fontSize: 22, fontWeight: 900, letterSpacing: -0.5, marginBottom: 12 }}>Practice Mode</h3>
+                <h3 style={{ fontSize: 22, fontWeight: 900, letterSpacing: -0.5, marginBottom: 12 }}>Solo Mode</h3>
                 <p style={{ fontSize: 13, color: C.textMuted, lineHeight: 1.8 }}>Train at your own pace across 10 difficulty levels. Sessions are tracked, ranked, and stored to your profile so you can see your improvement over time.</p>
               </div>
               <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -488,7 +488,7 @@ export default function LandingPage() {
           <div className="reveal" data-reveal data-reveal-order="0" style={{ textAlign: 'center', marginBottom: 64 }}>
             <div style={{ fontSize: 10, letterSpacing: 4, color: '#ff6bff', fontWeight: 700, marginBottom: 12 }}>WHERE DO YOU LAND?</div>
             <h2 style={{ fontSize: 36, fontWeight: 900, letterSpacing: -1 }}>Rank Tiers</h2>
-            <p style={{ color: C.textMuted, fontSize: 13, marginTop: 12, lineHeight: 1.8 }}>After each practice session, your average reaction time determines your rank.</p>
+            <p style={{ color: C.textMuted, fontSize: 13, marginTop: 12, lineHeight: 1.8 }}>After each solo session, your average reaction time determines your rank.</p>
           </div>
           <GlassCard className="reveal" data-reveal data-reveal-order="90" style={{ padding: '40px 48px' }}>
             <div className="ranks-row" style={{ display: 'flex', justifyContent: 'space-between', gap: 16 }}>

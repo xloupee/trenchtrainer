@@ -49,9 +49,9 @@ function PracticeMode({startDiff=1,onSessionComplete,onStartDiffChange,onOpenPro
     const maybePromise=onSessionCompleteRef.current?.(latest);
     if(maybePromise&&typeof maybePromise.then==="function"){
       maybePromise
-        .then((impact)=>{if(impact?.mode==="practice")setRankImpact(impact);})
+        .then((impact)=>{if(impact?.mode==="solo")setRankImpact(impact);})
         .catch(()=>{});
-    }else if(maybePromise?.mode==="practice"){
+    }else if(maybePromise?.mode==="solo"){
       setRankImpact(maybePromise);
     }
   };
@@ -73,7 +73,7 @@ function PracticeMode({startDiff=1,onSessionComplete,onStartDiffChange,onOpenPro
         
         {/* HEADER BLOCK */}
         <div style={{textAlign:"center",marginBottom:44,opacity:0,animation:"slideUp 0.6s ease forwards"}}>
-          <div style={{fontSize:10,color:C.green,letterSpacing:5,fontWeight:800,marginBottom:10}}>PRACTICE MODE</div>
+          <div style={{fontSize:10,color:C.green,letterSpacing:5,fontWeight:800,marginBottom:10}}>SOLO MODE</div>
           <h1 style={{fontSize:68,fontWeight:900,letterSpacing:-4,lineHeight:0.85,color:C.text}}>TRENCHES<br/><span style={{color:C.green}}>TRAINER</span></h1>
           <p style={{fontSize:13,color:C.textMuted,marginTop:18,letterSpacing:1,maxWidth:440,margin:"18px auto 0",lineHeight:1.6}}>Sharpen your reflexes. Read the signal. Tap fast.</p>
         </div>

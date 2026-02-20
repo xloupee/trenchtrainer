@@ -22,11 +22,20 @@ export const getDuelNextTier = (rating) => {
     const current = DUEL_TIERS[i];
     const next = DUEL_TIERS[i - 1];
     if (normalized >= current.min && normalized < next.min) {
-      return { current, next, pointsToNext: next.min - normalized };
+      const span = Math.max(1, next.min - current.min);
+      const progressPercent = Math.max(0, Math.min(100, ((normalized - current.min) / span) * 100));
+      return {
+        current,
+        next,
+        pointsToNext: next.min - normalized,
+        progressPercent,
+        currentMin: current.min,
+        nextMin: next.min,
+      };
     }
   }
   const top = DUEL_TIERS[0];
-  return { current: top, next: null, pointsToNext: 0 };
+  return { current: top, next: null, pointsToNext: 0, progressPercent: 100, currentMin: top.min, nextMin: top.min };
 };
 
 export const getDuelKFactor = (matchesPlayed = 0) => (Number(matchesPlayed) < 30 ? 32 : 20);

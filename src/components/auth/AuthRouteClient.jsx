@@ -9,13 +9,14 @@ import { CSS } from "../trenches/styles/cssText";
 
 const sanitizeNextPath = (rawValue) => {
   const value = typeof rawValue === "string" ? rawValue.trim() : "";
-  if (!value || !value.startsWith("/") || value.startsWith("//")) return "/play/practice";
-  if (value.startsWith("/auth")) return "/play/practice";
-  if (!value.startsWith("/play")) return "/play/practice";
+  if (!value || !value.startsWith("/") || value.startsWith("//")) return "/play/solo";
+  if (value.startsWith("/auth")) return "/play/solo";
+  if (!value.startsWith("/play")) return "/play/solo";
+  if (value.startsWith("/play/practice")) return "/play/solo";
   return value;
 };
 
-export default function AuthRouteClient({ initialNext = "/play/practice" }) {
+export default function AuthRouteClient({ initialNext = "/play/solo" }) {
   const router = useRouter();
   const nextPath = useMemo(() => sanitizeNextPath(initialNext), [initialNext]);
   const [authReady, setAuthReady] = useState(false);

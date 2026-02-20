@@ -26,24 +26,28 @@ export const C = {
   textGhost: "#222222",
 };
 
-export const MODE_KEYS = ["practice", "1v1", "profile"];
+export const MODE_KEYS = ["solo", "1v1", "profile"];
 const isModeKey = (value) => MODE_KEYS.includes(value);
-export const normalizeModeKey = (value) => (isModeKey(value) ? value : "practice");
+export const normalizeModeKey = (value) => {
+  if (value === "practice") return "solo";
+  return isModeKey(value) ? value : "solo";
+};
 export const MODE_ROUTE_MAP = Object.freeze({
-  practice: "/play/practice",
+  solo: "/play/solo",
   "1v1": "/play/duel",
   profile: "/play/profile",
 });
-export const modeToPath = (mode) => MODE_ROUTE_MAP[normalizeModeKey(mode)] || MODE_ROUTE_MAP.practice;
+export const modeToPath = (mode) => MODE_ROUTE_MAP[normalizeModeKey(mode)] || MODE_ROUTE_MAP.solo;
 export const pathToMode = (pathname = "") => {
   if (pathname.startsWith("/play/duel")) return "1v1";
   if (pathname.startsWith("/play/profile")) return "profile";
-  if (pathname.startsWith("/play/practice")) return "practice";
-  return "practice";
+  if (pathname.startsWith("/play/solo")) return "solo";
+  if (pathname.startsWith("/play/practice")) return "solo";
+  return "solo";
 };
 
 export const EMPTY_PROFILE_STATS = {
-  preferred_mode: "practice",
+  preferred_mode: "solo",
   practice_sessions: 0,
   practice_rounds: 0,
   practice_hits: 0,
