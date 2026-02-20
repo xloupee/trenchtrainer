@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { C } from "../config/constants";
 import { formatHistoryDate } from "../lib/format";
 import { getRank } from "../lib/rank";
@@ -6,6 +7,7 @@ import { useRouter } from "next/navigation";
 
 function ProfileTab({ session, stats, history, loading, msg, onRefresh }) {
   const router = useRouter();
+  const [historyFilter, setHistoryFilter] = useState("all");
   const rounds = stats.practice_rounds;
   const practiceAcc = rounds > 0 ? Math.round((stats.practice_hits / rounds) * 100) : 0;
   const duelWinRate = stats.duel_matches > 0 ? Math.round((stats.duel_wins / stats.duel_matches) * 100) : 0;
@@ -31,6 +33,11 @@ function ProfileTab({ session, stats, history, loading, msg, onRefresh }) {
     if (row.outcome === "loss") return C.red;
     return C.orange;
   };
+  const filteredHistory = history.filter((row) => {
+    if (historyFilter === "practice") return row.mode === "practice";
+    if (historyFilter === "duel") return row.mode === "1v1";
+    return true;
+  });
 
   return (
     <div className="menu-bg prac-page" style={{ justifyContent: "flex-start", paddingTop: 40, overflowY: "auto" }}>
@@ -127,12 +134,38 @@ function ProfileTab({ session, stats, history, loading, msg, onRefresh }) {
           <div className="glass-card" style={{ padding: 0, overflow: "hidden", minHeight: 300 }}>
             <div style={{ padding: "16px 24px", borderBottom: `1px solid ${C.border}`, background: "rgba(255,255,255,0.02)", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
               <span style={{ fontSize: 10, fontWeight: 800, color: C.textDim, letterSpacing: 2 }}>&gt; RECENT ACTIVITY</span>
-              <span style={{ fontSize: 9, color: C.textGhost }}>Auto sync enabled</span>
+              <div style={{ display: "flex", gap: 8 }}>
+                {[
+                  { key: "all", label: "All" },
+                  { key: "practice", label: "Practice" },
+                  { key: "duel", label: "Duel" },
+                ].map((opt) => {
+                  const active = historyFilter === opt.key;
+                  return (
+                    <button
+                      key={opt.key}
+                      onClick={() => setHistoryFilter(opt.key)}
+                      className="btn-ghost"
+                      style={{
+                        height: 28,
+                        padding: "0 10px",
+                        fontSize: 9,
+                        letterSpacing: 1.1,
+                        color: active ? C.green : C.textDim,
+                        borderColor: active ? C.green : C.border,
+                        background: active ? `${C.green}10` : "transparent",
+                      }}
+                    >
+                      {opt.label}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
             <div style={{ display: "flex", flexDirection: "column" }}>
-              {history.length === 0 ? (
+              {filteredHistory.length === 0 ? (
                 <div style={{ padding: 60, textAlign: "center", color: C.textGhost, fontSize: 11 }}>No activity yet.</div>
-              ) : history.slice(0, 10).map((row) => {
+              ) : filteredHistory.slice(0, 10).map((row) => {
                 const isPractice = row.mode === "practice";
                 const rt = typeof row.best_time === "number" ? `${(row.best_time / 1000).toFixed(3)}s` : "N/A";
                 return (
