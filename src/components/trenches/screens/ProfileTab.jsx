@@ -46,35 +46,36 @@ function ProfileTab({ session, stats, history }) {
 
           {/* Top-left: Identity */}
           <div className="glass-card" style={{ padding: "28px 30px", display: "grid", gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)", alignItems: "stretch", borderBottom: `2px solid ${practiceRank.color}`, minHeight: 210, gap: 20 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 24, minWidth: 0 }}>
-              <div style={{ 
-                width: 80, height: 80, background: "black", border: `1px solid ${C.border}`,
-                display: "flex", alignItems: "center", justifyContent: "center", fontSize: 36,
-                boxShadow: `0 0 30px ${practiceRank.color}22`, borderRadius: 12
-              }}>
-                {practiceRank.icon}
-              </div>
-              <div>
-                <div style={{ fontSize: 10, color: C.textDim, letterSpacing: 4, marginBottom: 8, fontWeight: 800 }}>USERNAME</div>
-                <h1 style={{ fontSize: 42, fontWeight: 900, letterSpacing: -2, color: C.text, lineHeight: 1 }}>{username.toUpperCase()}</h1>
-                <div style={{ fontSize: 11, fontWeight: 800, color: practiceRank.color, letterSpacing: 2, marginTop: 8 }}>
-                  SOLO {practiceRank.tier} • {stats.practice_rating} RP
-                </div>
-                <div style={{ fontSize: 11, fontWeight: 800, color: duelRank.color, letterSpacing: 2, marginTop: 4 }}>
-                  DUEL {duelRank.tier} • {stats.duel_rating} RP
+            <div style={{ width: "100%", display: "flex" }}>
+              <div className="glass-card" style={{ padding: "24px", background: "rgba(0,0,0,0.5)", borderRadius: 10, minHeight: 196, height: "100%", width: "100%", display: "flex", flexDirection: "column", justifyContent: "center" }}>
+                <div style={{ fontSize: 12, color: C.textDim, letterSpacing: 1.6, marginBottom: 18 }}>&gt; IDENTITY</div>
+                <div style={{ display: "flex", alignItems: "center", gap: 18, minWidth: 0 }}>
+                  <div style={{ 
+                    width: 72, height: 72, background: "black", border: `1px solid ${C.border}`,
+                    display: "flex", alignItems: "center", justifyContent: "center", fontSize: 34,
+                    boxShadow: `0 0 22px ${practiceRank.color}22`, borderRadius: 12, flexShrink: 0
+                  }}>
+                    {practiceRank.icon}
+                  </div>
+                  <div style={{ minWidth: 0 }}>
+                    <div style={{ fontSize: 10, color: C.textDim, letterSpacing: 3, marginBottom: 8, fontWeight: 800 }}>USERNAME</div>
+                    <h1 style={{ fontSize: 42, fontWeight: 900, letterSpacing: -2, color: C.text, lineHeight: 1, margin: 0, overflow: "hidden", textOverflow: "ellipsis" }}>
+                      {username.toUpperCase()}
+                    </h1>
+                  </div>
                 </div>
               </div>
             </div>
 
-            <div style={{ width: "100%" }}>
-              <div className="glass-card" style={{ padding: "24px", background: "rgba(0,0,0,0.5)", borderRadius: 10, minHeight: 164, display: "flex", flexDirection: "column", justifyContent: "center" }}>
-                <div style={{ fontSize: 10, color: C.textDim, letterSpacing: 1.6, marginBottom: 20 }}>&gt; RANK_PROGRESS</div>
+            <div style={{ width: "100%", display: "flex" }}>
+              <div className="glass-card" style={{ padding: "24px", background: "rgba(0,0,0,0.5)", borderRadius: 10, minHeight: 196, height: "100%", width: "100%", display: "flex", flexDirection: "column", justifyContent: "center" }}>
+                <div style={{ fontSize: 12, color: C.textDim, letterSpacing: 1.6, marginBottom: 20 }}>&gt; RANK PROGRESS</div>
                 
                 {/* Solo Progress */}
                 <div style={{ marginBottom: 16 }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 8 }}>
-                    <div style={{ fontSize: 9, color: C.textMuted, fontWeight: 800 }}>SOLO_TIER_PROGRESS</div>
-                    <div style={{ fontSize: 10, color: practiceRank.color, fontWeight: 800 }}>{practiceProgress.next ? `${practiceProgress.pointsToNext} RP TO ${practiceProgress.next.tier}` : "MAX_TIER_REACHED"}</div>
+                  <div style={{ fontSize: 11, color: C.textMuted, fontWeight: 800, marginBottom: 6 }}>SOLO TIER PROGRESS</div>
+                  <div style={{ fontSize: 14, color: practiceRank.color, fontWeight: 900, marginBottom: 10, letterSpacing: 0.4 }}>
+                    {practiceProgress.next ? `${practiceProgress.pointsToNext} RP TO ${practiceProgress.next.tier}` : "MAX TIER REACHED"}
                   </div>
                   <div style={{ height: 4, background: "rgba(255,255,255,0.05)", borderRadius: 2, overflow: "hidden", border: `1px solid ${C.border}` }}>
                     <div style={{ width: `${practiceProgress.progressPercent}%`, height: "100%", background: practiceRank.color, boxShadow: `0 0 10px ${practiceRank.color}`, transition: "width 1s ease-out" }} />
@@ -83,9 +84,9 @@ function ProfileTab({ session, stats, history }) {
 
                 {/* Duel Progress */}
                 <div style={{ marginBottom: 20 }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 8 }}>
-                    <div style={{ fontSize: 9, color: C.textMuted, fontWeight: 800 }}>DUEL_TIER_PROGRESS</div>
-                    <div style={{ fontSize: 10, color: duelRank.color, fontWeight: 800 }}>{duelProgress.next ? `${duelProgress.pointsToNext} RP TO ${duelProgress.next.tier}` : "MAX_TIER_REACHED"}</div>
+                  <div style={{ fontSize: 11, color: C.textMuted, fontWeight: 800, marginBottom: 6 }}>DUEL TIER PROGRESS</div>
+                  <div style={{ fontSize: 14, color: duelRank.color, fontWeight: 900, marginBottom: 10, letterSpacing: 0.4 }}>
+                    {duelProgress.next ? `${duelProgress.pointsToNext} RP TO ${duelProgress.next.tier}` : "MAX TIER REACHED"}
                   </div>
                   <div style={{ height: 4, background: "rgba(255,255,255,0.05)", borderRadius: 2, overflow: "hidden", border: `1px solid ${C.border}` }}>
                     <div style={{ width: `${duelProgress.progressPercent}%`, height: "100%", background: duelRank.color, boxShadow: `0 0 10px ${duelRank.color}`, transition: "width 1s ease-out" }} />
@@ -156,7 +157,7 @@ function ProfileTab({ session, stats, history }) {
           </div>
 
           {/* Bottom-right: Activity */}
-          <div className="glass-card" style={{ padding: 0, overflow: "hidden", minHeight: 300 }}>
+          <div className="glass-card" style={{ padding: 0, overflow: "hidden", minHeight: 300, marginTop: -110 }}>
             <div style={{ padding: "16px 24px", borderBottom: `1px solid ${C.border}`, background: "rgba(255,255,255,0.02)", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
               <span style={{ fontSize: 10, fontWeight: 800, color: C.textDim, letterSpacing: 2 }}>&gt; RECENT ACTIVITY</span>
               <div style={{ display: "flex", gap: 8 }}>
