@@ -99,7 +99,7 @@ function RankInfoModal({ open, onClose }) {
             Duel uses an Elo-style system:
             <br />- Beat higher-rated players: bigger gains.
             <br />- Lose to lower-rated players: bigger losses.
-            <br />- Draws give small changes depending on expected result.
+            <br />- Every match resolves to a winner and loser (no draws).
           </div>
           <TierTable title="Duel tiers" rows={DUEL_TIERS} />
         </div>

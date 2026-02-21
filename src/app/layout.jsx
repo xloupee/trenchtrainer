@@ -2,7 +2,7 @@ import './globals.css';
 import { Analytics } from '@vercel/analytics/react';
 
 export const metadata = {
-  title: 'Trenches Trainer — React Fast. Trade Faster.',
+  title: 'Trenches Trainer',
   description: 'Gamified reaction time training for crypto traders. Train solo or duel 1v1 — identify the right token before the window closes.',
   icons: {
     icon: '/logo.png',

@@ -85,7 +85,7 @@ const hasProfileProgress=(stats={})=>(
   Number(stats?.practice_hits||0)>0||
   Number(stats?.duel_matches||0)>0||
   Number(stats?.practice_rating||0)>0||
-  Number(stats?.duel_rating||0)>1000
+  Number(stats?.duel_rating||0)>0
 );
 const isSuspiciousResetRow=(row,historyRows=[])=>{
   if(!hasCoreProfileFields(row))return true;
@@ -118,7 +118,7 @@ const deriveProfileStatsFromHistory=(rows=[],seedStats=EMPTY_PROFILE_STATS)=>{
   let duelScoreFor=0;
   let duelScoreAgainst=0;
   let duelBestScore=base.duel_best_score;
-  let duelRating=Math.max(100,base.duel_rating||1000);
+  let duelRating=Math.max(0,base.duel_rating||0);
   let duelPeakRating=Math.max(base.duel_peak_rating||duelRating,duelRating);
   let sawDuelRating=false;
 
@@ -158,7 +158,7 @@ const deriveProfileStatsFromHistory=(rows=[],seedStats=EMPTY_PROFILE_STATS)=>{
       const ratingAfter=asNumber(row?.rating_after,NaN);
       if(Number.isFinite(ratingAfter)){
         if(!sawDuelRating){
-          duelRating=Math.max(100,Math.round(ratingAfter));
+          duelRating=Math.max(0,Math.round(ratingAfter));
           sawDuelRating=true;
         }
         duelPeakRating=Math.max(duelPeakRating,Math.round(ratingAfter));
@@ -760,15 +760,14 @@ export default function App({initialDuelCode=""}){
   },[insertMatchHistory,profileStats.practice_rating,updateProfileStats]);
 
   const recordDuelMatch=useCallback(async(result)=>{
-    const outcome=result?.outcome==="win"||result?.outcome==="loss"||result?.outcome==="draw"?result.outcome:"draw";
-    const isDraw=outcome==="draw";
+    const outcome=result?.outcome==="win"?"win":"loss";
     const isWin=outcome==="win";
     const myScore=Number(result?.myScore||0);
     const oppScore=Number(result?.oppScore||0);
-    const beforeRating=Math.max(100,Math.round(Number(profileStats.duel_rating||1000)));
+    const beforeRating=Math.max(0,Math.round(Number(profileStats.duel_rating||0)));
     const nextProfile=await updateProfileStats((prev)=>{
       const oppEstimated=Number(result?.oppEstimatedRating);
-      const opponentRating=Number.isFinite(oppEstimated)&&oppEstimated>0?oppEstimated:Math.max(1000,Number(prev.duel_rating||1000));
+      const opponentRating=Number.isFinite(oppEstimated)&&oppEstimated>=0?oppEstimated:Math.max(0,Number(prev.duel_rating||0));
       const nextDuelRating=computeDuelRating({
         currentRating:prev.duel_rating,
         opponentRating,
@@ -779,17 +778,17 @@ export default function App({initialDuelCode=""}){
         ...prev,
         duel_matches:prev.duel_matches+1,
         duel_wins:prev.duel_wins+(isWin?1:0),
-        duel_losses:prev.duel_losses+(!isWin&&!isDraw?1:0),
-        duel_draws:prev.duel_draws+(isDraw?1:0),
+        duel_losses:prev.duel_losses+(!isWin?1:0),
+        duel_draws:prev.duel_draws,
         duel_score_for:prev.duel_score_for+myScore,
         duel_score_against:prev.duel_score_against+oppScore,
         duel_best_score:Math.max(prev.duel_best_score,myScore),
         duel_rating:nextDuelRating,
-        duel_peak_rating:Math.max(prev.duel_peak_rating||1000,nextDuelRating),
+        duel_peak_rating:Math.max(prev.duel_peak_rating||0,nextDuelRating),
         duel_tier:getDuelTier(nextDuelRating).tier,
       };
     });
-    const afterRating=Math.max(100,Math.round(Number(nextProfile?.duel_rating||beforeRating)));
+    const afterRating=Math.max(0,Math.round(Number(nextProfile?.duel_rating||beforeRating)));
     const delta=afterRating-beforeRating;
     await insertMatchHistory({
       mode:"1v1",
@@ -960,12 +959,11 @@ export default function App({initialDuelCode=""}){
             <span style={{color:C.textMuted}}>USER: {session?.user?.user_metadata?.username || "ANONYMOUS"}</span>
             <span style={{color:C.cyan}}>SOLO: {profileStats.practice_tier} {profileStats.practice_rating}</span>
             <span style={{color:C.blue}}>DUEL: {profileStats.duel_tier} {profileStats.duel_rating}</span>
-            <span style={{color:C.orange}}>SESSIONS: {profileStats.practice_sessions}</span>
           </div>
         </div>
 
         <div style={{flex:1,overflow:"hidden",minHeight:0,position:"relative"}}>
-          {tab==="solo"?<PracticeMode startDiff={startDiff} onSessionComplete={recordPracticeSession} onStartDiffChange={setStartDiff} onOpenProfile={()=>handleModeSelect("profile")}/>:tab==="1v1"?<OneVOneMode onMatchComplete={recordDuelMatch} initialJoinCode={duelCode}/>:<ProfileTab session={session} stats={profileStats} history={matchHistory} loading={profileLoading} msg={profileMsg} onRefresh={loadProfileStats}/>}
+          {tab==="solo"?<PracticeMode startDiff={startDiff} onSessionComplete={recordPracticeSession} onStartDiffChange={setStartDiff} onOpenProfile={()=>handleModeSelect("profile")}/>:tab==="1v1"?<OneVOneMode onMatchComplete={recordDuelMatch} initialJoinCode={duelCode} playerIdentity={session?.user?.id||""}/>:<ProfileTab session={session} stats={profileStats} history={matchHistory} loading={profileLoading} msg={profileMsg} onRefresh={loadProfileStats}/>}
         </div>
       </main>
       <style>{CSS}</style>

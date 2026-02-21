@@ -8,18 +8,27 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint src --max-warnings=0",
-    "recover:profiles": "node scripts/recover-profile-stats-from-history.mjs"
+    "recover:profiles": "node scripts/recover-profile-stats-from-history.mjs",
+    "video:studio": "remotion studio",
+    "video:render": "remotion render FirstTxRoadmapDemo16x9 out/firsttx-roadmap-demo.mp4",
+    "video:render:preview": "remotion render FirstTxRoadmapDemo16x9 out/firsttx-roadmap-demo-preview.mp4 --jpeg-quality=70 --crf=28 --concurrency=2"
   },
   "dependencies": {
+    "@remotion/google-fonts": "^4.0.427",
+    "@remotion/media": "^4.0.427",
+    "@remotion/transitions": "^4.0.427",
     "@supabase/supabase-js": "^2.95.3",
     "@vercel/analytics": "^1.6.1",
     "eslint-config-next": "^16.1.6",
     "next": "^16.1.6",
     "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "react-dom": "^19.2.0",
+    "remotion": "^4.0.427",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
+    "@remotion/cli": "^4.0.427",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.1",
