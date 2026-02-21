@@ -93,7 +93,7 @@ function ProfileTab({ session, stats, history }) {
                 </div>
 
                 <button onClick={() => setShowRankInfo(true)} className="btn-ghost" style={{ fontSize: 9, letterSpacing: 1.2, alignSelf: "flex-start", padding: "6px 12px" }}>
-                  HOW_RANKING_WORKS
+                  HOW RANKING WORKS
                 </button>
               </div>
             </div>

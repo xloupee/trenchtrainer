@@ -29,12 +29,12 @@ function PracticeMode({startDiff=1,onSessionComplete,onStartDiffChange,onOpenPro
   const onSessionCompleteRef=useRef(onSessionComplete);
   const start=()=>{engine.reset();setScreen("playing");};
   const practiceSteps=[
-    ["01","Hold HOLSTER 0.8s to arm",C.text],
-    ["02","Read signal tweet first",C.text],
-    ["03","Tap TX NOW on match",C.green],
-    ["04","Traps use partial matches",C.yellow],
-    ["05","Any wrong click = miss",C.red],
-    ["06","Streaks boost PnL based on level",C.orange]
+    ["01","Hover on HOLSTER for 0.8s to start",C.text],
+    ["02","Read the signal tweet before clicking",C.text],
+    ["03","Tap TX NOW only when the token matches",C.green],
+    ["04","Watch out for trap tokens with similar names",C.yellow],
+    ["05","Any wrong click counts as a miss",C.red],
+    ["06","Hit streaks increase your score multiplier",C.orange]
   ];
   const levelOptions=[1,3,5,7,10];
   useEffect(()=>{latestStatsRef.current=engine.stats;},[engine.stats]);

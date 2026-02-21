@@ -20,7 +20,6 @@ const C = {
 };
 
 const ranks = [
-  { label: 'UNRANKED',   color: C.textDim,  threshold: '0 RP',      icon: '—'  },
   { label: 'BRONZE',     color: '#cd7f32',  threshold: '1+ RP',     icon: '🥉' },
   { label: 'SILVER',     color: '#a8a9ad',  threshold: '400+ RP',   icon: '🥈' },
   { label: 'GOLD',       color: '#ffd700',  threshold: '550+ RP',   icon: '🥇' },
@@ -30,9 +29,9 @@ const ranks = [
 ];
 
 const steps = [
-  { num: '01', title: 'READ THE SIGNAL',  desc: 'A tweet surfaces in the feed. Somewhere in the noise is the token being called. Parse it fast.' },
-  { num: '02', title: 'SNIPE THE TOKEN',  desc: 'A wave of tokens floods your screen — real ones, traps, decoys. Click the right one before the window closes.' },
-  { num: '03', title: 'BUILD YOUR EDGE',  desc: 'Track your reaction time, accuracy, and streaks. Climb the ranks. Challenge others 1v1.' },
+  { num: '01', title: 'READ THE SIGNAL',  desc: 'A post appears with the token you need to find. Spot the name quickly before the next step starts.' },
+  { num: '02', title: 'SNIPE THE TOKEN',  desc: 'You will see several token choices, including fake lookalikes. Click the exact matching token before time runs out.' },
+  { num: '03', title: 'BUILD YOUR EDGE',  desc: 'After each run, you can review your speed, accuracy, and streaks. Improve your rank over time, then challenge someone in 1v1.' },
 ];
 
 const HERO_TITLES = ['AIM TRAINER', 'REACTION TRAINER'];
@@ -354,9 +353,8 @@ export default function LandingPage() {
                   fontSize: 16, color: C.textMuted,
                   maxWidth: 460, lineHeight: 1.8, marginBottom: 44, fontWeight: 400,
                 }}>
-                  Sharpen your reaction time. Cut through the noise.
-                  Identify the right token before the window closes —
-                  then challenge someone to prove it.
+                  Improve your reaction speed by finding the correct token fast.
+                  Avoid decoys, stay accurate, and beat the timer on every round.
                 </p>
               </div>
 
@@ -497,8 +495,8 @@ export default function LandingPage() {
                 <div key={i} style={{ textAlign: 'center', flex: 1 }}>
                   <div style={{
                     width: 48, height: 48, borderRadius: '50%',
-                    background: r.label === 'UNRANKED' ? C.bgElevated : `${r.color}22`,
-                    border: `2px solid ${r.label === 'UNRANKED' ? C.textDim : r.color}`,
+                    background: `${r.color}22`,
+                    border: `2px solid ${r.color}`,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     margin: '0 auto 12px', fontSize: 18,
                   }}>

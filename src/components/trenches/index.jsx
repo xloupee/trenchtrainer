@@ -960,12 +960,11 @@ export default function App({initialDuelCode=""}){
             <span style={{color:C.textMuted}}>USER: {session?.user?.user_metadata?.username || "ANONYMOUS"}</span>
             <span style={{color:C.cyan}}>SOLO: {profileStats.practice_tier} {profileStats.practice_rating}</span>
             <span style={{color:C.blue}}>DUEL: {profileStats.duel_tier} {profileStats.duel_rating}</span>
-            <span style={{color:C.orange}}>SESSIONS: {profileStats.practice_sessions}</span>
           </div>
         </div>
 
         <div style={{flex:1,overflow:"hidden",minHeight:0,position:"relative"}}>
-          {tab==="solo"?<PracticeMode startDiff={startDiff} onSessionComplete={recordPracticeSession} onStartDiffChange={setStartDiff} onOpenProfile={()=>handleModeSelect("profile")}/>:tab==="1v1"?<OneVOneMode onMatchComplete={recordDuelMatch} initialJoinCode={duelCode}/>:<ProfileTab session={session} stats={profileStats} history={matchHistory} loading={profileLoading} msg={profileMsg} onRefresh={loadProfileStats}/>}
+          {tab==="solo"?<PracticeMode startDiff={startDiff} onSessionComplete={recordPracticeSession} onStartDiffChange={setStartDiff} onOpenProfile={()=>handleModeSelect("profile")}/>:tab==="1v1"?<OneVOneMode onMatchComplete={recordDuelMatch} initialJoinCode={duelCode} playerIdentity={session?.user?.id||""}/>:<ProfileTab session={session} stats={profileStats} history={matchHistory} loading={profileLoading} msg={profileMsg} onRefresh={loadProfileStats}/>}
         </div>
       </main>
       <style>{CSS}</style>

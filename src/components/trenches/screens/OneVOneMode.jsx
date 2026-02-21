@@ -23,7 +23,18 @@ const avgFromRow = (row) => {
   return sum / count;
 };
 
-function OneVOneMode({ onMatchComplete, initialJoinCode = "" }) {
+const ANON_DUEL_ID_KEY = "trenches:duel-anon-id-v1";
+
+const getStoredAnonDuelId = () => {
+  if (typeof window === "undefined") return `player-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+  const existing = window.localStorage.getItem(ANON_DUEL_ID_KEY);
+  if (existing) return existing;
+  const created = `player-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+  window.localStorage.setItem(ANON_DUEL_ID_KEY, created);
+  return created;
+};
+
+function OneVOneMode({ onMatchComplete, initialJoinCode = "", playerIdentity = "" }) {
   const [phase, setPhase] = useState("lobby");
   const [gameCode, setGameCode] = useState("");
   const [joinCode, setJoinCode] = useState("");
@@ -58,7 +69,8 @@ function OneVOneMode({ onMatchComplete, initialJoinCode = "" }) {
   const roundNumRef = useRef(0);
 
   const engine = useGameEngine(1, gameSeed);
-  const [playerId] = useState(() => `player-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`);
+  const [anonPlayerId] = useState(() => getStoredAnonDuelId());
+  const playerId = String(playerIdentity || "").trim() || anonPlayerId;
   const normalizedInitialJoinCode = (initialJoinCode || "")
     .toUpperCase()
     .replace(/[^A-Z0-9]/g, "")
