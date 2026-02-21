@@ -65,9 +65,9 @@ export const EMPTY_PROFILE_STATS = {
   duel_score_for: 0,
   duel_score_against: 0,
   duel_best_score: 0,
-  duel_rating: 1000,
-  duel_peak_rating: 1000,
-  duel_tier: "BRONZE",
+  duel_rating: 0,
+  duel_peak_rating: 0,
+  duel_tier: "UNRANKED",
 };
 
 export const PROFILE_SELECT =
@@ -106,7 +106,7 @@ export const normalizeProfileStats = (raw = {}) => ({
   duel_score_for: Number(raw?.duel_score_for || 0),
   duel_score_against: Number(raw?.duel_score_against || 0),
   duel_best_score: Number(raw?.duel_best_score || 0),
-  duel_rating: Number(raw?.duel_rating || 1000),
-  duel_peak_rating: Number(raw?.duel_peak_rating || 1000),
-  duel_tier: typeof raw?.duel_tier === "string" ? raw.duel_tier : "BRONZE",
+  duel_rating: Number(raw?.duel_rating || 0),
+  duel_peak_rating: Number(raw?.duel_peak_rating || 0),
+  duel_tier: typeof raw?.duel_tier === "string" ? raw.duel_tier : "UNRANKED",
 });

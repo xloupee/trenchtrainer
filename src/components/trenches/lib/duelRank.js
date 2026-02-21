@@ -1,13 +1,14 @@
-const MIN_DUEL_RATING = 100;
-const DUEL_BASE_RATING = 1000;
+const MIN_DUEL_RATING = 0;
+const DUEL_BASE_RATING = 0;
 
 const DUEL_TIERS = [
-  { tier: "CHALLENGER", min: 1700, color: "#ff3366", icon: "♛" },
-  { tier: "DIAMOND", min: 1500, color: "#63b3ed", icon: "◆" },
-  { tier: "PLATINUM", min: 1300, color: "#5dffc3", icon: "⬢" },
-  { tier: "GOLD", min: 1100, color: "#ecc94b", icon: "★" },
-  { tier: "SILVER", min: 900, color: "#a0aec0", icon: "☆" },
-  { tier: "BRONZE", min: 0, color: "#c77c48", icon: "●" },
+  { tier: "CHALLENGER", min: 1000, color: "#ff3366", icon: "♛" },
+  { tier: "DIAMOND", min: 850, color: "#63b3ed", icon: "◆" },
+  { tier: "PLATINUM", min: 700, color: "#5dffc3", icon: "⬢" },
+  { tier: "GOLD", min: 550, color: "#ecc94b", icon: "★" },
+  { tier: "SILVER", min: 400, color: "#a0aec0", icon: "☆" },
+  { tier: "BRONZE", min: 1, color: "#c77c48", icon: "●" },
+  { tier: "UNRANKED", min: 0, color: "#4a5568", icon: "—" },
 ];
 
 const clampRating = (value) => Math.max(MIN_DUEL_RATING, Math.round(Number(value) || DUEL_BASE_RATING));
@@ -49,8 +50,7 @@ export const getExpectedScore = (playerRating, opponentRating) => {
 
 const scoreFromOutcome = (outcome) => {
   if (outcome === "win") return 1;
-  if (outcome === "loss") return 0;
-  return 0.5;
+  return 0;
 };
 
 export const computeDuelRating = ({ currentRating, opponentRating, outcome, matchesPlayed }) => {

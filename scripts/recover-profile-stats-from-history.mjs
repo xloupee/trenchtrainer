@@ -32,9 +32,9 @@ const EMPTY_PROFILE_STATS = {
   duel_score_for: 0,
   duel_score_against: 0,
   duel_best_score: 0,
-  duel_rating: 1000,
-  duel_peak_rating: 1000,
-  duel_tier: "BRONZE",
+  duel_rating: 0,
+  duel_peak_rating: 0,
+  duel_tier: "UNRANKED",
 };
 
 const args = process.argv.slice(2);
@@ -85,9 +85,9 @@ const normalizeProfileStats = (raw = {}) => ({
   duel_score_for: asNumber(raw?.duel_score_for, 0),
   duel_score_against: asNumber(raw?.duel_score_against, 0),
   duel_best_score: asNumber(raw?.duel_best_score, 0),
-  duel_rating: Math.max(100, asNumber(raw?.duel_rating, 1000)),
-  duel_peak_rating: Math.max(100, asNumber(raw?.duel_peak_rating, 1000)),
-  duel_tier: typeof raw?.duel_tier === "string" && raw.duel_tier ? raw.duel_tier : "BRONZE",
+  duel_rating: Math.max(0, asNumber(raw?.duel_rating, 0)),
+  duel_peak_rating: Math.max(0, asNumber(raw?.duel_peak_rating, 0)),
+  duel_tier: typeof raw?.duel_tier === "string" && raw.duel_tier ? raw.duel_tier : "UNRANKED",
 });
 
 const hasProfileProgress = (stats = {}) =>
@@ -96,7 +96,7 @@ const hasProfileProgress = (stats = {}) =>
   asNumber(stats.practice_hits, 0) > 0 ||
   asNumber(stats.duel_matches, 0) > 0 ||
   asNumber(stats.practice_rating, 0) > 0 ||
-  asNumber(stats.duel_rating, 1000) > 1000;
+  asNumber(stats.duel_rating, 0) > 0;
 
 const getPracticeTier = (rating) => {
   const value = Math.max(0, Math.round(asNumber(rating, 0)));
@@ -110,13 +110,14 @@ const getPracticeTier = (rating) => {
 };
 
 const getDuelTier = (rating) => {
-  const value = Math.max(100, Math.round(asNumber(rating, 1000)));
-  if (value >= 1700) return "CHALLENGER";
-  if (value >= 1500) return "DIAMOND";
-  if (value >= 1300) return "PLATINUM";
-  if (value >= 1100) return "GOLD";
-  if (value >= 900) return "SILVER";
-  return "BRONZE";
+  const value = Math.max(0, Math.round(asNumber(rating, 0)));
+  if (value >= 1000) return "CHALLENGER";
+  if (value >= 850) return "DIAMOND";
+  if (value >= 700) return "PLATINUM";
+  if (value >= 550) return "GOLD";
+  if (value >= 400) return "SILVER";
+  if (value >= 1) return "BRONZE";
+  return "UNRANKED";
 };
 
 const isMissingColumnError = (error = {}) => {
@@ -206,7 +207,7 @@ const deriveStatsFromHistory = (rows = [], seedStats = EMPTY_PROFILE_STATS) => {
       const ratingAfter = asNumber(row?.rating_after, NaN);
       if (Number.isFinite(ratingAfter)) {
         if (!sawDuelRating) {
-          duelRating = Math.max(100, Math.round(ratingAfter));
+          duelRating = Math.max(0, Math.round(ratingAfter));
           sawDuelRating = true;
         }
         duelPeakRating = Math.max(duelPeakRating, Math.round(ratingAfter));

@@ -213,13 +213,19 @@ function OneVOneMode({ onMatchComplete, initialJoinCode = "", playerIdentity = "
     const oppHits = asNumber(oppRow?.hits, 0);
     const myMisses = asNumber(myRow?.misses, 0);
     const oppMisses = asNumber(oppRow?.misses, 0);
+    const myReactionSum = asNumber(myRow?.reaction_sum_ms, 0);
+    const oppReactionSum = asNumber(oppRow?.reaction_sum_ms, 0);
     const myBestRt = myRow?.best_time ?? null;
     const oppBestRt = oppRow?.best_time ?? null;
     const myAvgRt = avgFromRow(myRow);
     const oppAvgRt = avgFromRow(oppRow);
+    const myDoneAt = myRow?.done_at ? new Date(myRow.done_at).getTime() : NaN;
+    const oppDoneAt = oppRow?.done_at ? new Date(oppRow.done_at).getTime() : NaN;
+    const myDoneAtTs = Number.isFinite(myDoneAt) ? myDoneAt : null;
+    const oppDoneAtTs = Number.isFinite(oppDoneAt) ? oppDoneAt : null;
 
-    let winner = "draw";
-    let tiebreakReason = "exact_draw";
+    let winner = "me";
+    let tiebreakReason = "deterministic_fallback";
     const myForfeited = myMisses >= 999;
     const oppForfeited = oppMisses >= 999;
 
@@ -238,9 +244,21 @@ function OneVOneMode({ onMatchComplete, initialJoinCode = "", playerIdentity = "
     } else if (myBestRt !== null && oppBestRt !== null && myBestRt !== oppBestRt) {
       winner = myBestRt < oppBestRt ? "me" : "opp";
       tiebreakReason = "best_rt";
+    } else if (myReactionSum !== oppReactionSum) {
+      winner = myReactionSum < oppReactionSum ? "me" : "opp";
+      tiebreakReason = "reaction_sum";
+    } else if (myDoneAtTs !== null && oppDoneAtTs !== null && myDoneAtTs !== oppDoneAtTs) {
+      winner = myDoneAtTs < oppDoneAtTs ? "me" : "opp";
+      tiebreakReason = "done_at";
+    } else {
+      const myRole = String(myRow?.player_role || "");
+      const oppRole = String(oppRow?.player_role || "");
+      if (myRole && oppRole && myRole !== oppRole) {
+        winner = myRole === "host" ? "me" : "opp";
+        tiebreakReason = "deterministic_role";
+      }
     }
 
-    const draw = winner === "draw";
     const win = winner === "me";
     return {
       myScore,
@@ -249,13 +267,16 @@ function OneVOneMode({ onMatchComplete, initialJoinCode = "", playerIdentity = "
       oppHits,
       myMisses,
       oppMisses,
+      myReactionSum,
+      oppReactionSum,
       myAvgRt,
       oppAvgRt,
       myBestRt,
       oppBestRt,
+      myDoneAtTs,
+      oppDoneAtTs,
       win,
-      draw,
-      outcome: draw ? "draw" : win ? "win" : "loss",
+      outcome: win ? "win" : "loss",
       tiebreakReason,
     };
   }, []);
@@ -1015,10 +1036,9 @@ function OneVOneMode({ onMatchComplete, initialJoinCode = "", playerIdentity = "
   }
 
   if (phase === "results" && matchResult) {
-    const isDraw = Boolean(matchResult.draw);
-    const headingColor = isDraw ? C.yellow : matchResult.win ? C.green : C.red;
-    const headingText = isDraw ? "Draw" : matchResult.win ? "Victory" : "Defeat";
-    const headingIcon = isDraw ? "⚖️" : matchResult.win ? "🏆" : "💀";
+    const headingColor = matchResult.win ? C.green : C.red;
+    const headingText = matchResult.win ? "Victory" : "Defeat";
+    const headingIcon = matchResult.win ? "🏆" : "💀";
     const avgLabel = (value) => (value === null || value === undefined ? "--" : `${(value / 1000).toFixed(3)}s`);
     const bestLabel = (value) => (value === null || value === undefined ? "--" : `${(value / 1000).toFixed(3)}s`);
     const reasonMap = {
@@ -1027,7 +1047,10 @@ function OneVOneMode({ onMatchComplete, initialJoinCode = "", playerIdentity = "
       hits: `Score tied. ${matchResult.win ? "You" : "Opponent"} won on hits (${matchResult.myHits}-${matchResult.oppHits}).`,
       avg_rt: `Score/hits tied. ${matchResult.win ? "You" : "Opponent"} won on average reaction (${avgLabel(matchResult.myAvgRt)} vs ${avgLabel(matchResult.oppAvgRt)}).`,
       best_rt: `Score/hits/avg tied. ${matchResult.win ? "You" : "Opponent"} won on best reaction (${bestLabel(matchResult.myBestRt)} vs ${bestLabel(matchResult.oppBestRt)}).`,
-      exact_draw: "Exact tie across score, hits, average reaction, and best reaction.",
+      reaction_sum: `Score/hits/avg/best tied. ${matchResult.win ? "You" : "Opponent"} won on lower total reaction time (${avgLabel(matchResult.myReactionSum)} vs ${avgLabel(matchResult.oppReactionSum)}).`,
+      done_at: `Metrics tied. ${matchResult.win ? "You" : "Opponent"} finished all rounds first.`,
+      deterministic_role: "All tracked metrics tied. Host-side deterministic tiebreak decided the result.",
+      deterministic_fallback: "All tracked metrics tied. Final deterministic tiebreak decided the result.",
     };
     const detailText = reasonMap[matchResult.tiebreakReason] || "Result resolved.";
     const getColors = (metric) => {
