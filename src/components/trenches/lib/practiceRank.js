@@ -74,26 +74,58 @@ export const getPracticeNextTier = (rating) => {
   return { current: top, next: null, pointsToNext: 0, progressPercent: 100, currentMin: top.min, nextMin: top.min };
 };
 
-export const computePracticeSessionScore = ({ avgRtMs, accuracyPct, bestRtMs, hits = 0, rounds = 0 }) => {
+export const computePracticeSessionScore = ({ avgRtMs, accuracyPct, bestRtMs, hits = 0, rounds = 0, misses = 0, penalties = 0 }) => {
   const avg = Number(avgRtMs) > 0 ? Number(avgRtMs) : 3000;
   const acc = clamp(Number(accuracyPct) || 0, 0, 100);
   const best = Number(bestRtMs) > 0 ? Number(bestRtMs) : avg;
   const hitCount = Math.max(0, Number(hits) || 0);
   const roundCount = Math.max(1, Number(rounds) || 1);
+  const missCount = Math.max(0, Number(misses) || 0);
+  const penaltyCount = Math.max(0, Number(penalties) || 0);
+
+  const totalFailures = missCount + penaltyCount;
+  const netRatio = clamp((hitCount - totalFailures + roundCount) / (2 * roundCount), 0, 1);
   const completionRate = clamp(hitCount / roundCount, 0, 1);
-  const hitVolumeScore = completionRate * 450;
-  const speedScore = clamp(((2600 - avg) / 1600) * 450, 0, 450);
-  const accuracyScore = (acc / 100) * 120;
   const consistencyRatio = clamp(1 - (avg - best) / Math.max(avg, 1), 0, 1);
+
+  const accuracyScore = (acc / 100) * 380;
+  const netExecutionScore = netRatio * 320;
+  const speedScore = clamp(((2600 - avg) / 1600) * 220, 0, 220);
   const consistencyBonus = consistencyRatio * 80;
   const roundCompletionBonus = clamp((completionRate * (acc / 100)) * 50, 0, 50);
-  return Math.round(
-    hitVolumeScore +
-    speedScore +
-    accuracyScore +
-    consistencyBonus +
+
+  return Math.round(accuracyScore + netExecutionScore + speedScore + consistencyBonus + roundCompletionBonus);
+};
+
+export const computePracticeSessionScoreBreakdown = ({ avgRtMs, accuracyPct, bestRtMs, hits = 0, rounds = 0, misses = 0, penalties = 0 }) => {
+  const avg = Number(avgRtMs) > 0 ? Number(avgRtMs) : 3000;
+  const acc = clamp(Number(accuracyPct) || 0, 0, 100);
+  const best = Number(bestRtMs) > 0 ? Number(bestRtMs) : avg;
+  const hitCount = Math.max(0, Number(hits) || 0);
+  const roundCount = Math.max(1, Number(rounds) || 1);
+  const missCount = Math.max(0, Number(misses) || 0);
+  const penaltyCount = Math.max(0, Number(penalties) || 0);
+  const totalFailures = missCount + penaltyCount;
+
+  const completionRate = clamp(hitCount / roundCount, 0, 1);
+  const netRatio = clamp((hitCount - totalFailures + roundCount) / (2 * roundCount), 0, 1);
+  const consistencyRatio = clamp(1 - (avg - best) / Math.max(avg, 1), 0, 1);
+
+  const accuracyScore = Math.round((acc / 100) * 380);
+  const netExecutionScore = Math.round(netRatio * 320);
+  const speedScore = Math.round(clamp(((2600 - avg) / 1600) * 220, 0, 220));
+  const consistencyBonus = Math.round(consistencyRatio * 80);
+  const roundCompletionBonus = Math.round(clamp((completionRate * (acc / 100)) * 50, 0, 50));
+  const total = accuracyScore + netExecutionScore + speedScore + consistencyBonus + roundCompletionBonus;
+
+  return {
+    accuracyScore,
+    netExecutionScore,
+    speedScore,
+    consistencyBonus,
     roundCompletionBonus,
-  );
+    total: Math.round(total),
+  };
 };
 
 export const getPracticePerformanceBand = (sessionScore) => {
@@ -148,16 +180,16 @@ export const computePracticeRating = ({
 
   const gap = BAND_INDEX[band] - BAND_INDEX[expectedBand];
   let delta = (BASE_DELTA_BY_BAND[band] || 0) + gap * 5;
-
-  if (safeAccuracy >= 95) delta += 4;
-  if (totalMisses >= 2) delta -= 6;
-  if (safeHits >= 8) delta += 4;
+  delta -= Math.min(10, totalMisses * 2);
+  if (safeAccuracy > 80) delta += Math.max(0, Math.floor((safeAccuracy - 80) / 5));
+  if (safeAccuracy < 60) delta -= Math.max(0, Math.floor((60 - safeAccuracy) / 10));
+  if (safeHits >= 8) delta += 2;
 
   const currentTier = getPracticeTier(current).tier;
   if ((currentTier === "UNRANKED" || currentTier === "BRONZE") && band === "CHALLENGER") delta += 10;
   if ((currentTier === "UNRANKED" || currentTier === "BRONZE") && band === "PLAT") delta += 6;
 
-  delta = clamp(Math.round(delta), -30, 50);
+  delta = clamp(Math.round(delta), -35, 55);
   const nextRating = Math.max(0, current + delta);
 
   return {
@@ -165,6 +197,35 @@ export const computePracticeRating = ({
     delta,
     band,
     expectedBand,
+  };
+};
+
+const BAND_TO_TIER = Object.freeze({
+  UNDER: "BRONZE",
+  BRONZE: "BRONZE",
+  SILVER: "SILVER",
+  GOLD: "GOLD",
+  PLAT: "PLATINUM",
+  CHALLENGER: "CHALLENGER",
+});
+
+export const getPracticeSessionTier = ({ avgRtMs = null, accuracyPct = 0, bestRtMs = null, hits = 0, rounds = 0, misses = 0, penalties = 0 }) => {
+  const sessionScore = computePracticeSessionScore({
+    avgRtMs,
+    accuracyPct,
+    bestRtMs,
+    hits,
+    rounds,
+    misses,
+    penalties,
+  });
+  const band = getPracticePerformanceBand(sessionScore);
+  const tierName = BAND_TO_TIER[band] || "BRONZE";
+  const tier = PRACTICE_TIERS.find((row) => row.tier === tierName) || PRACTICE_TIERS[PRACTICE_TIERS.length - 2];
+  return {
+    ...tier,
+    band,
+    sessionScore,
   };
 };
 

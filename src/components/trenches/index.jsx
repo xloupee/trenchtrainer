@@ -126,8 +126,15 @@ const deriveProfileStatsFromHistory=(rows=[],seedStats=EMPTY_PROFILE_STATS)=>{
   list.forEach((row)=>{
     if(isSoloHistoryMode(row?.mode)){
       practiceSessions+=1;
-      const rounds=Math.max(0,Math.round(asNumber(row?.rounds,0)));
-      const hits=Math.max(0,Math.round(asNumber(row?.score,0)));
+      const storedRounds=Math.max(0,Math.round(asNumber(row?.rounds,0)));
+      const storedScore=Math.max(0,Math.round(asNumber(row?.score,0)));
+      const rawAccuracy=asNumber(row?.accuracy_pct,NaN);
+      const hasAccuracy=Number.isFinite(rawAccuracy);
+      const accuracyPct=Math.max(0,Math.min(100,rawAccuracy));
+      const rounds=storedRounds>0?storedRounds:(hasAccuracy?0:storedScore);
+      const hits=hasAccuracy&&rounds>0
+        ?Math.max(0,Math.min(rounds,Math.round((accuracyPct/100)*rounds)))
+        :Math.max(0,Math.min(rounds,storedScore));
       practiceRounds+=rounds;
       practiceHits+=hits;
       practiceMisses+=Math.max(0,rounds-hits);
@@ -707,6 +714,8 @@ export default function App({initialDuelCode=""}){
       bestRtMs:practiceStats.bestTime,
       hits:practiceStats.hits,
       rounds,
+      misses:practiceStats.misses,
+      penalties:practiceStats.penalties,
     });
     const nextProfile=await updateProfileStats((prev)=>{
       const ratingUpdate=computePracticeRating({
@@ -739,7 +748,7 @@ export default function App({initialDuelCode=""}){
     await insertMatchHistory({
       mode:"solo",
       outcome:"session",
-      score:practiceStats.hits||0,
+      score:practiceStats.score||0,
       opponent_score:null,
       rounds,
       accuracy_pct:accuracy,
