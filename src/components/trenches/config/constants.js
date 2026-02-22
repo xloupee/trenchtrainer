@@ -26,7 +26,7 @@ export const C = {
   textGhost: "#222222",
 };
 
-export const MODE_KEYS = ["solo", "1v1", "profile"];
+export const MODE_KEYS = ["solo", "1v1", "wager", "profile"];
 const isModeKey = (value) => MODE_KEYS.includes(value);
 export const normalizeModeKey = (value) => {
   if (value === "practice") return "solo";
@@ -35,11 +35,13 @@ export const normalizeModeKey = (value) => {
 export const MODE_ROUTE_MAP = Object.freeze({
   solo: "/play/solo",
   "1v1": "/play/duel",
+  wager: "/play/wager",
   profile: "/play/profile",
 });
 export const modeToPath = (mode) => MODE_ROUTE_MAP[normalizeModeKey(mode)] || MODE_ROUTE_MAP.solo;
 export const pathToMode = (pathname = "") => {
   if (pathname.startsWith("/play/duel")) return "1v1";
+  if (pathname.startsWith("/play/wager")) return "wager";
   if (pathname.startsWith("/play/profile")) return "profile";
   if (pathname.startsWith("/play/solo")) return "solo";
   if (pathname.startsWith("/play/practice")) return "solo";
