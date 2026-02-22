@@ -39,6 +39,14 @@ const BASE_DELTA_BY_BAND = Object.freeze({
   CHALLENGER: 37,
 });
 
+const PRACTICE_DIFFICULTY_MULTIPLIERS = Object.freeze({
+  1: 1.0,
+  3: 1.25,
+  5: 1.5,
+  7: 1.75,
+  10: 2.0,
+});
+
 export const getPracticeTier = (rating) => {
   const normalized = Math.max(0, Math.round(Number(rating) || PRACTICE_BASE_RATING));
   return PRACTICE_TIERS.find((row) => normalized >= row.min) || PRACTICE_TIERS[PRACTICE_TIERS.length - 1];
@@ -158,6 +166,11 @@ export const computePracticeRating = ({
     band,
     expectedBand,
   };
+};
+
+export const getPracticeDifficultyMultiplier = (level) => {
+  const normalized = Math.round(Number(level) || 1);
+  return PRACTICE_DIFFICULTY_MULTIPLIERS[normalized] || 1;
 };
 
 export { PRACTICE_BASE_RATING };

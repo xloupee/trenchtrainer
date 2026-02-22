@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { C } from "../config/constants";
 import useGameEngine from "../hooks/useGameEngine";
+import { getPracticeDifficultyMultiplier } from "../lib/practiceRank";
 import { GameView, SessionSummary } from "../ui/shared";
 
 const SOLO_DIFFICULTY_SETTINGS={
@@ -10,6 +11,7 @@ const SOLO_DIFFICULTY_SETTINGS={
   7:{roundCap:9,maxMultiplier:2.75},
   10:{roundCap:12,maxMultiplier:3.0},
 };
+const SOLO_ROUND_TIME_LIMIT_MS=15000;
 const formatMultiplier=(value)=>{
   if(Number.isInteger(value))return `x${value.toFixed(1)}`;
   const text=value.toFixed(2).replace(/0+$/,"").replace(/\.$/,"");
@@ -19,15 +21,22 @@ const formatMultiplier=(value)=>{
 function PracticeMode({startDiff=1,onSessionComplete,onStartDiffChange,onOpenProfile}){
   const[screen,setScreen]=useState("menu"); // menu | playing | summary
   const[rankImpact,setRankImpact]=useState(null);
+  const[showMultiplierHelp,setShowMultiplierHelp]=useState(false);
   const levelConfig=SOLO_DIFFICULTY_SETTINGS[startDiff]||SOLO_DIFFICULTY_SETTINGS[1];
   const levelCap=levelConfig.roundCap;
   const maxMultiplier=levelConfig.maxMultiplier;
-  const engine=useGameEngine(startDiff,null,levelCap,maxMultiplier);
+  const rpMultiplier=getPracticeDifficultyMultiplier(startDiff);
+  const engine=useGameEngine(startDiff,null,levelCap,maxMultiplier,{roundTimeLimitMs:SOLO_ROUND_TIME_LIMIT_MS});
   const summarySavedRef=useRef(false);
+  const sessionDifficultyRef=useRef(startDiff);
   const latestStatsRef=useRef(engine.stats);
   const latestScreenRef=useRef(screen);
   const onSessionCompleteRef=useRef(onSessionComplete);
-  const start=()=>{engine.reset();setScreen("playing");};
+  const start=()=>{
+    sessionDifficultyRef.current=startDiff;
+    engine.reset();
+    setScreen("playing");
+  };
   const practiceSteps=[
     ["01","Hover on HOLSTER for 0.8s to start",C.text],
     ["02","Read the signal tweet before clicking",C.text],
@@ -46,7 +55,10 @@ function PracticeMode({startDiff=1,onSessionComplete,onStartDiffChange,onOpenPro
     const rounds=(latest?.hits||0)+(latest?.misses||0)+(latest?.penalties||0);
     if(rounds<=0)return;
     summarySavedRef.current=true;
-    const maybePromise=onSessionCompleteRef.current?.(latest);
+    const maybePromise=onSessionCompleteRef.current?.({
+      ...latest,
+      difficultyLevel:sessionDifficultyRef.current,
+    });
     if(maybePromise&&typeof maybePromise.then==="function"){
       maybePromise
         .then((impact)=>{if(impact?.mode==="solo")setRankImpact(impact);})
@@ -110,8 +122,38 @@ function PracticeMode({startDiff=1,onSessionComplete,onStartDiffChange,onOpenPro
               </div>
               <div style={{display:"flex",gap:28,justifyContent:"center",width:"100%"}}>
                 <div>
-                  <div style={{fontSize:10,color:C.textDim,letterSpacing:2,marginBottom:4}}>MULTIPLIER</div>
-                  <div style={{fontSize:28,fontWeight:900,color:C.orange}}>{formatMultiplier(maxMultiplier)}</div>
+                  <div style={{position:"relative",display:"inline-flex",alignItems:"center",gap:6,marginBottom:4}}>
+                    <div style={{fontSize:10,color:C.textDim,letterSpacing:2}}>MULTIPLIER</div>
+                    <button
+                      type="button"
+                      onMouseEnter={()=>setShowMultiplierHelp(true)}
+                      onMouseLeave={()=>setShowMultiplierHelp(false)}
+                      onFocus={()=>setShowMultiplierHelp(true)}
+                      onBlur={()=>setShowMultiplierHelp(false)}
+                      style={{width:16,height:16,borderRadius:"50%",border:`1px solid ${C.border}`,background:C.bgCard,color:C.textMuted,fontSize:10,fontWeight:900,cursor:"help",lineHeight:1,padding:0}}
+                      aria-label="Show multiplier help"
+                    >
+                      ?
+                    </button>
+                    {showMultiplierHelp&&(
+                      <div style={{position:"absolute",top:26,left:"50%",transform:"translateX(-50%)",width:500,padding:"16px 18px",borderRadius:12,border:`1px solid ${C.borderLight}`,background:`linear-gradient(145deg,${C.bgCard},${C.bgAlt})`,boxShadow:"0 16px 38px rgba(0,0,0,0.5)",zIndex:40,textAlign:"left"}}>
+                        <div style={{fontSize:12,color:C.yellow,letterSpacing:2.2,fontWeight:800,marginBottom:10}}>SOLO RP MULTIPLIER</div>
+                        <div style={{display:"grid",gridTemplateColumns:"1fr auto",rowGap:6,columnGap:12,fontFamily:"var(--mono)",fontSize:13,marginBottom:10}}>
+                          <span style={{color:C.textMuted}}>Level 1</span><span style={{color:C.text,fontWeight:800}}>x1.00</span>
+                          <span style={{color:C.textMuted}}>Level 3</span><span style={{color:C.text,fontWeight:800}}>x1.25</span>
+                          <span style={{color:C.textMuted}}>Level 5</span><span style={{color:C.text,fontWeight:800}}>x1.50</span>
+                          <span style={{color:C.textMuted}}>Level 7</span><span style={{color:C.text,fontWeight:800}}>x1.75</span>
+                          <span style={{color:C.textMuted}}>Level 10</span><span style={{color:C.text,fontWeight:800}}>x2.00</span>
+                        </div>
+                        <div style={{fontSize:13,color:C.textMuted,lineHeight:1.55}}>
+                          Base RP is calculated from reaction speed, accuracy, and consistency.
+                          <br/>
+                          Final RP = Base RP x level multiplier (clamped to +/-100).
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  <div style={{fontSize:28,fontWeight:900,color:C.orange}}>{formatMultiplier(rpMultiplier)}</div>
                 </div>
                 <div>
                   <div style={{fontSize:10,color:C.textDim,letterSpacing:2,marginBottom:4}}>ROUND_CAP</div>
@@ -130,7 +172,7 @@ function PracticeMode({startDiff=1,onSessionComplete,onStartDiffChange,onOpenPro
 
       </div>
     </div>);
-  return <GameView engine={engine} onExit={()=>setScreen("summary")}/>;
+  return <GameView engine={engine} onExit={()=>setScreen("summary")} timerMode="countdown" timerLimitMs={SOLO_ROUND_TIME_LIMIT_MS} timerLabel="TIME LEFT"/>;
 }
 
 export default PracticeMode;

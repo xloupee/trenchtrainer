@@ -1,0 +1,164 @@
+row_type,theme_id,kw,emoji,names_csv,decoys_csv,emoji_decoys_csv,text,user,handle,time,sort_order,verified,warn,reply,media_type,media_dur,quote_user,quote_handle,quote_time,quote_verified,quote_text,quote_media_type,quote_media_dur,kind,value
+theme,apple,apple,🍎,AppleCoin|APPLE|AppleToken|APPLX,GrapeCoin|BananaToken|MangoDAO|OrangeCoin|PearToken|CHERRY|KiwiCoin|BlueberryDAO|CitrusCoin|MelonToken|PLUM|FruitDAO,🍊|🍇|🍌|🥭|🍐|🍒|🫐|🥝|🍑|🍋,,,,,,,,,,,,,,,,,,,
+theme_tweet,apple,,,,,,Apples are at an all-time high right now. 🍎,CryptoAlerts,@cryptoalerts,27s,1,,,,,,,,,,,,,,
+theme_tweet,apple,,,,,,Farmers reporting apples falling everywhere. Bullish 📈,DeFi Degen,@defidegen,14s,2,,,,,,,,,,,,,,
+theme_tweet,apple,,,,,,Apple demand exploding!! Narrative is CLEAR.,AlphaLeaks,@alphaleaks,45s,3,,,,,,,,,,,,,,
+theme_tweet,apple,,,,,,Breaking: Global apple shortage 🍎🍎🍎,Whale Watch,@whalewatcher,8s,4,,,,,,,,,,,,,,
+theme,rocket,rocket,🚀,RocketCoin|ROCKET|RocketDAO|RKTX,PlaneCoin|UFOToken|StarDAO|MoonCoin|JetToken|COMET|SpaceCoin|OrbitDAO|SaturnCoin|NebulaTkn,✈️|🛸|🎆|💫|⭐|🌙|🛩️|🎯|🌟|💥,,,,,,,,,,,,,,,,,,,
+theme_tweet,rocket,,,,,,NASA just announced a new rocket launch window 🚀,SpaceNews,@spacenews,12s,1,,,,,,,,,,,,,,
+theme_tweet,rocket,,,,,,Rockets trending #1 worldwide.,TrendBot,@trendbot,31s,2,,,,,,,,,,,,,,
+theme_tweet,rocket,,,,,,SpaceX competitor revealed new design. CT going crazy,TechAlpha,@techalpha,5s,3,,,,,,,,,,,,,,
+theme,dog,dog,🐕,DogCoin|DOG|DogToken|DOGX,CatCoin|BearToken|BunnyDAO|FoxCoin|WolfToken|HAMSTER|LionCoin|TigerDAO|PandaCoin|MonkeyTkn,🐱|🐻|🐰|🦊|🐺|🐹|🦁|🐯|🐼|🐵,,,,,,,,,,,,,,,,,,,
+theme_tweet,dog,,,,,,Dogs are dominating social media today 🐕,ViralTracker,@viraltracker,19s,1,,,,,,,,,,,,,,
+theme_tweet,dog,,,,,,World's largest dog show breaks all records.,NewsWire,@newswire,42s,2,,,,,,,,,,,,,,
+theme_tweet,dog,,,,,,Dog adoption rates hit all-time high 🐶📈,DataPulse,@datapulse,7s,3,,,,,,,,,,,,,,
+theme,fire,fire,🔥,FireCoin|FIRE|FireToken|FIRX,WaterCoin|IceToken|ThunderDAO|WaveCoin|WindToken|VOLCANO|SunCoin|StormDAO|BlazeCoin|FlameTkn,💧|❄️|⚡|🌊|💨|🌋|☀️|🌈|🌪️|🧊,,,,,,,,,,,,,,,,,,,
+theme_tweet,fire,,,,,,This market is on FIRE 🔥🔥🔥,MarketPulse,@marketpulse,3s,1,,,,,,,,,,,,,,
+theme_tweet,fire,,,,,,Wildfire narrative spreading across CT.,AlphaSignals,@alphasignals,22s,2,,,,,,,,,,,,,,
+theme_tweet,fire,,,,,,Fire emojis everywhere. You know what that means. 🔥,DegenAlerts,@degenalerts,16s,3,,,,,,,,,,,,,,
+theme,diamond,diamond,💎,DiamondCoin|DIAMOND|DiamondDAO|DMDX,GoldCoin|CoinToken|CrownDAO|RingCoin|TrophyTkn|PEARL|CrystalCoin|RubyDAO|EmeraldCoin|SapphireTkn,💰|🪙|👑|💍|🏆|🔮|🪨|💵|🎰|🏅,,,,,,,,,,,,,,,,,,,
+theme_tweet,diamond,,,,,,Diamond hands are winning today 💎,HODLKing,@hodlking,9s,1,,,,,,,,,,,,,,
+theme_tweet,diamond,,,,,,Diamond prices surge to record levels.,MarketWatch,@mktwatch,33s,2,,,,,,,,,,,,,,
+theme_tweet,diamond,,,,,,CT can't stop talking about diamonds 💎💎,GemHunter,@gemhunter,21s,3,,,,,,,,,,,,,,
+theme,frog,frog,🐸,FrogCoin|FROG|FrogToken|FRGX,SnakeCoin|LizardTkn|TurtleDAO|CrocCoin|DinoToken|GECKO|ToadCoin|NewtDAO|BugCoin|BeetleTkn,🐍|🦎|🐢|🐊|🦖|🐛|🦗|🐞|🦋|🐝,,,,,,,,,,,,,,,,,,,
+theme_tweet,frog,,,,,,Frogs taking over the timeline again 🐸,MemeRadar,@memeradar,6s,1,,,,,,,,,,,,,,
+theme_tweet,frog,,,,,,The frog meta is BACK 🐸🐸,AlphaFrog,@alphafrog,28s,2,,,,,,,,,,,,,,
+theme_tweet,frog,,,,,,Frog memes everywhere. Crystal clear.,DegenPulse,@degenpulse,11s,3,,,,,,,,,,,,,,
+theme,penguin,penguin,🐧,PenguinCoin|PENGUIN|PenguinDAO|PNGX,EagleCoin|DuckToken|OwlDAO|BirdCoin|ParrotTkn|DOVE|FlamingoC|ChickenDAO|PeacockCoin|SwanTkn,🦅|🦆|🦉|🐦|🦜|🕊️|🦩|🐔|🦚|🦢,,,,,,,,,,,,,,,,,,,
+theme_tweet,penguin,,,,,,Penguins trending everywhere 🐧 Load up.,TrendAlpha,@trendalpha,15s,1,,,,,,,,,,,,,,
+theme_tweet,penguin,,,,,,Antarctic penguin population hits record.,SciAlerts,@scialerts,38s,2,,,,,,,,,,,,,,
+theme_tweet,penguin,,,,,,Penguin szn is here. Don't sleep. 🐧🐧,NarrativeBot,@narrativebot,4s,3,,,,,,,,,,,,,,
+theme,moon,moon,🌕,MoonCoin|MOON|MoonToken|MOONX,StarCoin|SunToken|PlanetDAO|EarthCoin|CosmosTkn|GALAXY|CometCoin|NovaCoin|AuroraCoin|NeptuneTkn,⭐|☀️|🪐|🌍|💫|🌌|☄️|🔭|🌟|✨,,,,,,,,,,,,,,,,,,,
+theme_tweet,moon,,,,,,Going to the MOON tonight 🌕 Buckle up.,MoonBoi,@moonboi,2s,1,,,,,,,,,,,,,,
+theme_tweet,moon,,,,,,Lunar eclipse — moon mania 🌙,AstroAlerts,@astroalerts,25s,2,,,,,,,,,,,,,,
+theme_tweet,moon,,,,,,Moon content flooding every timeline.,NarrativeHQ,@narrativehq,18s,3,,,,,,,,,,,,,,
+theme,cat,cat,🐈,CatCoin|CAT|CatToken|CATX,DogCoin|BearToken|BunnyDAO|FoxCoin|WolfToken|HAMSTER|LionCoin|TigerDAO|PandaCoin|MonkeyTkn,🐕|🐻|🐰|🦊|🐺|🐹|🦁|🐯|🐼|🐵,,,,,,,,,,,,,,,,,,,
+theme_tweet,cat,,,,,,Cat meta heating up again 🐈,MemeRadar,@memeradar,9s,1,,,,,,,,,,,,,,
+theme_tweet,cat,,,,,,Cats dominating For You right now.,TrendDesk,@trenddesk,21s,2,,,,,,,,,,,,,,
+theme_tweet,cat,,,,,,Feline narrative confirmed. 🐾,AlphaCats,@alphacats,36s,3,,,,,,,,,,,,,,
+theme,shark,shark,🦈,SharkCoin|SHARK|SharkDAO|SHRK,WhaleCoin|DolphinTkn|OctoDAO|SquidCoin|FishToken|REEF|CrabCoin|JellyDAO|PufferCoin|ShrimpTkn,🐋|🐬|🐙|🦑|🐟|🐠|🦀|🪼|🐡|🦐,,,,,,,,,,,,,,,,,,,
+theme_tweet,shark,,,,,,Sharks are circling low caps 🦈,WhaleScope,@whalescope,12s,1,,,,,,,,,,,,,,
+theme_tweet,shark,,,,,,Big wallets just rotated into shark names.,OnchainEdge,@onchainedge,28s,2,,,,,,,,,,,,,,
+theme_tweet,shark,,,,,,Shark szn back on CT. Teeth out.,TrenchAlpha,@trenchaIpha,44s,3,,,,,,,,,,,,,,
+theme,coffee,coffee,☕,CoffeeCoin|COFFEE|BrewToken|BREWX,SodaCoin|BobaToken|TeaDAO|MilkCoin|JuiceToken|LATTE|AleCoin|WineDAO|ToastCoin|MateTkn,🥤|🧋|🍵|🥛|🍶|🧃|🍺|🍷|🥂|🧉,,,,,,,,,,,,,,,,,,,
+theme_tweet,coffee,,,,,,Coffee narrative waking up the timeline ☕,MorningCalls,@morningcalls,5s,1,,,,,,,,,,,,,,
+theme_tweet,coffee,,,,,,Caffeine coins pumping before NY open.,MarketWake,@marketwake,19s,2,,,,,,,,,,,,,,
+theme_tweet,coffee,,,,,,Brew meta everywhere. Don't fade.,DegenBrew,@degenbrew,33s,3,,,,,,,,,,,,,,
+theme,robot,robot,🤖,RobotCoin|ROBOT|MechDAO|RBTX,UFOToken|SignalCoin|CodeToken|BrainDAO|BatteryCoin|GEAR|SatelliteCoin|CyberDAO|GeneCoin|LabTkn,🛸|📡|💻|🧠|🔋|⚙️|🛰️|🦾|🧬|🧪,,,,,,,,,,,,,,,,,,,
+theme_tweet,robot,,,,,,AI bots are printing again 🤖,AIPulse,@aipulse,7s,1,,,,,,,,,,,,,,
+theme_tweet,robot,,,,,,Robot tags trending after open-source launch.,TechWire,@techwire,23s,2,,,,,,,,,,,,,,
+theme_tweet,robot,,,,,,Machine narrative is loud tonight.,AlphaMech,@alphamech,41s,3,,,,,,,,,,,,,,
+theme,volcano,volcano,🌋,VolcanoCoin|VOLCANO|LavaToken|LAVAX,WaveCoin|MountainDAO|IceToken|StormCoin|SunToken|RAIN|ThunderCoin|MistDAO|FlameCoin|ArcTkn,🌊|🏔️|🧊|🌪️|☀️|🌧️|⚡|🌫️|🔥|🌈,,,,,,,,,,,,,,,,,,,
+theme_tweet,volcano,,,,,,Volcano tokens erupting 🌋,HeatMap,@heatmap,11s,1,,,,,,,,,,,,,,
+theme_tweet,volcano,,,,,,Lava narrative just broke resistance.,ChartSage,@chartsage,26s,2,,,,,,,,,,,,,,
+theme_tweet,volcano,,,,,,Magma memes all over X right now.,NarrativeNow,@narrativenow,39s,3,,,,,,,,,,,,,,
+theme,ghost,ghost,👻,GhostCoin|GHOST|PhantomDAO|GHSTX,SkullCoin|ZombieToken|VampDAO|SpiderCoin|BatToken|WITCH|MagicCoin|FogDAO|MoonShade|CandleTkn,💀|🧟|🧛|🕷️|🦇|🧙|🪄|🌫️|🌙|🕯️,,,,,,,,,,,,,,,,,,,
+theme_tweet,ghost,,,,,,Ghost narrative haunting CT 👻,NightAlpha,@nightalpha,6s,1,,,,,,,,,,,,,,
+theme_tweet,ghost,,,,,,Phantom names catching bids into close.,AfterHours,@afterhours,17s,2,,,,,,,,,,,,,,
+theme_tweet,ghost,,,,,,Spooky season came early on chain.,MemeDesk,@memedesk,29s,3,,,,,,,,,,,,,,
+filler,,,,,,,scam proposal.,billymeth.eth,@biiiymeister,13s,,true,false,@jup_uplink,,,Jupiter Uplink,@jup_uplink,26m,true,"To Jupuary or not to Jupuary.
+
+High-level overview of the upcoming DAO vote.",video,0:38,,
+filler,,,,,,,Lots of X accounts hacked. DO NOT click DM links.,Security Alert,@secalert,2m,,true,true,,,,,,,false,,,,,
+filler,,,,,,,"gm. another day another narrative.
+
+if you're not in the trenches rn wyd",degen_steve,@degensteve,1m,,false,false,,image,,,,,false,,,,,
+filler,,,,,,,"New pairs flying. Stay sharp 👀
+
+Already 3 10x plays today.",TrenchWatch,@trenchwatch,4m,,true,false,,,,Raydium,@RaydiumProtocol,1h,true,"24h volume just crossed $2.1B.
+
+New ATH for the protocol.",image,,,
+filler,,,,,,,not watching memescope rn? ngmi,based_trader,@basedtrader,5m,,false,false,,,,,,,false,,,,,
+filler,,,,,,,Volume insane on Raydium today.,DEX Analytics,@dexanalytics,6m,,true,false,,image,,,,,false,,,,,
+filler,,,,,,,this is the play. not financial advice.,whale_alert,@whale_alert_,30s,,false,false,@pumpdotfun,,,pump.fun,@pumpdotfun,12m,true,Introducing graduated tokens — LP migration is now live.,,,,
+filler,,,,,,,someone just aped $50K into a 2 minute old token lol,onchain_lens,@onchain_lens,45s,,true,false,,image,,,,,false,,,,,
+filler,,,,,,,Volume divergence on memescope. Fast rotations everywhere.,FlowScanner,@flowscanner,22s,,true,false,,,,,,,false,,,,,
+filler,,,,,,,this pair launched 90s ago and already at 4k holders??,chain_hunter,@chain_hunter,11s,,false,false,,image,,,,,false,,,,,
+filler,,,,,,,Narratives flipping every 10 minutes today. Stay fluid.,MetaShift,@metashift,3m,,false,false,,,,,,,false,,,,,
+filler,,,,,,,whale wallet 9Z...k7 bought then sold in 47s. brutal.,TapeReader,@tapereader,1m,,true,false,,,,,,,false,,,,,
+filler,,,,,,,not your keys not your conviction,oldman_ct,@oldmanct,8m,,false,false,,,,,,,false,,,,,
+filler,,,,,,,Holders climbing but socials are dead. careful.,RiskDesk,@riskdesk,2m,,false,true,,,,,,,false,,,,,
+filler,,,,,,,I only trust entries after two clean pullbacks.,price_action_ser,@priceactionser,5m,,false,false,,,,,,,false,,,,,
+filler,,,,,,,new token launched with website + docs + roadmap. rare.,launch_watch,@launchwatch,48s,,false,false,,image,,,,,false,,,,,
+noise,,,,,,,,,,,1,,,,,,,,,,,,,ticker,BONK
+noise,,,,,,,,,,,2,,,,,,,,,,,,,ticker,WIF
+noise,,,,,,,,,,,3,,,,,,,,,,,,,ticker,PEPE
+noise,,,,,,,,,,,4,,,,,,,,,,,,,ticker,BRETT
+noise,,,,,,,,,,,5,,,,,,,,,,,,,ticker,ANDY
+noise,,,,,,,,,,,6,,,,,,,,,,,,,ticker,CHAD
+noise,,,,,,,,,,,7,,,,,,,,,,,,,ticker,GIGA
+noise,,,,,,,,,,,8,,,,,,,,,,,,,ticker,SMOL
+noise,,,,,,,,,,,9,,,,,,,,,,,,,ticker,BASED
+noise,,,,,,,,,,,10,,,,,,,,,,,,,ticker,SEND
+noise,,,,,,,,,,,11,,,,,,,,,,,,,ticker,COPE
+noise,,,,,,,,,,,12,,,,,,,,,,,,,ticker,SLERF
+noise,,,,,,,,,,,13,,,,,,,,,,,,,ticker,MEW
+noise,,,,,,,,,,,14,,,,,,,,,,,,,ticker,MYRO
+noise,,,,,,,,,,,15,,,,,,,,,,,,,ticker,SAMO
+noise,,,,,,,,,,,16,,,,,,,,,,,,,ticker,TURBO
+noise,,,,,,,,,,,17,,,,,,,,,,,,,ticker,SNEK
+noise,,,,,,,,,,,18,,,,,,,,,,,,,ticker,HONK
+noise,,,,,,,,,,,19,,,,,,,,,,,,,ticker,NEIRO
+noise,,,,,,,,,,,20,,,,,,,,,,,,,ticker,GOAT
+noise,,,,,,,,,,,21,,,,,,,,,,,,,ticker,PNUT
+noise,,,,,,,,,,,22,,,,,,,,,,,,,ticker,SPX
+noise,,,,,,,,,,,23,,,,,,,,,,,,,ticker,MOG
+noise,,,,,,,,,,,24,,,,,,,,,,,,,ticker,TOSHI
+noise,,,,,,,,,,,25,,,,,,,,,,,,,ticker,SIGMA
+noise,,,,,,,,,,,26,,,,,,,,,,,,,ticker,GRIND
+noise,,,,,,,,,,,27,,,,,,,,,,,,,ticker,PUMP
+noise,,,,,,,,,,,28,,,,,,,,,,,,,ticker,YOLO
+noise,,,,,,,,,,,29,,,,,,,,,,,,,ticker,WAGMI
+noise,,,,,,,,,,,30,,,,,,,,,,,,,ticker,NGMI
+noise,,,,,,,,,,,31,,,,,,,,,,,,,ticker,HODL
+noise,,,,,,,,,,,32,,,,,,,,,,,,,ticker,MONKE
+noise,,,,,,,,,,,33,,,,,,,,,,,,,ticker,VIBE
+noise,,,,,,,,,,,34,,,,,,,,,,,,,ticker,AURA
+noise,,,,,,,,,,,35,,,,,,,,,,,,,ticker,FROST
+noise,,,,,,,,,,,36,,,,,,,,,,,,,ticker,KONG
+noise,,,,,,,,,,,37,,,,,,,,,,,,,ticker,JOLT
+noise,,,,,,,,,,,38,,,,,,,,,,,,,ticker,DUST
+noise,,,,,,,,,,,39,,,,,,,,,,,,,ticker,WAVE
+noise,,,,,,,,,,,40,,,,,,,,,,,,,ticker,BYTE
+noise,,,,,,,,,,,41,,,,,,,,,,,,,ticker,NOVA
+noise,,,,,,,,,,,42,,,,,,,,,,,,,ticker,ATOM
+noise,,,,,,,,,,,43,,,,,,,,,,,,,ticker,FLIP
+noise,,,,,,,,,,,44,,,,,,,,,,,,,ticker,FOMO
+noise,,,,,,,,,,,45,,,,,,,,,,,,,ticker,RUSH
+noise,,,,,,,,,,,1,,,,,,,,,,,,,emoji,🐶
+noise,,,,,,,,,,,2,,,,,,,,,,,,,emoji,🐱
+noise,,,,,,,,,,,3,,,,,,,,,,,,,emoji,🐻
+noise,,,,,,,,,,,4,,,,,,,,,,,,,emoji,🦊
+noise,,,,,,,,,,,5,,,,,,,,,,,,,emoji,🐸
+noise,,,,,,,,,,,6,,,,,,,,,,,,,emoji,🐧
+noise,,,,,,,,,,,7,,,,,,,,,,,,,emoji,🎭
+noise,,,,,,,,,,,8,,,,,,,,,,,,,emoji,🗿
+noise,,,,,,,,,,,9,,,,,,,,,,,,,emoji,🧠
+noise,,,,,,,,,,,10,,,,,,,,,,,,,emoji,💊
+noise,,,,,,,,,,,11,,,,,,,,,,,,,emoji,🫡
+noise,,,,,,,,,,,12,,,,,,,,,,,,,emoji,👑
+noise,,,,,,,,,,,13,,,,,,,,,,,,,emoji,💀
+noise,,,,,,,,,,,14,,,,,,,,,,,,,emoji,🤡
+noise,,,,,,,,,,,15,,,,,,,,,,,,,emoji,🎪
+noise,,,,,,,,,,,16,,,,,,,,,,,,,emoji,🦍
+noise,,,,,,,,,,,17,,,,,,,,,,,,,emoji,🐍
+noise,,,,,,,,,,,18,,,,,,,,,,,,,emoji,🦈
+noise,,,,,,,,,,,19,,,,,,,,,,,,,emoji,🐋
+noise,,,,,,,,,,,20,,,,,,,,,,,,,emoji,🌊
+noise,,,,,,,,,,,21,,,,,,,,,,,,,emoji,🔮
+noise,,,,,,,,,,,22,,,,,,,,,,,,,emoji,🪙
+noise,,,,,,,,,,,23,,,,,,,,,,,,,emoji,💰
+noise,,,,,,,,,,,24,,,,,,,,,,,,,emoji,🎰
+noise,,,,,,,,,,,25,,,,,,,,,,,,,emoji,⭐
+noise,,,,,,,,,,,26,,,,,,,,,,,,,emoji,🌶️
+noise,,,,,,,,,,,27,,,,,,,,,,,,,emoji,🍄
+noise,,,,,,,,,,,28,,,,,,,,,,,,,emoji,🧊
+noise,,,,,,,,,,,29,,,,,,,,,,,,,emoji,🫧
+noise,,,,,,,,,,,30,,,,,,,,,,,,,emoji,🪐
+noise,,,,,,,,,,,31,,,,,,,,,,,,,emoji,☄️
+noise,,,,,,,,,,,32,,,,,,,,,,,,,emoji,🌋
+noise,,,,,,,,,,,33,,,,,,,,,,,,,emoji,🦎
+noise,,,,,,,,,,,34,,,,,,,,,,,,,emoji,🎯
+noise,,,,,,,,,,,35,,,,,,,,,,,,,emoji,⚡
+noise,,,,,,,,,,,36,,,,,,,,,,,,,emoji,🔥
+noise,,,,,,,,,,,37,,,,,,,,,,,,,emoji,💎
