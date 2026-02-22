@@ -121,6 +121,38 @@ function PracticeMode({startDiff=1,onSessionComplete,onStartDiffChange,onOpenPro
                     </button>
                   );
                 })}
+                <button
+                  type="button"
+                  disabled
+                  aria-disabled="true"
+                  aria-label="Endless mode coming soon"
+                  title="Endless mode coming soon"
+                  style={{
+                    flex:1,
+                    height:52,
+                    border:`1px dashed ${C.cyan}66`,
+                    background:`linear-gradient(145deg, ${C.bgCard}, ${C.bgAlt})`,
+                    color:C.cyan,
+                    fontSize:10,
+                    fontWeight:900,
+                    cursor:"not-allowed",
+                    transition:"all 0.2s",
+                    borderRadius:4,
+                    letterSpacing:1.4,
+                    display:"flex",
+                    alignItems:"center",
+                    justifyContent:"center",
+                    gap:6,
+                    padding:"0 10px",
+                    boxShadow:"inset 0 1px 0 rgba(255,255,255,0.02)",
+                    opacity:0.9,
+                  }}
+                >
+                  <span style={{letterSpacing:1.1}}>ENDLESS</span>
+                  <span style={{fontSize:8,color:C.textMuted,letterSpacing:1.2,padding:"2px 5px",borderRadius:999,border:`1px solid ${C.borderLight}`,background:C.bg}}>
+                    SOON
+                  </span>
+                </button>
               </div>
               <div style={{display:"flex",gap:28,justifyContent:"center",width:"100%"}}>
                 <div>
@@ -141,16 +173,16 @@ function PracticeMode({startDiff=1,onSessionComplete,onStartDiffChange,onOpenPro
                       <div style={{position:"absolute",top:26,left:"50%",transform:"translateX(-50%)",width:500,padding:"16px 18px",borderRadius:12,border:`1px solid ${C.borderLight}`,background:`linear-gradient(145deg,${C.bgCard},${C.bgAlt})`,boxShadow:"0 16px 38px rgba(0,0,0,0.5)",zIndex:40,textAlign:"left"}}>
                         <div style={{fontSize:12,color:C.yellow,letterSpacing:2.2,fontWeight:800,marginBottom:10}}>SOLO RP MULTIPLIER</div>
                         <div style={{display:"grid",gridTemplateColumns:"1fr auto",rowGap:6,columnGap:12,fontFamily:"var(--mono)",fontSize:13,marginBottom:10}}>
-                          <span style={{color:C.textMuted}}>Level 1</span><span style={{color:C.text,fontWeight:800}}>x1.00</span>
-                          <span style={{color:C.textMuted}}>Level 3</span><span style={{color:C.text,fontWeight:800}}>x1.25</span>
-                          <span style={{color:C.textMuted}}>Level 5</span><span style={{color:C.text,fontWeight:800}}>x1.50</span>
-                          <span style={{color:C.textMuted}}>Level 7</span><span style={{color:C.text,fontWeight:800}}>x1.75</span>
-                          <span style={{color:C.textMuted}}>Level 10</span><span style={{color:C.text,fontWeight:800}}>x2.00</span>
+                          <span style={{color:C.textMuted}}>Level 1</span><span style={{color:C.text,fontWeight:800}}>x0.50</span>
+                          <span style={{color:C.textMuted}}>Level 3</span><span style={{color:C.text,fontWeight:800}}>x0.90</span>
+                          <span style={{color:C.textMuted}}>Level 5</span><span style={{color:C.text,fontWeight:800}}>x1.15</span>
+                          <span style={{color:C.textMuted}}>Level 7</span><span style={{color:C.text,fontWeight:800}}>x1.40</span>
+                          <span style={{color:C.textMuted}}>Level 10</span><span style={{color:C.text,fontWeight:800}}>x1.70</span>
                         </div>
                         <div style={{fontSize:13,color:C.textMuted,lineHeight:1.55}}>
                           Base RP is calculated from reaction speed, accuracy, and consistency.
                           <br/>
-                          Final RP = Base RP x level multiplier (clamped to -30/+50).
+                          Final RP = Base RP x level multiplier (clamped to -35/+55).
                         </div>
                       </div>
                     )}

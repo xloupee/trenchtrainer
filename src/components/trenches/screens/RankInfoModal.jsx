@@ -115,6 +115,13 @@ function RankInfoModal({ open, onClose }) {
           </div>
         </div>
 
+        <div className="glass-card" style={{ padding: 14, marginBottom: 12, border: `1px solid ${C.yellow}33`, background: `linear-gradient(145deg, rgba(251,191,36,0.08), rgba(0,0,0,0.35))` }}>
+          <div style={{ fontSize: 10, color: C.yellow, letterSpacing: 2, marginBottom: 6 }}>&gt; RISK NOTICE</div>
+          <div style={{ fontSize: 11, color: C.textMuted, lineHeight: 1.6 }}>
+            LLM-powered signals may contain mistakes. Always verify information before acting.
+          </div>
+        </div>
+
         <div style={{ fontSize: 10, color: C.textDim, letterSpacing: 1.1 }}>
           Peak RP is your all-time highest RP for each mode.
         </div>

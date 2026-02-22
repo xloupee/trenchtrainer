@@ -40,11 +40,11 @@ const BASE_DELTA_BY_BAND = Object.freeze({
 });
 
 const PRACTICE_DIFFICULTY_MULTIPLIERS = Object.freeze({
-  1: 1.0,
-  3: 1.25,
-  5: 1.5,
-  7: 1.75,
-  10: 2.0,
+  1: 0.5,
+  3: 0.9,
+  5: 1.15,
+  7: 1.4,
+  10: 1.7,
 });
 
 export const getPracticeTier = (rating) => {

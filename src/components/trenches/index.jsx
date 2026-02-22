@@ -17,7 +17,7 @@ import {
   pathToMode,
 } from "./config/constants";
 import { computeDuelRating, getDuelTier } from "./lib/duelRank";
-import { computePracticeRating, computePracticeSessionScore, getPracticeNextTier, getPracticeTier } from "./lib/practiceRank";
+import { getPracticeDifficultyMultiplier, computePracticeRating, computePracticeSessionScore, getPracticeNextTier, getPracticeTier } from "./lib/practiceRank";
 import OneVOneMode from "./screens/OneVOneMode";
 import PracticeMode from "./screens/PracticeMode";
 import ProfileTab from "./screens/ProfileTab";
@@ -705,6 +705,8 @@ export default function App({initialDuelCode=""}){
   const recordPracticeSession=useCallback(async(practiceStats)=>{
     const rounds=practiceStats.hits+practiceStats.misses+practiceStats.penalties;
     if(rounds<=0)return;
+    const difficultyLevel=Math.round(Number(practiceStats?.difficultyLevel)||1);
+    const difficultyMultiplier=getPracticeDifficultyMultiplier(difficultyLevel);
     const accuracy=Math.round((practiceStats.hits/rounds)*100);
     const times=Array.isArray(practiceStats?.times)?practiceStats.times.filter((value)=>Number.isFinite(value)&&value>0):[];
     const avgRtMs=times.length>0?times.reduce((sum,value)=>sum+value,0)/times.length:null;
@@ -717,6 +719,7 @@ export default function App({initialDuelCode=""}){
       misses:practiceStats.misses,
       penalties:practiceStats.penalties,
     });
+    let baseDelta=0;
     const nextProfile=await updateProfileStats((prev)=>{
       const ratingUpdate=computePracticeRating({
         currentRating:prev.practice_rating,
@@ -727,7 +730,9 @@ export default function App({initialDuelCode=""}){
         penalties:practiceStats.penalties,
         accuracyPct:accuracy,
       });
-      const nextPracticeRating=ratingUpdate.nextRating;
+      baseDelta=Number.isFinite(Number(ratingUpdate?.delta))?Math.round(Number(ratingUpdate.delta)):0;
+      const finalDelta=Math.max(-35,Math.min(55,Math.round(baseDelta*difficultyMultiplier)));
+      const nextPracticeRating=Math.max(0,Math.round(Number(prev.practice_rating||0))+finalDelta);
       return{
         ...prev,
         practice_sessions:prev.practice_sessions+1,
@@ -766,6 +771,9 @@ export default function App({initialDuelCode=""}){
       beforeRating,
       afterRating,
       delta,
+      baseDelta,
+      difficultyMultiplier,
+      difficultyLevel,
       beforeTier,
       afterTier,
       peak:Math.max(Number(nextProfile?.practice_peak_rating||0),afterRating),
