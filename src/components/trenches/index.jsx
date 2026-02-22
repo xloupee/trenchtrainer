@@ -17,7 +17,7 @@ import {
   pathToMode,
 } from "./config/constants";
 import { computeDuelRating, getDuelTier } from "./lib/duelRank";
-import { computePracticeRating, computePracticeSessionScore, getPracticeDifficultyMultiplier, getPracticeNextTier, getPracticeTier } from "./lib/practiceRank";
+import { computePracticeRating, computePracticeSessionScore, getPracticeNextTier, getPracticeTier } from "./lib/practiceRank";
 import OneVOneMode from "./screens/OneVOneMode";
 import PracticeMode from "./screens/PracticeMode";
 import ProfileTab from "./screens/ProfileTab";
@@ -698,9 +698,6 @@ export default function App({initialDuelCode=""}){
   const recordPracticeSession=useCallback(async(practiceStats)=>{
     const rounds=practiceStats.hits+practiceStats.misses+practiceStats.penalties;
     if(rounds<=0)return;
-    const rawDifficultyLevel=Math.round(Number(practiceStats?.difficultyLevel)||1);
-    const difficultyLevel=[1,3,5,7,10].includes(rawDifficultyLevel)?rawDifficultyLevel:1;
-    const difficultyMultiplier=getPracticeDifficultyMultiplier(difficultyLevel);
     const accuracy=Math.round((practiceStats.hits/rounds)*100);
     const times=Array.isArray(practiceStats?.times)?practiceStats.times.filter((value)=>Number.isFinite(value)&&value>0):[];
     const avgRtMs=times.length>0?times.reduce((sum,value)=>sum+value,0)/times.length:null;
@@ -711,11 +708,9 @@ export default function App({initialDuelCode=""}){
       hits:practiceStats.hits,
       rounds,
     });
-    let baseDelta=0;
     const nextProfile=await updateProfileStats((prev)=>{
-      const currentPracticeRating=Math.max(0,Math.round(Number(prev.practice_rating)||0));
       const ratingUpdate=computePracticeRating({
-        currentRating:currentPracticeRating,
+        currentRating:prev.practice_rating,
         sessionScore,
         avgRtMs,
         hits:practiceStats.hits,
@@ -723,10 +718,7 @@ export default function App({initialDuelCode=""}){
         penalties:practiceStats.penalties,
         accuracyPct:accuracy,
       });
-      baseDelta=Number.isFinite(ratingUpdate.delta)?Math.round(ratingUpdate.delta):0;
-      const boostedDelta=Math.round(baseDelta*difficultyMultiplier);
-      const finalDelta=Math.max(-100,Math.min(100,boostedDelta));
-      const nextPracticeRating=Math.max(0,currentPracticeRating+finalDelta);
+      const nextPracticeRating=ratingUpdate.nextRating;
       return{
         ...prev,
         practice_sessions:prev.practice_sessions+1,
@@ -765,9 +757,6 @@ export default function App({initialDuelCode=""}){
       beforeRating,
       afterRating,
       delta,
-      baseDelta,
-      difficultyLevel,
-      difficultyMultiplier,
       beforeTier,
       afterTier,
       peak:Math.max(Number(nextProfile?.practice_peak_rating||0),afterRating),
@@ -776,7 +765,7 @@ export default function App({initialDuelCode=""}){
       progressPercent:typeof nextTierInfo?.progressPercent==="number"?nextTierInfo.progressPercent:0,
       sessionScore,
     };
-  },[getPracticeDifficultyMultiplier,insertMatchHistory,profileStats.practice_rating,updateProfileStats]);
+  },[insertMatchHistory,profileStats.practice_rating,updateProfileStats]);
 
   const recordDuelMatch=useCallback(async(result)=>{
     const outcome=result?.outcome==="win"?"win":"loss";

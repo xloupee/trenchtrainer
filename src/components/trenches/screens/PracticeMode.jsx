@@ -33,6 +33,8 @@ function PracticeMode({startDiff=1,onSessionComplete,onStartDiffChange,onOpenPro
   const latestScreenRef=useRef(screen);
   const onSessionCompleteRef=useRef(onSessionComplete);
   const start=()=>{
+    summarySavedRef.current=false;
+    setRankImpact(null);
     sessionDifficultyRef.current=startDiff;
     engine.reset();
     setScreen("playing");
@@ -148,7 +150,7 @@ function PracticeMode({startDiff=1,onSessionComplete,onStartDiffChange,onOpenPro
                         <div style={{fontSize:13,color:C.textMuted,lineHeight:1.55}}>
                           Base RP is calculated from reaction speed, accuracy, and consistency.
                           <br/>
-                          Final RP = Base RP x level multiplier (clamped to +/-100).
+                          Final RP = Base RP x level multiplier (clamped to -30/+50).
                         </div>
                       </div>
                     )}
