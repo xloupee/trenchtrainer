@@ -21,6 +21,7 @@ import { computePracticeRating, computePracticeSessionScore, getPracticeNextTier
 import OneVOneMode from "./screens/OneVOneMode";
 import PracticeMode from "./screens/PracticeMode";
 import ProfileTab from "./screens/ProfileTab";
+import WagerWipTab from "./screens/WagerWipTab";
 import { CSS } from "./styles/cssText";
 
 const SIDEBAR_WIDTH_KEY="trenches:sidebar-width";
@@ -294,6 +295,13 @@ const CompactProfileIcon=({color})=>(
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
     <path d="M12 12a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9Z" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
     <path d="M4.5 20.5a7.5 7.5 0 0 1 15 0" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
+);
+const CompactWagerIcon=({color})=>(
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <path d="M6.5 8.2h11a2 2 0 0 1 2 2v5.6a2 2 0 0 1-2 2h-11a2 2 0 0 1-2-2v-5.6a2 2 0 0 1 2-2Z" stroke={color} strokeWidth="1.8" strokeLinejoin="round"/>
+    <circle cx="12" cy="13" r="2.3" stroke={color} strokeWidth="1.8"/>
+    <path d="M8.2 6.2h7.6M9.8 5h4.4" stroke={color} strokeWidth="1.5" strokeLinecap="round"/>
   </svg>
 );
 
@@ -820,6 +828,7 @@ export default function App({initialDuelCode=""}){
   const navItems = [
     { key: "solo", word: "SOLO", compactIcon: "/practice-icon.png" },
     { key: "1v1", word: "DUEL", compactIconNode: (color)=><CompactDuelIcon color={color} variant={duelIconVariant}/> },
+    { key: "wager", word: "WAGER", compactIconNode: (color)=><CompactWagerIcon color={color}/>, persist: false },
     { key: "profile", word: "STATS", compactIconNode: (color)=><CompactProfileIcon color={color}/> },
   ];
 
@@ -837,7 +846,7 @@ export default function App({initialDuelCode=""}){
             return (
               <div
                 key={item.key}
-                onClick={()=>handleModeSelect(item.key)}
+                onClick={()=>handleModeSelect(item.key,{persist:item.persist!==false})}
                 onMouseEnter={()=>setHoveredSidebarKey(item.key)}
                 onMouseLeave={()=>setHoveredSidebarKey((prev)=>prev===item.key?null:prev)}
                 style={{ 
@@ -963,7 +972,7 @@ export default function App({initialDuelCode=""}){
         </div>
 
         <div style={{flex:1,overflow:"hidden",minHeight:0,position:"relative"}}>
-          {tab==="solo"?<PracticeMode startDiff={startDiff} onSessionComplete={recordPracticeSession} onStartDiffChange={setStartDiff} onOpenProfile={()=>handleModeSelect("profile")}/>:tab==="1v1"?<OneVOneMode onMatchComplete={recordDuelMatch} initialJoinCode={duelCode} playerIdentity={session?.user?.id||""}/>:<ProfileTab session={session} stats={profileStats} history={matchHistory} loading={profileLoading} msg={profileMsg} onRefresh={loadProfileStats}/>}
+          {tab==="solo"?<PracticeMode startDiff={startDiff} onSessionComplete={recordPracticeSession} onStartDiffChange={setStartDiff} onOpenProfile={()=>handleModeSelect("profile")}/>:tab==="1v1"?<OneVOneMode onMatchComplete={recordDuelMatch} initialJoinCode={duelCode} playerIdentity={session?.user?.id||""}/>:tab==="wager"?<WagerWipTab/>:<ProfileTab session={session} stats={profileStats} history={matchHistory} loading={profileLoading} msg={profileMsg} onRefresh={loadProfileStats}/>}
         </div>
       </main>
       <style>{CSS}</style>

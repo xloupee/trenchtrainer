@@ -49,19 +49,33 @@ function ProfileTab({ session, stats, history }) {
             <div style={{ width: "100%", display: "flex" }}>
               <div className="glass-card" style={{ padding: "24px", background: "rgba(0,0,0,0.5)", borderRadius: 10, minHeight: 196, height: "100%", width: "100%", display: "flex", flexDirection: "column", justifyContent: "center" }}>
                 <div style={{ fontSize: 12, color: C.textDim, letterSpacing: 1.6, marginBottom: 18 }}>&gt; IDENTITY</div>
-                <div style={{ display: "flex", alignItems: "center", gap: 18, minWidth: 0 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 16, minWidth: 0, marginBottom: 14 }}>
                   <div style={{ 
-                    width: 72, height: 72, background: "black", border: `1px solid ${C.border}`,
-                    display: "flex", alignItems: "center", justifyContent: "center", fontSize: 34,
+                    width: 64, height: 64, background: "black", border: `1px solid ${C.border}`,
+                    display: "flex", alignItems: "center", justifyContent: "center", fontSize: 30,
                     boxShadow: `0 0 22px ${practiceRank.color}22`, borderRadius: 12, flexShrink: 0
                   }}>
                     {practiceRank.icon}
                   </div>
-                  <div style={{ minWidth: 0 }}>
+                  <div style={{ minWidth: 0, flex: 1 }}>
                     <div style={{ fontSize: 10, color: C.textDim, letterSpacing: 3, marginBottom: 8, fontWeight: 800 }}>USERNAME</div>
                     <h1 style={{ fontSize: 42, fontWeight: 900, letterSpacing: -2, color: C.text, lineHeight: 1, margin: 0, overflow: "hidden", textOverflow: "ellipsis" }}>
                       {username.toUpperCase()}
                     </h1>
+                  </div>
+                </div>
+                <div style={{ display: "grid", gap: 8 }}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", border: `1px solid ${C.border}`, background: "rgba(255,255,255,0.02)", borderRadius: 8, padding: "8px 10px" }}>
+                    <span style={{ fontSize: 9, color: C.textDim, letterSpacing: 1.2, fontWeight: 800 }}>SOLO RANK</span>
+                    <span style={{ fontSize: 12, color: practiceRank.color, letterSpacing: 1, fontWeight: 900 }}>
+                      {practiceRank.tier} • {stats.practice_rating} RP
+                    </span>
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", border: `1px solid ${C.border}`, background: "rgba(255,255,255,0.02)", borderRadius: 8, padding: "8px 10px" }}>
+                    <span style={{ fontSize: 9, color: C.textDim, letterSpacing: 1.2, fontWeight: 800 }}>DUEL RANK</span>
+                    <span style={{ fontSize: 12, color: duelRank.color, letterSpacing: 1, fontWeight: 900 }}>
+                      {duelRank.tier} • {stats.duel_rating} RP
+                    </span>
                   </div>
                 </div>
               </div>
