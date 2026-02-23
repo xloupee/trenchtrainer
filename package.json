@@ -19,7 +19,8 @@
     "video:render:preview": "remotion render FirstTxRoadmapDemo16x9 out/firsttx-roadmap-demo-preview.mp4 --jpeg-quality=70 --crf=28 --concurrency=2",
     "content:export": "node scripts/content/export-game-data-to-csv.mjs",
     "content:import": "node scripts/content/import-csv-to-game-data.mjs",
-    "content:sync": "npm run content:export && npm run content:import"
+    "content:sync": "npm run content:export && npm run content:import",
+    "rank:sim:solo": "node scripts/rank/simulate-solo-rp.mjs"
   },
   "dependencies": {
     "@remotion/google-fonts": "^4.0.427",

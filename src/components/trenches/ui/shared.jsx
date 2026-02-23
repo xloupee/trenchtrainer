@@ -198,7 +198,7 @@ function SessionSummary({stats,onBack,onProfile,onPlayAgain,rankImpact=null}){
   return (
     <div className="menu-bg" style={{justifyContent:"flex-start",overflowY:"auto",overflowX:"hidden",paddingTop:isWideSummary?20:16,paddingBottom:isWideSummary?18:14}}>
       <div className="grid-bg" />
-      <div className="menu-inner" style={{maxWidth:isWideSummary?1240:960,paddingBottom:isWideSummary?18:14}}>
+      <div className="menu-inner" style={{maxWidth:isWideSummary?980:760,paddingBottom:isWideSummary?18:14}}>
         <div style={{textAlign:"center",marginBottom:isWideSummary?32:22}}>
           <h2 style={{fontSize:isWideSummary?46:38,fontWeight:900,color:C.text,marginBottom:6,letterSpacing:-1.5,textShadow:"0 0 20px rgba(255,255,255,0.1)"}}>{summaryTitle}</h2>
           <div style={{fontSize:isWideSummary?15:13,fontWeight:700,color:C.textDim,letterSpacing:4,textTransform:"uppercase"}}>{summarySubtitle}</div>
@@ -304,20 +304,109 @@ function SessionSummary({stats,onBack,onProfile,onPlayAgain,rankImpact=null}){
           </div>
         </div>
 
-        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(220px,1fr))",gap:isWideSummary?12:10,marginTop:isWideSummary?22:18}}>
+        <div
+          style={{
+            display:"flex",
+            flexDirection:"column",
+            gap:10,
+            marginTop:isWideSummary?16:12,
+            width:"100%",
+            maxWidth:isWideSummary?430:320,
+            marginInline:"auto",
+            alignSelf:"center",
+          }}
+        >
           {onPlayAgain&&(
-            <button onClick={onPlayAgain} className="btn-primary btn-green" style={{padding:isWideSummary?"16px":"14px",fontSize:isWideSummary?12:11}}>
+            <button 
+              onClick={onPlayAgain} 
+              className="btn-primary btn-green" 
+              style={{
+                height:isWideSummary?48:42,
+                fontSize:isWideSummary?13:11,
+                fontWeight:900,
+                letterSpacing:2.2,
+                display:"flex",
+                alignItems:"center",
+                justifyContent:"center",
+                gap:8,
+                boxShadow:`0 8px 32px ${C.green}25`
+              }}
+            >
               PLAY AGAIN
             </button>
           )}
-          <button onClick={onBack} className="btn-primary btn-ghost" style={{padding:isWideSummary?"16px":"14px",fontSize:isWideSummary?12:11,fontWeight:900,letterSpacing:1.5,border:`1px solid ${C.borderLight}`}}>
-            MENU
-          </button>
-          {onProfile&&(
-            <button onClick={onProfile} className="btn-primary btn-blue" style={{padding:isWideSummary?"16px":"14px",fontSize:isWideSummary?12:11}}>
-              PROFILE
+          
+          <div style={{display:"flex",gap:10}}>
+            <button 
+              onClick={onBack} 
+              className="glass-card" 
+              style={{
+                flex:1,
+                padding:0,
+                height:isWideSummary?42:38,
+                display:"flex",
+                alignItems:"center",
+                justifyContent:"center",
+                gap:8,
+                fontSize:10,
+                fontWeight:800,
+                letterSpacing:1.5,
+                color:C.textMuted,
+                cursor:"pointer",
+                transition:"all 0.2s",
+                background:C.bgAlt,
+                border:`1px solid ${C.borderLight}`
+              }}
+              onMouseEnter={e => {
+                e.currentTarget.style.borderColor = C.textDim;
+                e.currentTarget.style.color = C.text;
+                e.currentTarget.style.background = C.bgElevated;
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.borderColor = C.borderLight;
+                e.currentTarget.style.color = C.textMuted;
+                e.currentTarget.style.background = C.bgAlt;
+              }}
+            >
+              MENU
             </button>
-          )}
+            
+            {onProfile && (
+              <button 
+                onClick={onProfile} 
+                className="glass-card" 
+                style={{
+                  flex:1,
+                  padding:0,
+                  height:isWideSummary?42:38,
+                  display:"flex",
+                  alignItems:"center",
+                  justifyContent:"center",
+                  gap:8,
+                  fontSize:10,
+                  fontWeight:800,
+                  letterSpacing:1.5,
+                  color:C.textMuted,
+                  cursor:"pointer",
+                  transition:"all 0.2s",
+                  background:C.bgAlt,
+                  border:`1px solid ${C.borderLight}`
+                }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.borderColor = C.blue;
+                  e.currentTarget.style.color = C.text;
+                  e.currentTarget.style.background = C.bgElevated;
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.borderColor = C.borderLight;
+                  e.currentTarget.style.color = C.textMuted;
+                  e.currentTarget.style.background = C.bgAlt;
+                }}
+              >
+                PROFILE
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </div>
@@ -391,7 +480,6 @@ function GameView({engine,onExit,rightPanel,exitLabel="END",onExitConfirmMessage
           {/* Trenches header */}
           <div className="col-header" style={{padding:"8px 12px"}}>
             <span style={{fontWeight:900,fontSize:14,color:C.text}}>Trenches</span>
-            <span style={{fontSize:11,color:C.textDim,cursor:"pointer"}}>≡</span>
             <span className="badge-beta">Beta</span>
             <div style={{flex:1}}/>
             {g.isPaused&&<span style={{fontSize:9,fontWeight:800,letterSpacing:1.8,color:C.yellow,padding:"3px 7px",borderRadius:6,border:`1px solid ${C.yellow}40`,background:`${C.yellow}12`}}>PAUSED</span>}
