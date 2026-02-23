@@ -39,6 +39,15 @@ const BASE_DELTA_BY_BAND = Object.freeze({
   CHALLENGER: 37,
 });
 
+const ENDLESS_BASE_DELTA_BY_BAND = Object.freeze({
+  UNDER: -14,
+  BRONZE: 4,
+  SILVER: 11,
+  GOLD: 19,
+  PLAT: 30,
+  CHALLENGER: 40,
+});
+
 const PRACTICE_DIFFICULTY_MULTIPLIERS = Object.freeze({
   1: 0.5,
   3: 0.9,
@@ -190,6 +199,84 @@ export const computePracticeRating = ({
   if ((currentTier === "UNRANKED" || currentTier === "BRONZE") && band === "PLAT") delta += 6;
 
   delta = clamp(Math.round(delta), -35, 55);
+  const nextRating = Math.max(0, current + delta);
+
+  return {
+    nextRating,
+    delta,
+    band,
+    expectedBand,
+  };
+};
+
+export const computeEndlessRunScore = ({
+  peakRound = 0,
+  avgRtMs = null,
+  bestRtMs = null,
+  accuracyPct = 0,
+  hits = 0,
+  misses = 0,
+  penalties = 0,
+  rounds = 0,
+}) => {
+  const peak = Math.max(0, Math.round(Number(peakRound) || 0));
+  const avg = Number(avgRtMs) > 0 ? Number(avgRtMs) : 3000;
+  const best = Number(bestRtMs) > 0 ? Number(bestRtMs) : avg;
+  const acc = clamp(Number(accuracyPct) || 0, 0, 100);
+  const hitCount = Math.max(0, Math.round(Number(hits) || 0));
+  const missCount = Math.max(0, Math.round(Number(misses) || 0));
+  const penaltyCount = Math.max(0, Math.round(Number(penalties) || 0));
+  const roundCount = Math.max(1, Math.round(Number(rounds) || hitCount + missCount + penaltyCount || 1));
+  const totalFailures = missCount + penaltyCount;
+
+  const progressionRatio = clamp(Math.log2(peak + 1) / Math.log2(33), 0, 1);
+  const netRatio = clamp((hitCount - totalFailures + roundCount) / (2 * roundCount), 0, 1);
+  const consistencyRatio = clamp(1 - (avg - best) / Math.max(avg, 1), 0, 1);
+
+  const progressionScore = progressionRatio * 450;
+  const executionScore = (acc / 100) * 170 + netRatio * 130;
+  const speedScore = clamp(((2500 - avg) / 1500), 0, 1) * 160 + clamp(((1800 - best) / 1200), 0, 1) * 40;
+  const consistencyBonus = consistencyRatio * 50;
+
+  return Math.round(progressionScore + executionScore + speedScore + consistencyBonus);
+};
+
+export const computeEndlessRating = ({
+  currentRating,
+  sessionScore,
+  peakRound = 0,
+  hits = 0,
+  misses = 0,
+  penalties = 0,
+  accuracyPct = 0,
+  avgRtMs = null,
+}) => {
+  const current = Math.max(0, Math.round(Number(currentRating) || PRACTICE_BASE_RATING));
+  const scoreBand = getPracticePerformanceBand(sessionScore);
+  const speedBand = getSpeedBand(avgRtMs);
+  const blendedBandIndex = Math.round(BAND_INDEX[scoreBand] * 0.75 + BAND_INDEX[speedBand] * 0.25);
+  const band = PRACTICE_BANDS[clamp(blendedBandIndex, 0, PRACTICE_BANDS.length - 1)].key;
+  const expectedBand = getExpectedBandFromRating(current);
+
+  const safeHits = Math.max(0, Math.round(Number(hits) || 0));
+  const safePeak = Math.max(0, Math.round(Number(peakRound) || 0));
+  const safeAccuracy = clamp(Number(accuracyPct) || 0, 0, 100);
+  const totalFailures = Math.max(0, Math.round(Number(misses) || 0)) + Math.max(0, Math.round(Number(penalties) || 0));
+  const gap = BAND_INDEX[band] - BAND_INDEX[expectedBand];
+
+  let delta = (ENDLESS_BASE_DELTA_BY_BAND[band] || 0) + gap * 6;
+  if (safePeak >= 30) delta += 12;
+  else if (safePeak >= 20) delta += 8;
+  else if (safePeak >= 10) delta += 4;
+  else if (safePeak >= 6) delta += 2;
+
+  delta -= Math.min(14, totalFailures * 2);
+  if (safeAccuracy >= 92 && safePeak >= 15) delta += 4;
+  if (safeAccuracy < 45) delta = Math.min(delta, 0);
+  if (safePeak < 4) delta = Math.min(delta, 4);
+  if (safeHits === 0) delta = Math.min(delta, 0);
+
+  delta = clamp(Math.round(delta), -40, 65);
   const nextRating = Math.max(0, current + delta);
 
   return {

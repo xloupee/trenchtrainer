@@ -8,7 +8,7 @@ import RankInfoModal from "./RankInfoModal";
 function ProfileTab({ session, stats, history }) {
   const [historyFilter, setHistoryFilter] = useState("all");
   const [showRankInfo, setShowRankInfo] = useState(false);
-  const isSoloMode = (mode) => mode === "solo" || mode === "practice";
+  const isSoloMode = (mode) => mode === "solo" || mode === "practice" || mode === "endless";
   const duelWinRate = stats.duel_matches > 0 ? Math.round((stats.duel_wins / stats.duel_matches) * 100) : 0;
   const avgDuelFor = stats.duel_matches > 0 ? (stats.duel_score_for / stats.duel_matches).toFixed(1) : "0.0";
   const username = session?.user?.user_metadata?.username || session?.user?.email?.split("@")[0] || "anonymous";
@@ -217,10 +217,14 @@ function ProfileTab({ session, stats, history }) {
                   }}>
                     <div style={{ fontSize: 9, color: C.textDim, fontFamily: "monospace" }}>[{formatHistoryDate(row.created_at || "").toUpperCase()}]</div>
                     <div style={{ fontSize: 10, fontWeight: 900, color: getOutcomeColor(row), letterSpacing: 1.5 }}>
-                      {isPractice ? "Solo" : "Duel"}
+                      {row.mode === "endless" ? "Endless" : isPractice ? "Solo" : "Duel"}
                     </div>
                     <div style={{ fontSize: 12, color: C.textMuted }}>
-                      {isPractice ? `Reaction: ${rt} • Accuracy: ${row.accuracy_pct}%` : `Score: ${row.score} - ${row.opponent_score}`}
+                      {row.mode === "endless"
+                        ? `Peak: ${row.rounds || 0} • Reaction: ${rt} • Accuracy: ${row.accuracy_pct}%`
+                        : isPractice
+                        ? `Reaction: ${rt} • Accuracy: ${row.accuracy_pct}%`
+                        : `Score: ${row.score} - ${row.opponent_score}`}
                     </div>
                     <div style={{ fontSize: 11, fontWeight: 800, color: getDeltaColor(delta), fontFamily: "monospace", paddingLeft: 16 }}>
                       {formatDelta(delta)}

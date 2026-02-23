@@ -1,0 +1,15 @@
+{
+  "name": "wager-escrow",
+  "private": true,
+  "version": "0.0.1",
+  "dependencies": {
+    "@coral-xyz/anchor": "^0.32.1"
+  },
+  "scripts": {
+    "solana:anchor:check": "bash ../../scripts/solana/check-anchor-toolchain.sh",
+    "solana:anchor:install:mac": "bash ../../scripts/solana/install-rust-anchor-macos.sh",
+    "build": "bash ../../scripts/solana/anchor-run-safe.sh build",
+    "test": "bash ../../scripts/solana/wager-local-test.sh",
+    "test:anchor": "bash ../../scripts/solana/anchor-run-safe.sh test"
+  }
+}
