@@ -141,14 +141,14 @@ function PracticeMode({startDiff=1,onSessionComplete,onStartDiffChange,onOpenPro
                     letterSpacing:1.4,
                     display:"flex",
                     alignItems:"center",
-                    justifyContent:"center",
-                    gap:6,
-                    padding:"0 10px",
+                    justifyContent:"space-between",
+                    gap:10,
+                    padding:"0 16px",
                     boxShadow:"inset 0 1px 0 rgba(255,255,255,0.02)",
                     opacity:0.9,
                   }}
                 >
-                  <span style={{letterSpacing:1.1}}>ENDLESS</span>
+                  <span style={{letterSpacing:1,fontSize:10}}>ENDLESS</span>
                   <span style={{fontSize:8,color:C.textMuted,letterSpacing:1.2,padding:"2px 5px",borderRadius:999,border:`1px solid ${C.borderLight}`,background:C.bg}}>
                     SOON
                   </span>

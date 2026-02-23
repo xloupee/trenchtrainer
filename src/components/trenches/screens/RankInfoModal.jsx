@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { C } from "../config/constants";
 import { DUEL_TIERS } from "../lib/duelRank";
 import { PRACTICE_TIERS } from "../lib/practiceRank";
@@ -26,6 +26,8 @@ function TierTable({ title, rows, suffix = "RP" }) {
 }
 
 function RankInfoModal({ open, onClose }) {
+  const [activeTab, setActiveTab] = useState("solo");
+
   useEffect(() => {
     if (!open) return undefined;
     const onKeyDown = (event) => {
@@ -35,7 +37,14 @@ function RankInfoModal({ open, onClose }) {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [open, onClose]);
 
+  useEffect(() => {
+    if (open) setActiveTab("solo");
+  }, [open]);
+
   if (!open) return null;
+
+  const isSoloTab = activeTab === "solo";
+  const activeColor = isSoloTab ? C.green : C.blue;
 
   return (
     <div
@@ -79,47 +88,97 @@ function RankInfoModal({ open, onClose }) {
           <span style={{ color: C.green }}>Solo RP</span> for solo sessions and <span style={{ color: C.blue }}>Duel RP</span> for 1v1 matches.
         </div>
 
-        <div className="glass-card" style={{ padding: 14, marginBottom: 12 }}>
-          <div style={{ fontSize: 10, color: C.green, letterSpacing: 2, marginBottom: 6 }}>&gt; SOLO RANK</div>
-          <div style={{ fontSize: 11, color: C.textMuted, lineHeight: 1.6 }}>
-            Solo RP is based on three things:
-            <br />1. Faster average reaction time
-            <br />2. Better accuracy
-            <br />3. Better consistency (best vs average)
-            <br />
-            <br />
-            Your new RP is smoothed, so one run won’t swing rank too hard.
-          </div>
-          <TierTable title="Solo tiers" rows={PRACTICE_TIERS} />
+        <div
+          className="glass-card"
+          style={{ padding: 6, marginBottom: 12, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 }}
+        >
+          <button
+            className="btn-ghost"
+            style={{
+              height: 34,
+              fontSize: 10,
+              letterSpacing: 1.8,
+              fontWeight: 900,
+              color: isSoloTab ? C.green : C.textDim,
+              borderColor: isSoloTab ? C.green : C.border,
+              background: isSoloTab ? `${C.green}12` : "transparent",
+            }}
+            onClick={() => setActiveTab("solo")}
+            aria-pressed={isSoloTab}
+            aria-label="Show Solo ranking guide"
+          >
+            SOLO
+          </button>
+          <button
+            className="btn-ghost"
+            style={{
+              height: 34,
+              fontSize: 10,
+              letterSpacing: 1.8,
+              fontWeight: 900,
+              color: !isSoloTab ? C.blue : C.textDim,
+              borderColor: !isSoloTab ? C.blue : C.border,
+              background: !isSoloTab ? `${C.blue}12` : "transparent",
+            }}
+            onClick={() => setActiveTab("duel")}
+            aria-pressed={!isSoloTab}
+            aria-label="Show Duel ranking guide"
+          >
+            DUEL
+          </button>
         </div>
 
         <div className="glass-card" style={{ padding: 14, marginBottom: 12 }}>
-          <div style={{ fontSize: 10, color: C.blue, letterSpacing: 2, marginBottom: 6 }}>&gt; DUEL RANK</div>
-          <div style={{ fontSize: 11, color: C.textMuted, lineHeight: 1.6 }}>
-            Duel uses an Elo-style system:
-            <br />- Beat higher-rated players: bigger gains.
-            <br />- Lose to lower-rated players: bigger losses.
-            <br />- Every match resolves to a winner and loser (no draws).
+          <div style={{ fontSize: 10, color: activeColor, letterSpacing: 2, marginBottom: 6 }}>
+            {isSoloTab ? "> SOLO RANK" : "> DUEL RANK"}
           </div>
-          <TierTable title="Duel tiers" rows={DUEL_TIERS} />
+          {isSoloTab ? (
+            <>
+              <div style={{ fontSize: 11, color: C.textMuted, lineHeight: 1.6 }}>
+                Solo RP is based on three things:
+                <br />1. Faster average reaction time
+                <br />2. Better accuracy
+                <br />3. Better consistency (best vs average)
+                <br />
+                <br />
+                Your new RP is smoothed, so one run won’t swing rank too hard.
+              </div>
+              <TierTable title="Solo tiers" rows={PRACTICE_TIERS} />
+            </>
+          ) : (
+            <>
+              <div style={{ fontSize: 11, color: C.textMuted, lineHeight: 1.6 }}>
+                Duel uses an Elo-style system:
+                <br />- Beat higher-rated players: bigger gains.
+                <br />- Lose to lower-rated players: bigger losses.
+                <br />- Every match resolves to a winner and loser (no draws).
+              </div>
+              <TierTable title="Duel tiers" rows={DUEL_TIERS} />
+            </>
+          )}
         </div>
 
         <div className="glass-card" style={{ padding: 14, marginBottom: 12 }}>
-          <div style={{ fontSize: 10, color: C.orange, letterSpacing: 2, marginBottom: 6 }}>&gt; QUICK EXAMPLES</div>
-          <div style={{ fontSize: 11, color: C.textMuted, lineHeight: 1.6 }}>
-            Example A: You improve from 80% to 92% accuracy with faster reactions in Solo, your RP should rise.
-            <br />
-            Example B: You beat a stronger Duel opponent, you usually gain more RP than a normal win.
-            <br />
-            Example C: You can track progress to next tier from the Solo summary and this Profile page.
+          <div style={{ fontSize: 10, color: C.orange, letterSpacing: 2, marginBottom: 6 }}>
+            {isSoloTab ? "> SOLO EXAMPLES" : "> DUEL EXAMPLES"}
           </div>
-        </div>
-
-        <div className="glass-card" style={{ padding: 14, marginBottom: 12, border: `1px solid ${C.yellow}33`, background: `linear-gradient(145deg, rgba(251,191,36,0.08), rgba(0,0,0,0.35))` }}>
-          <div style={{ fontSize: 10, color: C.yellow, letterSpacing: 2, marginBottom: 6 }}>&gt; RISK NOTICE</div>
-          <div style={{ fontSize: 11, color: C.textMuted, lineHeight: 1.6 }}>
-            LLM-powered signals may contain mistakes. Always verify information before acting.
-          </div>
+          {isSoloTab ? (
+            <div style={{ fontSize: 11, color: C.textMuted, lineHeight: 1.6 }}>
+              Example A: You improve from 80% to 92% accuracy with faster reactions in Solo, your RP should rise.
+              <br />
+              Example B: You keep the same accuracy but become less consistent, so gains may be smaller.
+              <br />
+              Example C: You can track progress to next tier from the Solo summary and this Profile page.
+            </div>
+          ) : (
+            <div style={{ fontSize: 11, color: C.textMuted, lineHeight: 1.6 }}>
+              Example A: You beat a stronger Duel opponent, you usually gain more RP than a normal win.
+              <br />
+              Example B: You lose to a much lower-rated opponent, the RP loss is usually larger.
+              <br />
+              Example C: Every duel resolves with a winner and loser, so RP moves each match.
+            </div>
+          )}
         </div>
 
         <div style={{ fontSize: 10, color: C.textDim, letterSpacing: 1.1 }}>
