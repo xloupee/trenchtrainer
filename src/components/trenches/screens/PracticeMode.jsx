@@ -380,6 +380,7 @@ function PracticeMode({ startDiff = 1, onSessionComplete, onStartDiffChange, onO
       timerMode="countdown"
       timerLimitMs={engine.roundTimeLimitMs || (isEndless ? ENDLESS_BASE_TIME_LIMIT_MS : SOLO_ROUND_TIME_LIMIT_MS)}
       timerLabel="TIME LEFT"
+      showPnl={isEndless}
     />
   );
 }
