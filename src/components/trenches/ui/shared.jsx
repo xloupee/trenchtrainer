@@ -184,11 +184,8 @@ function SessionSummary({stats,onBack,onProfile,onPlayAgain,rankImpact=null}){
   };
   const metricCards=isEndlessImpact
     ?[
-      ["PEAK ROUND",Number(rankImpact?.peakRound||stats.hits||0),C.cyan],
-      ["HITS",stats.hits,C.green],
-      ["ACCURACY",`${acc}%`,acc>=80?C.green:acc>=50?C.yellow:C.red],
+      ["ROUNDS",Number(rankImpact?.peakRound||stats.hits||0),C.cyan],
       ["FASTEST",stats.bestTime!==null?`${(stats.bestTime/1000).toFixed(3)}s`:"—",C.cyan],
-      ["MISSES",stats.misses+stats.penalties,C.red],
     ]
     :[
       ["SCORE",stats.score,C.green],
@@ -241,7 +238,7 @@ function SessionSummary({stats,onBack,onProfile,onPlayAgain,rankImpact=null}){
           </div>
 
           <div style={{display:"flex",flexDirection:"column",gap:isWideSummary?22:16,minWidth:0,height:"100%"}}>
-            <div className="glass-card" style={{padding:isWideSummary?"30px 32px":"24px 26px",textAlign:"left",display:"flex",flexDirection:"column"}}>
+            <div className="glass-card" style={{padding:isWideSummary?"30px 32px":"24px 26px",textAlign:"left",display:"flex",flexDirection:"column",flex:1}}>
               <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:isWideSummary?18:12,gap:10,flexWrap:"wrap"}}>
                 <div style={{display:"flex",alignItems:"center",gap:8}}>
                   <div style={{width:4,height:12,background:C.green,borderRadius:2}} />
