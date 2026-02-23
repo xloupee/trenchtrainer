@@ -28,3 +28,13 @@ out
 .next
 .env.local
 .vercel
+
+# Solana / Anchor local artifacts
+.solana-smoke/
+.solana-smoke-local/
+test-ledger/
+solana/wager-escrow/target/
+solana/wager-escrow/.anchor/
+solana/wager-escrow/node_modules/
+solana/wager-escrow/test-ledger/
+solana/wager-escrow/.keys/

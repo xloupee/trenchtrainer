@@ -1,40 +1,44 @@
-export const THEMES = [
-  { kw:"apple",emoji:"🍎",de:["🍊","🍇","🍌","🥭","🍐","🍒","🫐","🥝","🍑","🍋"],names:["AppleCoin","APPLE","AppleToken","APPLX"],decoys:["GrapeCoin","BananaToken","MangoDAO","OrangeCoin","PearToken","CHERRY","KiwiCoin","BlueberryDAO","CitrusCoin","MelonToken","PLUM","FruitDAO"],tweets:[{text:"Apples are at an all-time high right now. 🍎",user:"CryptoAlerts",handle:"@cryptoalerts",time:"27s"},{text:"Farmers reporting apples falling everywhere. Bullish 📈",user:"DeFi Degen",handle:"@defidegen",time:"14s"},{text:"Apple demand exploding!! Narrative is CLEAR.",user:"AlphaLeaks",handle:"@alphaleaks",time:"45s"},{text:"Breaking: Global apple shortage 🍎🍎🍎",user:"Whale Watch",handle:"@whalewatcher",time:"8s"}]},
-  { kw:"rocket",emoji:"🚀",de:["✈️","🛸","🎆","💫","⭐","🌙","🛩️","🎯","🌟","💥"],names:["RocketCoin","ROCKET","RocketDAO","RKTX"],decoys:["PlaneCoin","UFOToken","StarDAO","MoonCoin","JetToken","COMET","SpaceCoin","OrbitDAO","SaturnCoin","NebulaTkn"],tweets:[{text:"NASA just announced a new rocket launch window 🚀",user:"SpaceNews",handle:"@spacenews",time:"12s"},{text:"Rockets trending #1 worldwide.",user:"TrendBot",handle:"@trendbot",time:"31s"},{text:"SpaceX competitor revealed new design. CT going crazy",user:"TechAlpha",handle:"@techalpha",time:"5s"}]},
-  { kw:"dog",emoji:"🐕",de:["🐱","🐻","🐰","🦊","🐺","🐹","🦁","🐯","🐼","🐵"],names:["DogCoin","DOG","DogToken","DOGX"],decoys:["CatCoin","BearToken","BunnyDAO","FoxCoin","WolfToken","HAMSTER","LionCoin","TigerDAO","PandaCoin","MonkeyTkn"],tweets:[{text:"Dogs are dominating social media today 🐕",user:"ViralTracker",handle:"@viraltracker",time:"19s"},{text:"World's largest dog show breaks all records.",user:"NewsWire",handle:"@newswire",time:"42s"},{text:"Dog adoption rates hit all-time high 🐶📈",user:"DataPulse",handle:"@datapulse",time:"7s"}]},
-  { kw:"fire",emoji:"🔥",de:["💧","❄️","⚡","🌊","💨","🌋","☀️","🌈","🌪️","🧊"],names:["FireCoin","FIRE","FireToken","FIRX"],decoys:["WaterCoin","IceToken","ThunderDAO","WaveCoin","WindToken","VOLCANO","SunCoin","StormDAO","BlazeCoin","FlameTkn"],tweets:[{text:"This market is on FIRE 🔥🔥🔥",user:"MarketPulse",handle:"@marketpulse",time:"3s"},{text:"Wildfire narrative spreading across CT.",user:"AlphaSignals",handle:"@alphasignals",time:"22s"},{text:"Fire emojis everywhere. You know what that means. 🔥",user:"DegenAlerts",handle:"@degenalerts",time:"16s"}]},
-  { kw:"diamond",emoji:"💎",de:["💰","🪙","👑","💍","🏆","🔮","🪨","💵","🎰","🏅"],names:["DiamondCoin","DIAMOND","DiamondDAO","DMDX"],decoys:["GoldCoin","CoinToken","CrownDAO","RingCoin","TrophyTkn","PEARL","CrystalCoin","RubyDAO","EmeraldCoin","SapphireTkn"],tweets:[{text:"Diamond hands are winning today 💎",user:"HODLKing",handle:"@hodlking",time:"9s"},{text:"Diamond prices surge to record levels.",user:"MarketWatch",handle:"@mktwatch",time:"33s"},{text:"CT can't stop talking about diamonds 💎💎",user:"GemHunter",handle:"@gemhunter",time:"21s"}]},
-  { kw:"frog",emoji:"🐸",de:["🐍","🦎","🐢","🐊","🦖","🐛","🦗","🐞","🦋","🐝"],names:["FrogCoin","FROG","FrogToken","FRGX"],decoys:["SnakeCoin","LizardTkn","TurtleDAO","CrocCoin","DinoToken","GECKO","ToadCoin","NewtDAO","BugCoin","BeetleTkn"],tweets:[{text:"Frogs taking over the timeline again 🐸",user:"MemeRadar",handle:"@memeradar",time:"6s"},{text:"The frog meta is BACK 🐸🐸",user:"AlphaFrog",handle:"@alphafrog",time:"28s"},{text:"Frog memes everywhere. Crystal clear.",user:"DegenPulse",handle:"@degenpulse",time:"11s"}]},
-  { kw:"penguin",emoji:"🐧",de:["🦅","🦆","🦉","🐦","🦜","🕊️","🦩","🐔","🦚","🦢"],names:["PenguinCoin","PENGUIN","PenguinDAO","PNGX"],decoys:["EagleCoin","DuckToken","OwlDAO","BirdCoin","ParrotTkn","DOVE","FlamingoC","ChickenDAO","PeacockCoin","SwanTkn"],tweets:[{text:"Penguins trending everywhere 🐧 Load up.",user:"TrendAlpha",handle:"@trendalpha",time:"15s"},{text:"Antarctic penguin population hits record.",user:"SciAlerts",handle:"@scialerts",time:"38s"},{text:"Penguin szn is here. Don't sleep. 🐧🐧",user:"NarrativeBot",handle:"@narrativebot",time:"4s"}]},
-  { kw:"moon",emoji:"🌕",de:["⭐","☀️","🪐","🌍","💫","🌌","☄️","🔭","🌟","✨"],names:["MoonCoin","MOON","MoonToken","MOONX"],decoys:["StarCoin","SunToken","PlanetDAO","EarthCoin","CosmosTkn","GALAXY","CometCoin","NovaCoin","AuroraCoin","NeptuneTkn"],tweets:[{text:"Going to the MOON tonight 🌕 Buckle up.",user:"MoonBoi",handle:"@moonboi",time:"2s"},{text:"Lunar eclipse — moon mania 🌙",user:"AstroAlerts",handle:"@astroalerts",time:"25s"},{text:"Moon content flooding every timeline.",user:"NarrativeHQ",handle:"@narrativehq",time:"18s"}]},
-  { kw:"cat",emoji:"🐈",de:["🐕","🐻","🐰","🦊","🐺","🐹","🦁","🐯","🐼","🐵"],names:["CatCoin","CAT","CatToken","CATX"],decoys:["DogCoin","BearToken","BunnyDAO","FoxCoin","WolfToken","HAMSTER","LionCoin","TigerDAO","PandaCoin","MonkeyTkn"],tweets:[{text:"Cat meta heating up again 🐈",user:"MemeRadar",handle:"@memeradar",time:"9s"},{text:"Cats dominating For You right now.",user:"TrendDesk",handle:"@trenddesk",time:"21s"},{text:"Feline narrative confirmed. 🐾",user:"AlphaCats",handle:"@alphacats",time:"36s"}]},
-  { kw:"shark",emoji:"🦈",de:["🐋","🐬","🐙","🦑","🐟","🐠","🦀","🪼","🐡","🦐"],names:["SharkCoin","SHARK","SharkDAO","SHRK"],decoys:["WhaleCoin","DolphinTkn","OctoDAO","SquidCoin","FishToken","REEF","CrabCoin","JellyDAO","PufferCoin","ShrimpTkn"],tweets:[{text:"Sharks are circling low caps 🦈",user:"WhaleScope",handle:"@whalescope",time:"12s"},{text:"Big wallets just rotated into shark names.",user:"OnchainEdge",handle:"@onchainedge",time:"28s"},{text:"Shark szn back on CT. Teeth out.",user:"TrenchAlpha",handle:"@trenchaIpha",time:"44s"}]},
-  { kw:"coffee",emoji:"☕",de:["🥤","🧋","🍵","🥛","🍶","🧃","🍺","🍷","🥂","🧉"],names:["CoffeeCoin","COFFEE","BrewToken","BREWX"],decoys:["SodaCoin","BobaToken","TeaDAO","MilkCoin","JuiceToken","LATTE","AleCoin","WineDAO","ToastCoin","MateTkn"],tweets:[{text:"Coffee narrative waking up the timeline ☕",user:"MorningCalls",handle:"@morningcalls",time:"5s"},{text:"Caffeine coins pumping before NY open.",user:"MarketWake",handle:"@marketwake",time:"19s"},{text:"Brew meta everywhere. Don't fade.",user:"DegenBrew",handle:"@degenbrew",time:"33s"}]},
-  { kw:"robot",emoji:"🤖",de:["🛸","📡","💻","🧠","🔋","⚙️","🛰️","🦾","🧬","🧪"],names:["RobotCoin","ROBOT","MechDAO","RBTX"],decoys:["UFOToken","SignalCoin","CodeToken","BrainDAO","BatteryCoin","GEAR","SatelliteCoin","CyberDAO","GeneCoin","LabTkn"],tweets:[{text:"AI bots are printing again 🤖",user:"AIPulse",handle:"@aipulse",time:"7s"},{text:"Robot tags trending after open-source launch.",user:"TechWire",handle:"@techwire",time:"23s"},{text:"Machine narrative is loud tonight.",user:"AlphaMech",handle:"@alphamech",time:"41s"}]},
-  { kw:"volcano",emoji:"🌋",de:["🌊","🏔️","🧊","🌪️","☀️","🌧️","⚡","🌫️","🔥","🌈"],names:["VolcanoCoin","VOLCANO","LavaToken","LAVAX"],decoys:["WaveCoin","MountainDAO","IceToken","StormCoin","SunToken","RAIN","ThunderCoin","MistDAO","FlameCoin","ArcTkn"],tweets:[{text:"Volcano tokens erupting 🌋",user:"HeatMap",handle:"@heatmap",time:"11s"},{text:"Lava narrative just broke resistance.",user:"ChartSage",handle:"@chartsage",time:"26s"},{text:"Magma memes all over X right now.",user:"NarrativeNow",handle:"@narrativenow",time:"39s"}]},
-  { kw:"ghost",emoji:"👻",de:["💀","🧟","🧛","🕷️","🦇","🧙","🪄","🌫️","🌙","🕯️"],names:["GhostCoin","GHOST","PhantomDAO","GHSTX"],decoys:["SkullCoin","ZombieToken","VampDAO","SpiderCoin","BatToken","WITCH","MagicCoin","FogDAO","MoonShade","CandleTkn"],tweets:[{text:"Ghost narrative haunting CT 👻",user:"NightAlpha",handle:"@nightalpha",time:"6s"},{text:"Phantom names catching bids into close.",user:"AfterHours",handle:"@afterhours",time:"17s"},{text:"Spooky season came early on chain.",user:"MemeDesk",handle:"@memedesk",time:"29s"}]},
-];
+import * as generated from "./gameData.generated.js";
+import * as fallback from "./gameData.default.js";
 
-export const FILLER=[
-  {text:"scam proposal.",user:"billymeth.eth",handle:"@biiiymeister",time:"13s",verified:true,reply:"@jup_uplink",
-    quote:{user:"Jupiter Uplink",handle:"@jup_uplink",time:"26m",verified:true,text:"To Jupuary or not to Jupuary.\n\nHigh-level overview of the upcoming DAO vote.",media:{type:"video",dur:"0:38"}}},
-  {text:"Lots of X accounts hacked. DO NOT click DM links.",user:"Security Alert",handle:"@secalert",time:"2m",warn:true,verified:true},
-  {text:"gm. another day another narrative.\n\nif you're not in the trenches rn wyd",user:"degen_steve",handle:"@degensteve",time:"1m",media:{type:"image"}},
-  {text:"New pairs flying. Stay sharp 👀\n\nAlready 3 10x plays today.",user:"TrenchWatch",handle:"@trenchwatch",time:"4m",verified:true,
-    quote:{user:"Raydium",handle:"@RaydiumProtocol",time:"1h",verified:true,text:"24h volume just crossed $2.1B.\n\nNew ATH for the protocol.",media:{type:"image"}}},
-  {text:"not watching memescope rn? ngmi",user:"based_trader",handle:"@basedtrader",time:"5m"},
-  {text:"Volume insane on Raydium today.",user:"DEX Analytics",handle:"@dexanalytics",time:"6m",verified:true,media:{type:"image"}},
-  {text:"this is the play. not financial advice.",user:"whale_alert",handle:"@whale_alert_",time:"30s",reply:"@pumpdotfun",
-    quote:{user:"pump.fun",handle:"@pumpdotfun",time:"12m",verified:true,text:"Introducing graduated tokens — LP migration is now live."}},
-  {text:"someone just aped $50K into a 2 minute old token lol",user:"onchain_lens",handle:"@onchain_lens",time:"45s",verified:true,media:{type:"image"}},
-  {text:"Volume divergence on memescope. Fast rotations everywhere.",user:"FlowScanner",handle:"@flowscanner",time:"22s",verified:true},
-  {text:"this pair launched 90s ago and already at 4k holders??",user:"chain_hunter",handle:"@chain_hunter",time:"11s",media:{type:"image"}},
-  {text:"Narratives flipping every 10 minutes today. Stay fluid.",user:"MetaShift",handle:"@metashift",time:"3m"},
-  {text:"whale wallet 9Z...k7 bought then sold in 47s. brutal.",user:"TapeReader",handle:"@tapereader",time:"1m",verified:true},
-  {text:"not your keys not your conviction",user:"oldman_ct",handle:"@oldmanct",time:"8m"},
-  {text:"Holders climbing but socials are dead. careful.",user:"RiskDesk",handle:"@riskdesk",time:"2m",warn:true},
-  {text:"I only trust entries after two clean pullbacks.",user:"price_action_ser",handle:"@priceactionser",time:"5m"},
-  {text:"new token launched with website + docs + roadmap. rare.",user:"launch_watch",handle:"@launchwatch",time:"48s",media:{type:"image"}},
-];
-export const NOISE_TICKERS=["BONK","WIF","PEPE","BRETT","ANDY","CHAD","GIGA","SMOL","BASED","SEND","COPE","SLERF","MEW","MYRO","SAMO","TURBO","SNEK","HONK","NEIRO","GOAT","PNUT","SPX","MOG","TOSHI","SIGMA","GRIND","PUMP","YOLO","WAGMI","NGMI","HODL","MONKE","VIBE","AURA","FROST","KONG","JOLT","DUST","WAVE","BYTE","NOVA","ATOM","FLIP","FOMO","RUSH"];
-export const NOISE_EMOJIS=["🐶","🐱","🐻","🦊","🐸","🐧","🎭","🗿","🧠","💊","🫡","👑","💀","🤡","🎪","🦍","🐍","🦈","🐋","🌊","🔮","🪙","💰","🎰","⭐","🌶️","🍄","🧊","🫧","🪐","☄️","🌋","🦎","🎯","⚡","🔥","💎"];
+const isNonEmptyString = (value) => typeof value === "string" && value.trim().length > 0;
+
+const isThemeValid = (row) =>
+  row &&
+  isNonEmptyString(row.kw) &&
+  isNonEmptyString(row.emoji) &&
+  Array.isArray(row.de) &&
+  row.de.length > 0 &&
+  Array.isArray(row.names) &&
+  row.names.length > 0 &&
+  Array.isArray(row.decoys) &&
+  row.decoys.length > 0 &&
+  Array.isArray(row.tweets) &&
+  row.tweets.length > 0;
+
+const isFillerRowValid = (row) =>
+  row &&
+  isNonEmptyString(row.text) &&
+  isNonEmptyString(row.user) &&
+  isNonEmptyString(row.handle) &&
+  isNonEmptyString(row.time);
+
+const isDatasetValid = (dataset) =>
+  dataset &&
+  Array.isArray(dataset.THEMES) &&
+  dataset.THEMES.length > 0 &&
+  dataset.THEMES.every(isThemeValid) &&
+  Array.isArray(dataset.FILLER) &&
+  dataset.FILLER.length > 0 &&
+  dataset.FILLER.every(isFillerRowValid) &&
+  Array.isArray(dataset.NOISE_TICKERS) &&
+  dataset.NOISE_TICKERS.length > 0 &&
+  Array.isArray(dataset.NOISE_EMOJIS) &&
+  dataset.NOISE_EMOJIS.length > 0;
+
+const data = isDatasetValid(generated) ? generated : fallback;
+
+export const THEMES = data.THEMES;
+export const FILLER = data.FILLER;
+export const NOISE_TICKERS = data.NOISE_TICKERS;
+export const NOISE_EMOJIS = data.NOISE_EMOJIS;

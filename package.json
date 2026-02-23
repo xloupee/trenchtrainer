@@ -9,9 +9,17 @@
     "start": "next start",
     "lint": "eslint src --max-warnings=0",
     "recover:profiles": "node scripts/recover-profile-stats-from-history.mjs",
+    "solana:smoke": "bash scripts/solana/devnet-transfer-smoke.sh",
+    "solana:smoke:local": "bash scripts/solana/localnet-transfer-smoke.sh",
+    "solana:anchor:check": "bash scripts/solana/check-anchor-toolchain.sh",
+    "solana:anchor:install:mac": "bash scripts/solana/install-rust-anchor-macos.sh",
+    "solana:wager:test": "npm --prefix solana/wager-escrow run test",
     "video:studio": "remotion studio",
     "video:render": "remotion render FirstTxRoadmapDemo16x9 out/firsttx-roadmap-demo.mp4",
-    "video:render:preview": "remotion render FirstTxRoadmapDemo16x9 out/firsttx-roadmap-demo-preview.mp4 --jpeg-quality=70 --crf=28 --concurrency=2"
+    "video:render:preview": "remotion render FirstTxRoadmapDemo16x9 out/firsttx-roadmap-demo-preview.mp4 --jpeg-quality=70 --crf=28 --concurrency=2",
+    "content:export": "node scripts/content/export-game-data-to-csv.mjs",
+    "content:import": "node scripts/content/import-csv-to-game-data.mjs",
+    "content:sync": "npm run content:export && npm run content:import"
   },
   "dependencies": {
     "@remotion/google-fonts": "^4.0.427",

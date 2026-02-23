@@ -17,7 +17,15 @@ import {
   pathToMode,
 } from "./config/constants";
 import { computeDuelRating, getDuelTier } from "./lib/duelRank";
-import { computePracticeRating, computePracticeSessionScore, getPracticeNextTier, getPracticeTier } from "./lib/practiceRank";
+import {
+  getPracticeDifficultyMultiplier,
+  computePracticeRating,
+  computePracticeSessionScore,
+  computeEndlessRunScore,
+  computeEndlessRating,
+  getPracticeNextTier,
+  getPracticeTier,
+} from "./lib/practiceRank";
 import OneVOneMode from "./screens/OneVOneMode";
 import PracticeMode from "./screens/PracticeMode";
 import ProfileTab from "./screens/ProfileTab";
@@ -72,12 +80,20 @@ const isMissingHistoryRatingColumnsError=(error)=>{
     (message.includes("player_match_history")&&message.includes("column")&&(message.includes("does not exist")||message.includes("schema cache")))
   );
 };
+const isHistoryModeConstraintError=(error)=>{
+  const message=String(error?.message||"").toLowerCase();
+  return (
+    error?.code==="23514"&&
+    message.includes("player_match_history")&&
+    message.includes("mode")
+  );
+};
 const stripHistoryRatingFieldsFromPayload=(payload)=>{
   const next={...payload};
   HISTORY_RATING_FIELDS.forEach((field)=>{delete next[field];});
   return next;
 };
-const isSoloHistoryMode=(mode)=>mode==="solo"||mode==="practice";
+const isSoloHistoryMode=(mode)=>mode==="solo"||mode==="practice"||mode==="endless";
 const hasRankFieldsInRow=(row)=>Boolean(row)&&RANK_PROFILE_FIELDS.some((field)=>Object.prototype.hasOwnProperty.call(row,field));
 const hasCoreProfileFields=(row)=>Boolean(row)&&CORE_PROFILE_FIELDS.every((field)=>Object.prototype.hasOwnProperty.call(row,field));
 const hasProfileProgress=(stats={})=>(
@@ -126,8 +142,15 @@ const deriveProfileStatsFromHistory=(rows=[],seedStats=EMPTY_PROFILE_STATS)=>{
   list.forEach((row)=>{
     if(isSoloHistoryMode(row?.mode)){
       practiceSessions+=1;
-      const rounds=Math.max(0,Math.round(asNumber(row?.rounds,0)));
-      const hits=Math.max(0,Math.round(asNumber(row?.score,0)));
+      const storedRounds=Math.max(0,Math.round(asNumber(row?.rounds,0)));
+      const storedScore=Math.max(0,Math.round(asNumber(row?.score,0)));
+      const rawAccuracy=asNumber(row?.accuracy_pct,NaN);
+      const hasAccuracy=Number.isFinite(rawAccuracy);
+      const accuracyPct=Math.max(0,Math.min(100,rawAccuracy));
+      const rounds=storedRounds>0?storedRounds:(hasAccuracy?0:storedScore);
+      const hits=hasAccuracy&&rounds>0
+        ?Math.max(0,Math.min(rounds,Math.round((accuracyPct/100)*rounds)))
+        :Math.max(0,Math.min(rounds,storedScore));
       practiceRounds+=rounds;
       practiceHits+=hits;
       practiceMisses+=Math.max(0,rounds-hits);
@@ -665,6 +688,24 @@ export default function App({initialDuelCode=""}){
         },{})};
       }
     }
+    if(error&&isHistoryModeConstraintError(error)&&entry?.mode==="endless"){
+      const fallbackPayload={...payload,mode:"solo"};
+      const fallbackInsertRes=await insertWithSelect(fallbackPayload,HISTORY_SELECT);
+      data=fallbackInsertRes.data;
+      error=fallbackInsertRes.error;
+      if(error&&isMissingHistoryRatingColumnsError(error)){
+        const fallbackLegacyPayload=stripHistoryRatingFieldsFromPayload(fallbackPayload);
+        const fallbackLegacyRes=await insertWithSelect(fallbackLegacyPayload,HISTORY_SELECT_LEGACY);
+        data=fallbackLegacyRes.data;
+        error=fallbackLegacyRes.error;
+        if(data){
+          data={...data,...HISTORY_RATING_FIELDS.reduce((acc,field)=>{
+            if(entry[field]!==undefined)acc[field]=entry[field];
+            return acc;
+          },{})};
+        }
+      }
+    }
     if(error){
       setProfileMsg("Could not save match history.");
       return;
@@ -698,27 +739,63 @@ export default function App({initialDuelCode=""}){
   const recordPracticeSession=useCallback(async(practiceStats)=>{
     const rounds=practiceStats.hits+practiceStats.misses+practiceStats.penalties;
     if(rounds<=0)return;
+    const variant=practiceStats?.variant==="endless"?"endless":"solo";
+    const isEndless=variant==="endless";
+    const difficultyLevel=Math.round(Number(practiceStats?.difficultyLevel)||1);
+    const difficultyMultiplier=getPracticeDifficultyMultiplier(difficultyLevel);
     const accuracy=Math.round((practiceStats.hits/rounds)*100);
     const times=Array.isArray(practiceStats?.times)?practiceStats.times.filter((value)=>Number.isFinite(value)&&value>0):[];
     const avgRtMs=times.length>0?times.reduce((sum,value)=>sum+value,0)/times.length:null;
-    const sessionScore=computePracticeSessionScore({
-      avgRtMs,
-      accuracyPct:accuracy,
-      bestRtMs:practiceStats.bestTime,
-      hits:practiceStats.hits,
-      rounds,
-    });
-    const nextProfile=await updateProfileStats((prev)=>{
-      const ratingUpdate=computePracticeRating({
-        currentRating:prev.practice_rating,
-        sessionScore,
+    const peakRound=isEndless
+      ?Math.max(0,Math.round(Number(practiceStats?.peakRound??practiceStats?.hits??0)))
+      :null;
+    const sessionScore=isEndless
+      ?computeEndlessRunScore({
+        peakRound,
         avgRtMs,
+        bestRtMs:practiceStats.bestTime,
+        accuracyPct:accuracy,
         hits:practiceStats.hits,
+        rounds,
         misses:practiceStats.misses,
         penalties:practiceStats.penalties,
+      })
+      :computePracticeSessionScore({
+        avgRtMs,
         accuracyPct:accuracy,
+        bestRtMs:practiceStats.bestTime,
+        hits:practiceStats.hits,
+        rounds,
+        misses:practiceStats.misses,
+        penalties:practiceStats.penalties,
       });
-      const nextPracticeRating=ratingUpdate.nextRating;
+    let baseDelta=0;
+    const nextProfile=await updateProfileStats((prev)=>{
+      const ratingUpdate=isEndless
+        ?computeEndlessRating({
+          currentRating:prev.practice_rating,
+          sessionScore,
+          peakRound,
+          avgRtMs,
+          hits:practiceStats.hits,
+          misses:practiceStats.misses,
+          penalties:practiceStats.penalties,
+          accuracyPct:accuracy,
+        })
+        :computePracticeRating({
+          currentRating:prev.practice_rating,
+          sessionScore,
+          avgRtMs,
+          hits:practiceStats.hits,
+          misses:practiceStats.misses,
+          penalties:practiceStats.penalties,
+          accuracyPct:accuracy,
+        });
+      baseDelta=Number.isFinite(Number(ratingUpdate?.delta))?Math.round(Number(ratingUpdate.delta)):0;
+      const finalDelta=isEndless
+        ?Math.max(-40,Math.min(65,Math.round(baseDelta)))
+        :Math.max(-35,Math.min(55,Math.round(baseDelta*difficultyMultiplier)));
+      const nextPracticeRating=Math.max(0,Math.round(Number(prev.practice_rating||0))+finalDelta);
       return{
         ...prev,
         practice_sessions:prev.practice_sessions+1,
@@ -737,11 +814,11 @@ export default function App({initialDuelCode=""}){
     const afterRating=Math.max(0,Math.round(Number(nextProfile?.practice_rating||beforeRating)));
     const delta=afterRating-beforeRating;
     await insertMatchHistory({
-      mode:"solo",
+      mode:isEndless?"endless":"solo",
       outcome:"session",
-      score:practiceStats.hits||0,
+      score:practiceStats.score||0,
       opponent_score:null,
-      rounds,
+      rounds:isEndless?Math.max(peakRound||0,rounds):rounds,
       accuracy_pct:accuracy,
       best_time:practiceStats.bestTime??null,
       best_streak:practiceStats.bestStreak||0,
@@ -753,10 +830,15 @@ export default function App({initialDuelCode=""}){
     const afterTier=getPracticeTier(afterRating).tier;
     const nextTierInfo=getPracticeNextTier(afterRating);
     return{
-      mode:"solo",
+      mode:isEndless?"endless":"solo",
       beforeRating,
       afterRating,
       delta,
+      baseDelta,
+      difficultyMultiplier:isEndless?1:difficultyMultiplier,
+      difficultyLevel:isEndless?null:difficultyLevel,
+      peakRound:isEndless?peakRound:null,
+      endedBy:isEndless?(practiceStats?.endedBy||null):null,
       beforeTier,
       afterTier,
       peak:Math.max(Number(nextProfile?.practice_peak_rating||0),afterRating),

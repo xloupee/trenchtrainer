@@ -803,12 +803,12 @@ function OneVOneMode({ onMatchComplete, initialJoinCode = "", playerIdentity = "
       <div className="menu-bg prac-page" style={{ paddingTop: 40 }}>
         <div className="grid-bg" />
         <div className="prac-shell" style={{ display: "grid", gridTemplateAreas: "'head head' 'form join' 'public public'", gridTemplateColumns: "1fr 1fr", gap: 16, maxWidth: 1000, width: "100%" }}>
-          <div style={{ gridArea: "head", display: "flex", alignItems: "baseline", gap: 16, marginBottom: 12 }}>
+          <div style={{ gridArea: "head", display: "flex", alignItems: "baseline", gap: 16, marginBottom: 12, opacity: 0, animation: "slideUp 0.6s ease forwards" }}>
             <h1 style={{ fontSize: 42, fontWeight: 900, letterSpacing: -2, color: C.orange }}>DUEL LOBBY</h1>
             <span style={{ fontSize: 10, color: C.textDim, letterSpacing: 4 }}>LIVE MATCHMAKING</span>
           </div>
 
-          <div className="glass-card" style={{ gridArea: "form", padding: 28, display: "flex", flexDirection: "column", height: "100%" }}>
+          <div className="glass-card" style={{ gridArea: "form", padding: 28, display: "flex", flexDirection: "column", height: "100%", opacity: 0, animation: "slideUp 0.6s ease 0.1s forwards" }}>
             <div style={{ fontSize: 9, color: C.orange, letterSpacing: 2, fontWeight: 800, marginBottom: 20 }}>&gt; SETUP</div>
             <div style={{ marginBottom: 20 }}>
               <div style={{ fontSize: 8, color: C.textDim, letterSpacing: 2, marginBottom: 8 }}>DISPLAY NAME</div>
@@ -878,7 +878,7 @@ function OneVOneMode({ onMatchComplete, initialJoinCode = "", playerIdentity = "
             </button>
           </div>
 
-          <div className="glass-card" style={{ gridArea: "join", padding: 28, display: "flex", flexDirection: "column", justifyContent: "center", height: "100%" }}>
+          <div className="glass-card" style={{ gridArea: "join", padding: 28, display: "flex", flexDirection: "column", justifyContent: "center", height: "100%", opacity: 0, animation: "slideUp 0.6s ease 0.2s forwards" }}>
             <div style={{ fontSize: 9, color: C.cyan, letterSpacing: 2, fontWeight: 800, marginBottom: 20 }}>&gt; JOIN BY CODE</div>
             <div style={{ display: "flex", gap: 10, alignItems: "stretch", marginBottom: "auto", marginTop: "auto" }}>
               <input
@@ -896,7 +896,7 @@ function OneVOneMode({ onMatchComplete, initialJoinCode = "", playerIdentity = "
             <div style={{ fontSize: 9, color: C.textDim, marginTop: 16, textAlign: "center" }}>Enter a 6-character room code</div>
           </div>
 
-          <div className="glass-card" style={{ gridArea: "public", padding: 24 }}>
+          <div className="glass-card" style={{ gridArea: "public", padding: 24, opacity: 0, animation: "slideUp 0.6s ease 0.3s forwards" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
               <div style={{ fontSize: 9, color: C.green, letterSpacing: 2, fontWeight: 800 }}>&gt; PUBLIC LOBBIES</div>
               <button onClick={fetchPublicLobbies} className="btn-ghost" style={{ fontSize: 9, padding: "6px 12px" }}>
@@ -947,7 +947,7 @@ function OneVOneMode({ onMatchComplete, initialJoinCode = "", playerIdentity = "
             )}
           </div>
           {msg ? (
-            <div style={{ gridArea: "public", marginTop: 12, color: C.red, fontSize: 10, letterSpacing: 1.2 }}>{msg}</div>
+            <div style={{ gridArea: "public", marginTop: 12, color: C.red, fontSize: 10, letterSpacing: 1.2, opacity: 0, animation: "slideUp 0.6s ease 0.35s forwards" }}>{msg}</div>
           ) : null}
         </div>
       </div>
