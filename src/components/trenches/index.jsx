@@ -768,6 +768,7 @@ export default function App({initialDuelCode=""}){
         rounds,
         misses:practiceStats.misses,
         penalties:practiceStats.penalties,
+        roundTimeLimitMs:practiceStats?.roundTimeLimitMs,
       });
     let baseDelta=0;
     const nextProfile=await updateProfileStats((prev)=>{
@@ -837,6 +838,7 @@ export default function App({initialDuelCode=""}){
       baseDelta,
       difficultyMultiplier:isEndless?1:difficultyMultiplier,
       difficultyLevel:isEndless?null:difficultyLevel,
+      roundTimeLimitMs:isEndless?null:(Number.isFinite(Number(practiceStats?.roundTimeLimitMs))?Math.round(Number(practiceStats.roundTimeLimitMs)):null),
       peakRound:isEndless?peakRound:null,
       endedBy:isEndless?(practiceStats?.endedBy||null):null,
       beforeTier,

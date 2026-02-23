@@ -137,6 +137,7 @@ function PracticeMode({ startDiff = 1, onSessionComplete, onStartDiffChange, onO
       variant,
       peakRound: variant === "endless" ? endlessPeakRound : null,
       endedBy: variant === "endless" ? sessionEndReasonRef.current || latestRunEndedReasonRef.current || null : null,
+      roundTimeLimitMs: variant === "solo" ? SOLO_ROUND_TIME_LIMIT_MS : null,
     });
     if (maybePromise && typeof maybePromise.then === "function") {
       maybePromise
@@ -381,6 +382,7 @@ function PracticeMode({ startDiff = 1, onSessionComplete, onStartDiffChange, onO
       timerLimitMs={engine.roundTimeLimitMs || (isEndless ? ENDLESS_BASE_TIME_LIMIT_MS : SOLO_ROUND_TIME_LIMIT_MS)}
       timerLabel="TIME LEFT"
       showPnl={isEndless}
+      rankRoundTimeLimitMs={isEndless ? null : SOLO_ROUND_TIME_LIMIT_MS}
     />
   );
 }

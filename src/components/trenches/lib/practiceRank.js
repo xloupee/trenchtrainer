@@ -30,6 +30,8 @@ const BAND_INDEX = Object.freeze({
   CHALLENGER: 5,
 });
 
+const BAND_BY_INDEX = Object.freeze(Object.keys(BAND_INDEX).sort((a, b) => BAND_INDEX[a] - BAND_INDEX[b]));
+
 const BASE_DELTA_BY_BAND = Object.freeze({
   UNDER: -12,
   BRONZE: 6,
@@ -55,6 +57,33 @@ const PRACTICE_DIFFICULTY_MULTIPLIERS = Object.freeze({
   7: 1.4,
   10: 1.7,
 });
+
+const getSoloTimePressure = (avgRtMs, roundTimeLimitMs) => {
+  const avg = Number(avgRtMs);
+  const limit = Number(roundTimeLimitMs);
+  if (!Number.isFinite(avg) || avg <= 0) return null;
+  if (!Number.isFinite(limit) || limit <= 0) return null;
+  return clamp(avg / limit, 0, 1.25);
+};
+
+const lerp = (a, b, t) => a + (b - a) * t;
+
+const computeLateTimerPenalty = ({ avgRtMs, roundTimeLimitMs }) => {
+  const pressure = getSoloTimePressure(avgRtMs, roundTimeLimitMs);
+  if (pressure === null || pressure <= 0.6) return 0;
+  if (pressure <= 0.8) return Math.round(lerp(0, 90, (pressure - 0.6) / 0.2));
+  if (pressure <= 0.9) return Math.round(lerp(90, 180, (pressure - 0.8) / 0.1));
+  return Math.round(lerp(180, 320, (pressure - 0.9) / 0.35));
+};
+
+const applyLateTimerTierCap = ({ band, avgRtMs, roundTimeLimitMs }) => {
+  const pressure = getSoloTimePressure(avgRtMs, roundTimeLimitMs);
+  if (pressure === null || !Object.hasOwn(BAND_INDEX, band)) return band;
+  const currentIndex = BAND_INDEX[band];
+  if (pressure >= 0.97) return BAND_BY_INDEX[Math.min(currentIndex, BAND_INDEX.SILVER)];
+  if (pressure >= 0.9) return BAND_BY_INDEX[Math.min(currentIndex, BAND_INDEX.GOLD)];
+  return band;
+};
 
 export const getPracticeTier = (rating) => {
   const normalized = Math.max(0, Math.round(Number(rating) || PRACTICE_BASE_RATING));
@@ -83,7 +112,16 @@ export const getPracticeNextTier = (rating) => {
   return { current: top, next: null, pointsToNext: 0, progressPercent: 100, currentMin: top.min, nextMin: top.min };
 };
 
-export const computePracticeSessionScore = ({ avgRtMs, accuracyPct, bestRtMs, hits = 0, rounds = 0, misses = 0, penalties = 0 }) => {
+export const computePracticeSessionScore = ({
+  avgRtMs,
+  accuracyPct,
+  bestRtMs,
+  hits = 0,
+  rounds = 0,
+  misses = 0,
+  penalties = 0,
+  roundTimeLimitMs = null,
+}) => {
   const avg = Number(avgRtMs) > 0 ? Number(avgRtMs) : 3000;
   const acc = clamp(Number(accuracyPct) || 0, 0, 100);
   const best = Number(bestRtMs) > 0 ? Number(bestRtMs) : avg;
@@ -102,11 +140,21 @@ export const computePracticeSessionScore = ({ avgRtMs, accuracyPct, bestRtMs, hi
   const speedScore = clamp(((2600 - avg) / 1600) * 220, 0, 220);
   const consistencyBonus = consistencyRatio * 80;
   const roundCompletionBonus = clamp((completionRate * (acc / 100)) * 50, 0, 50);
+  const lateTimerPenalty = computeLateTimerPenalty({ avgRtMs: avg, roundTimeLimitMs });
 
-  return Math.round(accuracyScore + netExecutionScore + speedScore + consistencyBonus + roundCompletionBonus);
+  return Math.round(Math.max(0, accuracyScore + netExecutionScore + speedScore + consistencyBonus + roundCompletionBonus - lateTimerPenalty));
 };
 
-export const computePracticeSessionScoreBreakdown = ({ avgRtMs, accuracyPct, bestRtMs, hits = 0, rounds = 0, misses = 0, penalties = 0 }) => {
+export const computePracticeSessionScoreBreakdown = ({
+  avgRtMs,
+  accuracyPct,
+  bestRtMs,
+  hits = 0,
+  rounds = 0,
+  misses = 0,
+  penalties = 0,
+  roundTimeLimitMs = null,
+}) => {
   const avg = Number(avgRtMs) > 0 ? Number(avgRtMs) : 3000;
   const acc = clamp(Number(accuracyPct) || 0, 0, 100);
   const best = Number(bestRtMs) > 0 ? Number(bestRtMs) : avg;
@@ -125,7 +173,9 @@ export const computePracticeSessionScoreBreakdown = ({ avgRtMs, accuracyPct, bes
   const speedScore = Math.round(clamp(((2600 - avg) / 1600) * 220, 0, 220));
   const consistencyBonus = Math.round(consistencyRatio * 80);
   const roundCompletionBonus = Math.round(clamp((completionRate * (acc / 100)) * 50, 0, 50));
-  const total = accuracyScore + netExecutionScore + speedScore + consistencyBonus + roundCompletionBonus;
+  const totalBeforeLatePenalty = accuracyScore + netExecutionScore + speedScore + consistencyBonus + roundCompletionBonus;
+  const lateTimerPenalty = Math.round(computeLateTimerPenalty({ avgRtMs: avg, roundTimeLimitMs }));
+  const total = Math.max(0, totalBeforeLatePenalty - lateTimerPenalty);
 
   return {
     accuracyScore,
@@ -133,6 +183,8 @@ export const computePracticeSessionScoreBreakdown = ({ avgRtMs, accuracyPct, bes
     speedScore,
     consistencyBonus,
     roundCompletionBonus,
+    lateTimerPenalty,
+    totalBeforeLatePenalty,
     total: Math.round(total),
   };
 };
@@ -296,7 +348,16 @@ const BAND_TO_TIER = Object.freeze({
   CHALLENGER: "CHALLENGER",
 });
 
-export const getPracticeSessionTier = ({ avgRtMs = null, accuracyPct = 0, bestRtMs = null, hits = 0, rounds = 0, misses = 0, penalties = 0 }) => {
+export const getPracticeSessionTier = ({
+  avgRtMs = null,
+  accuracyPct = 0,
+  bestRtMs = null,
+  hits = 0,
+  rounds = 0,
+  misses = 0,
+  penalties = 0,
+  roundTimeLimitMs = null,
+}) => {
   const sessionScore = computePracticeSessionScore({
     avgRtMs,
     accuracyPct,
@@ -305,13 +366,16 @@ export const getPracticeSessionTier = ({ avgRtMs = null, accuracyPct = 0, bestRt
     rounds,
     misses,
     penalties,
+    roundTimeLimitMs,
   });
-  const band = getPracticePerformanceBand(sessionScore);
+  const rawBand = getPracticePerformanceBand(sessionScore);
+  const band = applyLateTimerTierCap({ band: rawBand, avgRtMs, roundTimeLimitMs });
   const tierName = BAND_TO_TIER[band] || "BRONZE";
   const tier = PRACTICE_TIERS.find((row) => row.tier === tierName) || PRACTICE_TIERS[PRACTICE_TIERS.length - 2];
   return {
     ...tier,
     band,
+    rawBand,
     sessionScore,
   };
 };
