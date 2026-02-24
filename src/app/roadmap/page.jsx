@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { C } from "../../components/trenches/config/constants";
 import { CSS } from "../../components/trenches/styles/cssText";
 
@@ -190,16 +190,20 @@ const RoadmapPhase = ({ phase, title, objective, categories, focus, delay = 0, s
 };
 
 export default function RoadmapPage() {
+  const router = useRouter();
   const [isPageVisible, setIsPageVisible] = useState(false);
   const [isVisionVisible, setIsVisionVisible] = useState(false);
   const [timelineLayout, setTimelineLayout] = useState({ markerOffsets: [], railTop: 0, railHeight: 0 });
-  const [timelineFillHeight, setTimelineFillHeight] = useState(0);
+  const [timelineDisplayProgress, setTimelineDisplayProgress] = useState(0);
   const visionRef = useRef(null);
   const scrollContainerRef = useRef(null);
   const timelineSectionRef = useRef(null);
   const phaseRefs = useRef([]);
   const resizeObserverRef = useRef(null);
   const scrollRafRef = useRef(null);
+  const progressRafRef = useRef(null);
+  const timelineGeometryRef = useRef({ markerOffsets: [], markerProgress: [], railTop: 0, railHeight: 0 });
+  const timelineProgressRef = useRef({ target: 0, display: 0, running: false });
 
   useEffect(() => {
     const timer = setTimeout(() => setIsPageVisible(true), 60);
@@ -234,6 +238,8 @@ export default function RoadmapPage() {
     if (markerOffsets.length < 2) return;
     const railTop = markerOffsets[0];
     const railHeight = Math.max(0, markerOffsets[markerOffsets.length - 1] - markerOffsets[0]);
+    const markerProgress = markerOffsets.map((offset) => (railHeight > 0 ? (offset - railTop) / railHeight : 0));
+    timelineGeometryRef.current = { markerOffsets, markerProgress, railTop, railHeight };
     setTimelineLayout((prev) => {
       const sameLength = prev.markerOffsets.length === markerOffsets.length;
       const sameMarkers = sameLength && prev.markerOffsets.every((value, idx) => Math.abs(value - markerOffsets[idx]) < 0.5);
@@ -242,10 +248,29 @@ export default function RoadmapPage() {
     });
   };
 
-  const updateTimelineProgress = () => {
+  const startProgressAnimation = () => {
+    if (timelineProgressRef.current.running) return;
+    timelineProgressRef.current.running = true;
+    const tick = () => {
+      const state = timelineProgressRef.current;
+      const delta = state.target - state.display;
+      state.display += delta * 0.18;
+      if (Math.abs(delta) < 0.0008) state.display = state.target;
+      setTimelineDisplayProgress((prev) => (Math.abs(prev - state.display) > 0.0004 ? state.display : prev));
+      if (state.display !== state.target) {
+        progressRafRef.current = requestAnimationFrame(tick);
+      } else {
+        state.running = false;
+        progressRafRef.current = null;
+      }
+    };
+    progressRafRef.current = requestAnimationFrame(tick);
+  };
+
+  const updateTimelineTargetProgress = () => {
     const container = scrollContainerRef.current;
     const nodes = phaseRefs.current.filter(Boolean);
-    const railHeight = timelineLayout.railHeight;
+    const { railHeight } = timelineGeometryRef.current;
     if (!container || nodes.length < 2 || railHeight <= 0) return;
     const containerRect = container.getBoundingClientRect();
     const activationY = containerRect.top + container.clientHeight * 0.3;
@@ -253,8 +278,9 @@ export default function RoadmapPage() {
     const lastY = nodes[nodes.length - 1].getBoundingClientRect().top + TIMELINE_MARKER_TOP_OFFSET;
     const span = Math.max(1, lastY - firstY);
     const raw = activationY - firstY;
-    const next = Math.max(0, Math.min(span, raw));
-    setTimelineFillHeight((prev) => (Math.abs(prev - next) > 0.5 ? next : prev));
+    const next = Math.max(0, Math.min(1, raw / span));
+    timelineProgressRef.current.target = next;
+    startProgressAnimation();
   };
 
   useEffect(() => {
@@ -263,7 +289,7 @@ export default function RoadmapPage() {
 
     const scheduleMeasure = () => requestAnimationFrame(() => {
       measureTimeline();
-      updateTimelineProgress();
+      updateTimelineTargetProgress();
     });
     scheduleMeasure();
     const t = setTimeout(scheduleMeasure, 220);
@@ -291,7 +317,7 @@ export default function RoadmapPage() {
   }, []);
 
   useEffect(() => {
-    updateTimelineProgress();
+    updateTimelineTargetProgress();
   }, [timelineLayout]);
 
   useEffect(() => {
@@ -301,7 +327,7 @@ export default function RoadmapPage() {
       if (scrollRafRef.current) return;
       scrollRafRef.current = requestAnimationFrame(() => {
         scrollRafRef.current = null;
-        updateTimelineProgress();
+        updateTimelineTargetProgress();
       });
     };
     container.addEventListener("scroll", onScroll, { passive: true });
@@ -312,8 +338,21 @@ export default function RoadmapPage() {
         cancelAnimationFrame(scrollRafRef.current);
         scrollRafRef.current = null;
       }
+      if (progressRafRef.current) {
+        cancelAnimationFrame(progressRafRef.current);
+        progressRafRef.current = null;
+      }
+      timelineProgressRef.current.running = false;
     };
   }, [timelineLayout]);
+
+  const handleBackToTerminal = () => {
+    if (typeof window !== "undefined" && window.history.length > 1) {
+      router.back();
+      return;
+    }
+    router.push("/play/solo");
+  };
 
   return (
     <div
@@ -371,9 +410,33 @@ export default function RoadmapPage() {
         }}
       >
         <div style={{ textAlign: "center", marginBottom: 60 }}>
-          <Link href="/" style={{ fontSize: 11, color: C.textDim, textDecoration: "none", letterSpacing: 2, display: "inline-flex", alignItems: "center", gap: 8, marginBottom: 24, transition: "color 0.2s" }} onMouseEnter={e => e.currentTarget.style.color = C.text} onMouseLeave={e => e.currentTarget.style.color = C.textDim}>
+          <button
+            type="button"
+            onClick={handleBackToTerminal}
+            style={{
+              fontSize: 11,
+              color: C.textDim,
+              textDecoration: "none",
+              letterSpacing: 2,
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 8,
+              marginBottom: 24,
+              transition: "color 0.2s",
+              background: "transparent",
+              border: "none",
+              cursor: "pointer",
+              padding: 0,
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color = C.text;
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.color = C.textDim;
+            }}
+          >
             <span>←</span> BACK TO TERMINAL
-          </Link>
+          </button>
           <h1 style={{ fontSize: 48, fontWeight: 900, color: C.text, letterSpacing: -2, marginBottom: 12 }}>ROADMAP</h1>
           <p style={{ fontSize: 16, color: C.textMuted, maxWidth: 600, margin: "0 auto", lineHeight: 1.6 }}>
             FirstTX is being built in structured phases. Each phase prioritizes stability, fairness, and long-term sustainability over rapid expansion.
@@ -395,7 +458,8 @@ export default function RoadmapPage() {
                 const markerStart = timelineLayout.markerOffsets[idx] - timelineLayout.railTop;
                 const markerEnd = timelineLayout.markerOffsets[idx + 1] - timelineLayout.railTop;
                 const segmentHeight = Math.max(0, markerEnd - markerStart);
-                const filled = Math.max(0, Math.min(segmentHeight, timelineFillHeight - markerStart));
+                const filledByProgress = timelineDisplayProgress * timelineLayout.railHeight;
+                const filled = Math.max(0, Math.min(segmentHeight, filledByProgress - markerStart));
                 if (filled <= 0) return null;
                 return (
                   <div
@@ -408,7 +472,6 @@ export default function RoadmapPage() {
                       height: filled,
                       background: getStatusColor(phase.status),
                       boxShadow: `0 0 10px ${getStatusColor(phase.status)}40`,
-                      transition: "height 0.12s linear",
                     }}
                   />
                 );
@@ -418,8 +481,8 @@ export default function RoadmapPage() {
 
           {timelineLayout.markerOffsets.map((offset, idx) => {
             const phase = ROADMAP_PHASES[idx];
-            const markerTrackY = offset - timelineLayout.railTop;
-            const isActive = timelineFillHeight >= markerTrackY - 0.5;
+            const markerProgress = timelineGeometryRef.current.markerProgress[idx] || 0;
+            const isActive = timelineDisplayProgress >= markerProgress - 0.008;
             const color = getStatusColor(phase.status);
             return (
               <div
@@ -458,7 +521,7 @@ export default function RoadmapPage() {
                 if (node && resizeObserverRef.current) resizeObserverRef.current.observe(node);
                 requestAnimationFrame(() => {
                   measureTimeline();
-                  updateTimelineProgress();
+                  updateTimelineTargetProgress();
                 });
               }}
             />
