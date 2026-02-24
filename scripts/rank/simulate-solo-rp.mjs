@@ -6,6 +6,7 @@ import { once } from "node:events";
 import {
   computePracticeRating,
   getPracticeDifficultyMultiplier,
+  getSoloTierDifficultyPenaltyMultiplier,
   getPracticeTier,
 } from "../../src/components/trenches/lib/practiceRank.js";
 
@@ -15,6 +16,7 @@ const SCORE_BAND_CASES = Object.freeze([
   { band: "SILVER", sessionScore: 470 },
   { band: "GOLD", sessionScore: 650 },
   { band: "PLAT", sessionScore: 830 },
+  { band: "DIAMOND", sessionScore: 900 },
   { band: "CHALLENGER", sessionScore: 980 },
 ]);
 
@@ -183,9 +185,12 @@ function buildCaseSignature({
   accuracy,
   hits,
   baseDelta,
+  difficultyMultiplier,
+  tierPenaltyMultiplier,
+  effectiveMultiplier,
   finalDelta,
 }) {
-  return `score=${scoreBand}|speed=${speedBand}|miss=${totalMisses}|acc=${accuracy}|hits=${hits}|base=${baseDelta}|final=${finalDelta}`;
+  return `score=${scoreBand}|speed=${speedBand}|miss=${totalMisses}|acc=${accuracy}|hits=${hits}|base=${baseDelta}|dMult=${difficultyMultiplier.toFixed(2)}|tierPen=${tierPenaltyMultiplier.toFixed(2)}|eff=${effectiveMultiplier.toFixed(2)}|final=${finalDelta}`;
 }
 
 async function writeRawHeader(stream) {
@@ -202,6 +207,8 @@ async function writeRawHeader(stream) {
     "accuracy_input",
     "difficulty_level",
     "difficulty_multiplier",
+    "tier_penalty_multiplier",
+    "effective_multiplier",
     "base_delta",
     "final_delta",
     "next_rating",
@@ -267,7 +274,12 @@ async function main() {
 
               for (const difficultyLevel of DIFFICULTY_LEVELS) {
                 const multiplier = getPracticeDifficultyMultiplier(difficultyLevel);
-                const finalDelta = clamp(Math.round(baseDelta * multiplier), FINAL_DELTA_MIN, FINAL_DELTA_MAX);
+                const tierPenaltyMultiplier = getSoloTierDifficultyPenaltyMultiplier({
+                  currentRating: rating,
+                  difficultyLevel,
+                });
+                const effectiveMultiplier = multiplier * tierPenaltyMultiplier;
+                const finalDelta = clamp(Math.round(baseDelta * effectiveMultiplier), FINAL_DELTA_MIN, FINAL_DELTA_MAX);
                 const nextRating = Math.max(0, Math.round(rating + finalDelta));
                 const nextTier = getPracticeTier(nextRating).tier;
 
@@ -285,6 +297,9 @@ async function main() {
                   accuracy,
                   hits,
                   baseDelta,
+                  difficultyMultiplier: multiplier,
+                  tierPenaltyMultiplier,
+                  effectiveMultiplier,
                   finalDelta,
                 });
 
@@ -331,6 +346,8 @@ async function main() {
                     accuracy,
                     difficultyLevel,
                     multiplier.toFixed(2),
+                    tierPenaltyMultiplier.toFixed(2),
+                    effectiveMultiplier.toFixed(2),
                     baseDelta,
                     finalDelta,
                     nextRating,
@@ -518,4 +535,3 @@ main().catch((error) => {
   console.error(error?.stack || error?.message || error);
   process.exit(1);
 });
-

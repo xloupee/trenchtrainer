@@ -1,5 +1,7 @@
 import './globals.css';
+import "@solana/wallet-adapter-react-ui/styles.css";
 import { Analytics } from '@vercel/analytics/react';
+import SolanaWalletProvider from '../components/wallet/SolanaWalletProvider';
 
 export const metadata = {
   title: 'Trenches Trainer',
@@ -15,7 +17,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>
-        {children}
+        <SolanaWalletProvider>{children}</SolanaWalletProvider>
         <Analytics />
       </body>
     </html>

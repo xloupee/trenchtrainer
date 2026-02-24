@@ -290,12 +290,20 @@ export default function LandingPage() {
           <img src="/logo.png" alt="Trenches logo" style={{ height: 38, width: 'auto', display: 'block' }} />
         </div>
         <div className="nav-links" style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: 32, alignItems: 'center' }}>
-          {[['#how-it-works','HOW IT WORKS'],['#modes','MODES'],['#ranks','RANKS']].map(([href, label]) => (
-            <a key={href} href={href} style={{ color: C.textMuted, textDecoration: 'none', fontSize: 12, letterSpacing: 1.5, fontWeight: 600, transition: 'color 0.2s' }}
-              onMouseOver={e => e.currentTarget.style.color = C.text}
-              onMouseOut={e  => e.currentTarget.style.color = C.textMuted}>
-              {label}
-            </a>
+          {[['#how-it-works','HOW IT WORKS'],['#modes','MODES'],['#ranks','RANKS'],['/roadmap','ROADMAP']].map(([href, label]) => (
+            href.startsWith('#') ? (
+              <a key={href} href={href} style={{ color: C.textMuted, textDecoration: 'none', fontSize: 12, letterSpacing: 1.5, fontWeight: 600, transition: 'color 0.2s' }}
+                onMouseOver={e => e.currentTarget.style.color = C.text}
+                onMouseOut={e  => e.currentTarget.style.color = C.textMuted}>
+                {label}
+              </a>
+            ) : (
+              <Link key={href} href={href} style={{ color: C.textMuted, textDecoration: 'none', fontSize: 12, letterSpacing: 1.5, fontWeight: 600, transition: 'color 0.2s' }}
+                onMouseOver={e => e.currentTarget.style.color = C.text}
+                onMouseOut={e  => e.currentTarget.style.color = C.textMuted}>
+                {label}
+              </Link>
+            )
           ))}
         </div>
         <div style={{ width: 200, marginLeft: 'auto', display: 'flex', justifyContent: 'flex-end', flexShrink: 0 }}>

@@ -19,6 +19,7 @@ import {
 import { computeDuelRating, getDuelTier } from "./lib/duelRank";
 import {
   getPracticeDifficultyMultiplier,
+  getSoloTierDifficultyPenaltyMultiplier,
   computePracticeRating,
   computePracticeSessionScore,
   computeEndlessRunScore,
@@ -325,6 +326,11 @@ const CompactWagerIcon=({color})=>(
     <path d="M6.5 8.2h11a2 2 0 0 1 2 2v5.6a2 2 0 0 1-2 2h-11a2 2 0 0 1-2-2v-5.6a2 2 0 0 1 2-2Z" stroke={color} strokeWidth="1.8" strokeLinejoin="round"/>
     <circle cx="12" cy="13" r="2.3" stroke={color} strokeWidth="1.8"/>
     <path d="M8.2 6.2h7.6M9.8 5h4.4" stroke={color} strokeWidth="1.5" strokeLinecap="round"/>
+  </svg>
+);
+const CompactRoadmapIcon=({color})=>(
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <path d="M9 20l-5-2V4l5 2m0 14l5-2m-5 2V6m5 12l5 2V6l-5-2m0 14V4" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
   </svg>
 );
 
@@ -731,6 +737,10 @@ export default function App({initialDuelCode=""}){
   },[profileHydrated,profileStats.preferred_mode,updateProfileStats]);
 
   const handleModeSelect=useCallback((mode,{persist=true}={})=>{
+    if(mode==="roadmap"){
+      router.push("/roadmap");
+      return;
+    }
     const normalized=normalizeModeKey(mode);
     router.push(modeToPath(normalized));
     if(persist&&profileHydrated)void savePreferredMode(normalized);
@@ -771,6 +781,8 @@ export default function App({initialDuelCode=""}){
         roundTimeLimitMs:practiceStats?.roundTimeLimitMs,
       });
     let baseDelta=0;
+    let tierPenaltyMultiplier=1;
+    let effectiveSoloMultiplier=difficultyMultiplier;
     const nextProfile=await updateProfileStats((prev)=>{
       const ratingUpdate=isEndless
         ?computeEndlessRating({
@@ -793,9 +805,16 @@ export default function App({initialDuelCode=""}){
           accuracyPct:accuracy,
         });
       baseDelta=Number.isFinite(Number(ratingUpdate?.delta))?Math.round(Number(ratingUpdate.delta)):0;
+      if(!isEndless){
+        tierPenaltyMultiplier=getSoloTierDifficultyPenaltyMultiplier({
+          currentRating:prev.practice_rating,
+          difficultyLevel,
+        });
+        effectiveSoloMultiplier=difficultyMultiplier*tierPenaltyMultiplier;
+      }
       const finalDelta=isEndless
         ?Math.max(-40,Math.min(65,Math.round(baseDelta)))
-        :Math.max(-35,Math.min(55,Math.round(baseDelta*difficultyMultiplier)));
+        :Math.max(-35,Math.min(55,Math.round(baseDelta*effectiveSoloMultiplier)));
       const nextPracticeRating=Math.max(0,Math.round(Number(prev.practice_rating||0))+finalDelta);
       return{
         ...prev,
@@ -837,6 +856,8 @@ export default function App({initialDuelCode=""}){
       delta,
       baseDelta,
       difficultyMultiplier:isEndless?1:difficultyMultiplier,
+      tierPenaltyMultiplier:isEndless?1:tierPenaltyMultiplier,
+      effectiveSoloMultiplier:isEndless?1:effectiveSoloMultiplier,
       difficultyLevel:isEndless?null:difficultyLevel,
       roundTimeLimitMs:isEndless?null:(Number.isFinite(Number(practiceStats?.roundTimeLimitMs))?Math.round(Number(practiceStats.roundTimeLimitMs)):null),
       peakRound:isEndless?peakRound:null,
@@ -914,6 +935,7 @@ export default function App({initialDuelCode=""}){
     { key: "1v1", word: "DUEL", compactIconNode: (color)=><CompactDuelIcon color={color} variant={duelIconVariant}/> },
     { key: "wager", word: "WAGER", compactIconNode: (color)=><CompactWagerIcon color={color}/>, persist: false },
     { key: "profile", word: "STATS", compactIconNode: (color)=><CompactProfileIcon color={color}/> },
+    { key: "roadmap", word: "ROADMAP", compactIconNode: (color)=><CompactRoadmapIcon color={color}/>, persist: false },
   ];
 
   return(

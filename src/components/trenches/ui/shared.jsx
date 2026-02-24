@@ -172,8 +172,8 @@ function SessionSummary({stats,onBack,onProfile,onPlayAgain,rankImpact=null}){
   const avg=stats.times.length>0?stats.times.reduce((a,b)=>a+b,0)/stats.times.length:null;
   const rounds=stats.hits+stats.misses+stats.penalties;
   const acc=rounds>0?Math.round((stats.hits/rounds)*100):0;
-  const rank=getPracticeSessionTier({avgRtMs:avg,accuracyPct:acc,bestRtMs:stats.bestTime,hits:stats.hits,misses:stats.misses,penalties:stats.penalties,rounds,roundTimeLimitMs:isEndlessImpact?null:Number(rankImpact?.roundTimeLimitMs||SOLO_TIMER_LIMIT_MS)});
   const isEndlessImpact=rankImpact?.mode==="endless";
+  const rank=getPracticeSessionTier({avgRtMs:avg,accuracyPct:acc,bestRtMs:stats.bestTime,hits:stats.hits,misses:stats.misses,penalties:stats.penalties,rounds,roundTimeLimitMs:isEndlessImpact?null:Number(rankImpact?.roundTimeLimitMs||SOLO_TIMER_LIMIT_MS)});
   const hasDifficultyBonus=rankImpact?.mode==="solo"&&Number.isFinite(Number(rankImpact?.difficultyMultiplier))&&Number.isFinite(Number(rankImpact?.delta));
   const difficultyMultiplier=Number(rankImpact?.difficultyMultiplier||1);
   const finalDelta=Number(rankImpact?.delta||0);

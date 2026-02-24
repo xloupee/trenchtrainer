@@ -118,6 +118,33 @@ pub mod wager_escrow {
         m.state = WagerState::Settled;
         Ok(())
     }
+
+    pub fn refund_host_expired(ctx: Context<RefundHostExpired>) -> Result<()> {
+        let now = Clock::get()?.unix_timestamp;
+        let host_key = ctx.accounts.host.key();
+        let payout = {
+            let m = &ctx.accounts.wager_match;
+            require!(m.state == WagerState::HostFunded, WagerError::InvalidState);
+            require!(host_key == m.host, WagerError::Unauthorized);
+            require!(now >= m.deadline_ts, WagerError::DeadlineNotReached);
+            m.stake_lamports
+        };
+
+        let wager_match_ai = ctx.accounts.wager_match.to_account_info();
+        let host_ai = ctx.accounts.host.to_account_info();
+        {
+            let mut match_lamports = wager_match_ai.try_borrow_mut_lamports()?;
+            **match_lamports -= payout;
+        }
+        {
+            let mut host_lamports = host_ai.try_borrow_mut_lamports()?;
+            **host_lamports += payout;
+        }
+
+        let m = &mut ctx.accounts.wager_match;
+        m.state = WagerState::Refunded;
+        Ok(())
+    }
 }
 
 #[derive(Accounts)]
@@ -164,6 +191,14 @@ pub struct SettleWinner<'info> {
     pub winner: UncheckedAccount<'info>,
 }
 
+#[derive(Accounts)]
+pub struct RefundHostExpired<'info> {
+    #[account(mut)]
+    pub wager_match: Account<'info, WagerMatch>,
+    #[account(mut)]
+    pub host: Signer<'info>,
+}
+
 #[account]
 #[derive(InitSpace)]
 pub struct WagerMatch {
@@ -198,6 +233,8 @@ pub enum WagerError {
     InvalidStake,
     #[msg("Invalid deadline")]
     InvalidDeadline,
+    #[msg("Deadline not reached")]
+    DeadlineNotReached,
     #[msg("Invalid state")]
     InvalidState,
     #[msg("Unauthorized")]

@@ -18,7 +18,8 @@ const PRACTICE_BANDS = [
   { key: "SILVER", min: 380 },
   { key: "GOLD", min: 560 },
   { key: "PLAT", min: 760 },
-  { key: "CHALLENGER", min: 930 },
+  { key: "DIAMOND", min: 860 },
+  { key: "CHALLENGER", min: 960 },
 ];
 
 const BAND_INDEX = Object.freeze({
@@ -27,7 +28,8 @@ const BAND_INDEX = Object.freeze({
   SILVER: 2,
   GOLD: 3,
   PLAT: 4,
-  CHALLENGER: 5,
+  DIAMOND: 5,
+  CHALLENGER: 6,
 });
 
 const BAND_BY_INDEX = Object.freeze(Object.keys(BAND_INDEX).sort((a, b) => BAND_INDEX[a] - BAND_INDEX[b]));
@@ -38,6 +40,7 @@ const BASE_DELTA_BY_BAND = Object.freeze({
   SILVER: 12,
   GOLD: 20,
   PLAT: 28,
+  DIAMOND: 33,
   CHALLENGER: 37,
 });
 
@@ -47,6 +50,7 @@ const ENDLESS_BASE_DELTA_BY_BAND = Object.freeze({
   SILVER: 11,
   GOLD: 19,
   PLAT: 30,
+  DIAMOND: 35,
   CHALLENGER: 40,
 });
 
@@ -56,6 +60,30 @@ const PRACTICE_DIFFICULTY_MULTIPLIERS = Object.freeze({
   5: 1.15,
   7: 1.4,
   10: 1.7,
+});
+
+const SOLO_TIER_DIFFICULTY_PENALTIES = Object.freeze({
+  GOLD: Object.freeze({
+    1: 0.65,
+    3: 0.78,
+    5: 0.9,
+    7: 0.96,
+    10: 1,
+  }),
+  DIAMOND: Object.freeze({
+    1: 0.18,
+    3: 0.32,
+    5: 0.55,
+    7: 0.78,
+    10: 1,
+  }),
+  CHALLENGER: Object.freeze({
+    1: 0.1,
+    3: 0.22,
+    5: 0.45,
+    7: 0.7,
+    10: 1,
+  }),
 });
 
 const getSoloTimePressure = (avgRtMs, roundTimeLimitMs) => {
@@ -201,7 +229,7 @@ export const getPracticePerformanceBand = (sessionScore) => {
 export const getExpectedBandFromRating = (rating) => {
   const tier = getPracticeTier(rating).tier;
   if (tier === "CHALLENGER") return "CHALLENGER";
-  if (tier === "DIAMOND") return "PLAT";
+  if (tier === "DIAMOND") return "DIAMOND";
   if (tier === "PLATINUM") return "PLAT";
   if (tier === "GOLD") return "GOLD";
   if (tier === "SILVER") return "SILVER";
@@ -345,6 +373,7 @@ const BAND_TO_TIER = Object.freeze({
   SILVER: "SILVER",
   GOLD: "GOLD",
   PLAT: "PLATINUM",
+  DIAMOND: "DIAMOND",
   CHALLENGER: "CHALLENGER",
 });
 
@@ -383,6 +412,17 @@ export const getPracticeSessionTier = ({
 export const getPracticeDifficultyMultiplier = (level) => {
   const normalized = Math.round(Number(level) || 1);
   return PRACTICE_DIFFICULTY_MULTIPLIERS[normalized] || 1;
+};
+
+export const getSoloTierDifficultyPenaltyMultiplier = ({
+  currentRating,
+  difficultyLevel,
+}) => {
+  const tier = getPracticeTier(currentRating).tier;
+  const table = SOLO_TIER_DIFFICULTY_PENALTIES[tier];
+  if (!table) return 1;
+  const normalizedDifficulty = Math.round(Number(difficultyLevel) || 1);
+  return table[normalizedDifficulty] || 1;
 };
 
 export { PRACTICE_BASE_RATING };
