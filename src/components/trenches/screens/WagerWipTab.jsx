@@ -26,7 +26,36 @@ const readAnchorError = (error) => {
   return text || "Action failed.";
 };
 
-export default function WagerWipTab() {
+function WagerWipOnlyTab() {
+  return (
+    <div className="menu-bg" style={{ justifyContent: "flex-start", overflowY: "auto", overflowX: "hidden", paddingTop: 20, paddingBottom: 52 }}>
+      <div className="grid-bg" />
+      <div className="menu-inner" style={{ maxWidth: 1120, minHeight: "calc(100vh - 140px)", display: "grid", placeItems: "center" }}>
+        <div className="glass-card" style={{ width: "100%", maxWidth: 880, padding: 26 }}>
+          <div style={{ fontSize: 10, fontWeight: 900, letterSpacing: 2.4, color: C.yellow, marginBottom: 8 }}>WAGER MODE // WORK IN PROGRESS</div>
+          <h2 style={{ fontSize: 38, lineHeight: 1, letterSpacing: -1, color: C.text, marginBottom: 12 }}>Wager Duels Are Coming Soon</h2>
+          <div style={{ fontSize: 15, color: C.textMuted, lineHeight: 1.6 }}>
+            Challenge another player and both sides lock the same SOL amount before the duel starts.
+          </div>
+          <div style={{ fontSize: 15, color: C.textMuted, lineHeight: 1.6 }}>
+            Winner takes the pot automatically. If no opponent joins in time, funds return to the host.
+          </div>
+          <div style={{ marginTop: 16, border: `1px solid ${C.border}`, background: "rgba(0,0,0,0.32)", borderRadius: 12, padding: 14 }}>
+            <div style={{ fontSize: 11, color: C.textGhost, letterSpacing: 1.6, marginBottom: 8 }}>&gt; HOW THIS MODE WILL PLAY</div>
+            <div style={{ fontSize: 13, color: C.textMuted, lineHeight: 1.7 }}>
+              1. Pick a stake tier. 2. Create or join a lobby. 3. Play a normal duel. 4. Winner is paid out.
+            </div>
+          </div>
+          <div style={{ marginTop: 14, fontSize: 11, color: C.textGhost }}>
+            Devnet testing is active. Public gameplay unlocks after final UX and safety checks.
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function WagerFullTab() {
   const { connection } = useConnection();
   const wallet = useWallet();
   const [lobbies, setLobbies] = useState([]);
@@ -508,3 +537,8 @@ export default function WagerWipTab() {
   );
 }
 
+export default function WagerWipTab() {
+  const uiMode = String(process.env.NEXT_PUBLIC_WAGER_UI_MODE || "wip").toLowerCase();
+  if (uiMode !== "full") return <WagerWipOnlyTab />;
+  return <WagerFullTab />;
+}
