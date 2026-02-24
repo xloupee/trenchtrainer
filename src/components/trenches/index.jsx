@@ -935,7 +935,6 @@ export default function App({initialDuelCode=""}){
     { key: "1v1", word: "DUEL", compactIconNode: (color)=><CompactDuelIcon color={color} variant={duelIconVariant}/> },
     { key: "wager", word: "WAGER", compactIconNode: (color)=><CompactWagerIcon color={color}/>, persist: false },
     { key: "profile", word: "STATS", compactIconNode: (color)=><CompactProfileIcon color={color}/> },
-    { key: "roadmap", word: "ROADMAP", compactIconNode: (color)=><CompactRoadmapIcon color={color}/>, persist: false },
   ];
 
   return(
@@ -1028,11 +1027,65 @@ export default function App({initialDuelCode=""}){
           </div>
         ):null}
         <div
+          onClick={()=>handleModeSelect("roadmap",{persist:false})}
+          onMouseEnter={()=>setHoveredSidebarKey("roadmap")}
+          onMouseLeave={()=>setHoveredSidebarKey((prev)=>prev==="roadmap"?null:prev)}
+          style={{
+            marginTop:"auto",
+            marginBottom:8,
+            color:tab==="roadmap"?C.green:C.textMuted,
+            cursor:"pointer",
+            transition:"all 0.2s",
+            width:showWideSidebar?"calc(100% - 16px)":56,
+            height:40,
+            display:"flex",
+            alignItems:"center",
+            justifyContent:showWideSidebar?"flex-start":"center",
+            borderRadius:8,
+            alignSelf:showWideSidebar?"center":"auto",
+            background:tab==="roadmap"?`${C.green}10`:"transparent",
+            position:"relative",
+            overflow:"visible",
+            paddingLeft:showWideSidebar?12:0,
+          }}
+          className="sidebar-item-btn"
+        >
+          {!showWideSidebar ? (
+            <CompactRoadmapIcon color={tab==="roadmap"?C.green:C.textMuted}/>
+          ) : (
+            <span style={{fontSize:10,fontWeight:900,letterSpacing:1.2,lineHeight:1}}>
+              {getSidebarWord("ROADMAP",sidebarWidth)}
+            </span>
+          )}
+          {!showWideSidebar&&hoveredSidebarKey==="roadmap"&&(
+            <div style={{
+              position:"absolute",
+              left:62,
+              top:"50%",
+              transform:"translateY(-50%)",
+              background:`linear-gradient(145deg,${C.bgCard},${C.bgAlt})`,
+              color:C.text,
+              border:`1px solid ${C.borderLight}`,
+              borderRadius:8,
+              padding:"6px 10px",
+              fontSize:9,
+              fontWeight:800,
+              letterSpacing:1.1,
+              whiteSpace:"nowrap",
+              zIndex:220,
+              boxShadow:"0 8px 20px rgba(0,0,0,0.4)",
+              pointerEvents:"none",
+            }}>
+              ROADMAP
+            </div>
+          )}
+        </div>
+        <div
           ref={logoutTriggerRef}
           onClick={openLogoutWarning}
           onMouseEnter={()=>setHoveredSidebarKey("logout")}
           onMouseLeave={()=>setHoveredSidebarKey((prev)=>prev==="logout"?null:prev)}
-          style={{marginTop:"auto",marginBottom:32,fontSize:18,color:C.textDim,cursor:"pointer",width:showWideSidebar?"calc(100% - 16px)":56,height:40,borderRadius:8,display:"flex",alignItems:"center",justifyContent:showWideSidebar?"flex-start":"center",paddingLeft:showWideSidebar?12:0,alignSelf:showWideSidebar?"center":"auto",background:showLogoutWarning?`${C.orange}12`:"transparent",position:"relative",overflow:"visible"}}
+          style={{marginTop:0,marginBottom:32,fontSize:18,color:C.textDim,cursor:"pointer",width:showWideSidebar?"calc(100% - 16px)":56,height:40,borderRadius:8,display:"flex",alignItems:"center",justifyContent:showWideSidebar?"flex-start":"center",paddingLeft:showWideSidebar?12:0,alignSelf:showWideSidebar?"center":"auto",background:showLogoutWarning?`${C.orange}12`:"transparent",position:"relative",overflow:"visible"}}
           className="sidebar-item-btn"
         >
           ⏻
