@@ -15,7 +15,7 @@ npm run rank:sim:solo -- --min-rating 0 --max-rating 1200 --step 1
 
 ## What This Simulator Solves
 
-The Solo rating system depends on multiple inputs (score band, speed, misses, accuracy, hits, difficulty multiplier).
+The Solo rating system depends on multiple inputs (score band, speed, misses, accuracy, hits, difficulty multiplier, tier penalty multiplier).
 Instead of testing manually in-game, this script sweeps combinations and gives you:
 
 - min/max RP change at each rating
@@ -30,7 +30,7 @@ This simulator defines **all outcomes** as **all important discrete branch combi
 
 It iterates:
 
-- Score band targets: `UNDER, BRONZE, SILVER, GOLD, PLAT, CHALLENGER`
+- Score band targets: `UNDER, BRONZE, SILVER, GOLD, PLAT, DIAMOND, CHALLENGER`
 - Speed band targets: `CHALLENGER, PLAT, GOLD, SILVER, BRONZE, UNDER`
 - Miss buckets: `0..5`
 - Accuracy cases: `0, 10, 20, 30, 40, 50, 60, 80, 81, 85, 90, 95, 100`
@@ -43,9 +43,11 @@ For each rating + branch case:
 
 1. Calls `computePracticeRating(...)` from `src/components/trenches/lib/practiceRank.js` to get `baseDelta`.
 2. Applies Solo difficulty multiplier from `getPracticeDifficultyMultiplier(level)`.
-3. Computes final delta exactly like app flow:
-   - `finalDelta = clamp(round(baseDelta * multiplier), -35, 55)`
-4. Computes:
+3. Applies tier-aware Solo anti-farming penalty from `getSoloTierDifficultyPenaltyMultiplier({ currentRating, difficultyLevel })`.
+4. Computes final delta exactly like app flow:
+   - `effectiveMultiplier = difficultyMultiplier * tierPenaltyMultiplier`
+   - `finalDelta = clamp(round(baseDelta * effectiveMultiplier), -35, 55)`
+5. Computes:
    - `nextRating = max(0, currentRating + finalDelta)`
    - `nextTier = getPracticeTier(nextRating).tier`
 
@@ -123,7 +125,7 @@ Columns:
 `*_case_signature` shows the branch combination that created that extreme:
 
 ```text
-score=GOLD|speed=CHALLENGER|miss=0|acc=90|hits=8|base=39|final=55
+score=GOLD|speed=CHALLENGER|miss=0|acc=90|hits=8|base=39|dMult=0.50|tierPen=0.65|eff=0.33|final=13
 ```
 
 ### 4) `solo-raw-combos.csv` (optional)
@@ -142,6 +144,8 @@ Columns:
 - `accuracy_input`
 - `difficulty_level`
 - `difficulty_multiplier`
+- `tier_penalty_multiplier`
+- `effective_multiplier`
 - `base_delta`
 - `final_delta`
 - `next_rating`
@@ -156,13 +160,13 @@ Use this for full branch-level debugging.
 Per rating, raw branch rows =:
 
 ```text
-6 score bands
+7 score bands
 x 6 speed bands
 x 6 miss buckets
 x 13 accuracy points
 x 2 hit states
 x 5 difficulty levels
-= 28,080 rows per rating
+= 32,760 rows per rating
 ```
 
 So full `0..1200` with step `1` can be large with `--raw`.

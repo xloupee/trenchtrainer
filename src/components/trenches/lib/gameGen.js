@@ -19,6 +19,37 @@ const rBS = () => `${Math.floor(Math.random() * 8)} · ${Math.floor(Math.random(
 const rT2 = () => `${Math.floor(Math.random() * 30)}%`;
 const rS2 = () => ({ web: Math.random() > 0.55, tg: Math.random() > 0.5, tw: Math.random() > 0.5, yt: Math.random() > 0.8 });
 
+const normalizeToken = (value) =>
+  String(value || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, "");
+
+const getNameRoots = (name) => {
+  const normalized = normalizeToken(name);
+  const stripped = normalized
+    .replace(/coin/g, "")
+    .replace(/token/g, "")
+    .replace(/dao/g, "")
+    .replace(/x$/g, "");
+  return [normalized, stripped].filter(Boolean);
+};
+
+const tweetMatchesTheme = (tweetText, themeKw, coinName) => {
+  const normalizedText = normalizeToken(tweetText);
+  if (!normalizedText) return false;
+  const kw = normalizeToken(themeKw);
+  if (kw && normalizedText.includes(kw)) return true;
+  return getNameRoots(coinName).some((root) => root.length >= 3 && normalizedText.includes(root));
+};
+
+const alignSignalTweet = (tweet, themeKw, coinName) => {
+  const base = { ...tweet };
+  if (tweetMatchesTheme(base.text, themeKw, coinName)) return base;
+  const suffix = ` ${String(themeKw || "").toUpperCase()} flow heating up.`;
+  base.text = `${String(base.text || "").trim()}${suffix}`.trim();
+  return base;
+};
+
 export function genNoiseToken() {
   return {
     name: pick(NOISE_TICKERS),
@@ -49,10 +80,11 @@ export function genRound(num, seed = null, maxDiffCap = 10) {
   const diff = maxDiffCap <= 3 ? Math.min(maxDiffCap, num + 1) : Math.min(maxDiffCap, Math.floor(num / 2) + 1);
   const pc = Math.round(Math.min(5 + diff * 1.5, 20));
   const th = _pick(THEMES),
-    tw = _pick(th.tweets),
     cn = _pick(th.names);
-  const ad = [...th.decoys, ...NOISE_TICKERS.slice(0, 10)],
-    ae = [...th.de, ...NOISE_EMOJIS.slice(0, 10)];
+  const tw = alignSignalTweet(_pick(th.tweets), th.kw, cn);
+  // Keep decoys inside the same narrative family so X tracker context matches token board.
+  const ad = [...th.decoys],
+    ae = [...th.de];
   const ud = _shuf(ad).slice(0, pc - 1),
     ue = _shuf(ae).slice(0, pc - 1);
   const traps = [];

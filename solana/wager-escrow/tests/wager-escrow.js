@@ -124,6 +124,76 @@ async function main() {
   assert.equal(winnerAfter - winnerBefore, stakeLamports * 2);
 
   console.log("All wager escrow happy-path checks passed.");
+
+  const host2 = Keypair.generate();
+  await airdrop(connection, host2.publicKey, fundingSol);
+
+  const refundGameCode = `RFND${Date.now().toString().slice(-8)}`.slice(0, 16);
+  const refundDeadlineTs = Math.floor(Date.now() / 1000) + 2;
+  const [refundMatch] = PublicKey.findProgramAddressSync(
+    [Buffer.from("wager_match"), Buffer.from(refundGameCode)],
+    program.programId,
+  );
+
+  console.log("[5/8] initialize_refund_match");
+  await program.methods
+    .initializeMatch(refundGameCode, new anchor.BN(stakeLamports), new anchor.BN(refundDeadlineTs), referee)
+    .accounts({
+      wagerMatch: refundMatch,
+      host: host2.publicKey,
+      systemProgram: SystemProgram.programId,
+    })
+    .signers([host2])
+    .rpc();
+
+  console.log("[6/8] fund_host_refund_match");
+  await program.methods
+    .fundHost()
+    .accounts({
+      wagerMatch: refundMatch,
+      host: host2.publicKey,
+      systemProgram: SystemProgram.programId,
+    })
+    .signers([host2])
+    .rpc();
+
+  console.log("[7/8] refund_fails_before_deadline");
+  let sawDeadlineFailure = false;
+  try {
+    await program.methods
+      .refundHostExpired()
+      .accounts({
+        wagerMatch: refundMatch,
+        host: host2.publicKey,
+      })
+      .signers([host2])
+      .rpc();
+  } catch (e) {
+    const msg = String(e?.message || e || "");
+    sawDeadlineFailure = msg.includes("DeadlineNotReached") || msg.toLowerCase().includes("deadline not reached");
+  }
+  assert.equal(sawDeadlineFailure, true, "Expected refund to fail before deadline.");
+
+  await new Promise((resolve) => setTimeout(resolve, 2500));
+  const escrowBeforeRefund = await connection.getBalance(refundMatch, "confirmed");
+
+  console.log("[8/8] refund_succeeds_after_deadline");
+  await program.methods
+    .refundHostExpired()
+    .accounts({
+      wagerMatch: refundMatch,
+      host: host2.publicKey,
+    })
+    .signers([host2])
+    .rpc();
+
+  const refundState = await program.account.wagerMatch.fetch(refundMatch);
+  assert.equal(stateName(refundState.state), "refunded");
+
+  const escrowAfterRefund = await connection.getBalance(refundMatch, "confirmed");
+  assert.equal(escrowBeforeRefund - escrowAfterRefund, stakeLamports);
+
+  console.log("Refund path checks passed.");
 }
 
 main().catch((err) => {
