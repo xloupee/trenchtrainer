@@ -1,0 +1,350 @@
+{
+  "address": "JCRT7U9RoxcQ7xt5PkZ3EsrPkDswGQRfcKkc2qB9cx4m",
+  "metadata": {
+    "name": "wager_escrow",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Wager escrow program for Trenches duels"
+  },
+  "instructions": [
+    {
+      "name": "fund_host",
+      "discriminator": [
+        232,
+        227,
+        164,
+        123,
+        141,
+        62,
+        182,
+        209
+      ],
+      "accounts": [
+        {
+          "name": "wager_match",
+          "writable": true
+        },
+        {
+          "name": "host",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "initialize_match",
+      "discriminator": [
+        156,
+        133,
+        52,
+        179,
+        176,
+        29,
+        64,
+        124
+      ],
+      "accounts": [
+        {
+          "name": "wager_match",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  119,
+                  97,
+                  103,
+                  101,
+                  114,
+                  95,
+                  109,
+                  97,
+                  116,
+                  99,
+                  104
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "game_code"
+              }
+            ]
+          }
+        },
+        {
+          "name": "host",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "game_code",
+          "type": "string"
+        },
+        {
+          "name": "stake_lamports",
+          "type": "u64"
+        },
+        {
+          "name": "deadline_ts",
+          "type": "i64"
+        },
+        {
+          "name": "referee",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "join_and_fund",
+      "discriminator": [
+        96,
+        116,
+        61,
+        161,
+        50,
+        24,
+        59,
+        225
+      ],
+      "accounts": [
+        {
+          "name": "wager_match",
+          "writable": true
+        },
+        {
+          "name": "guest",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "refund_host_expired",
+      "discriminator": [
+        230,
+        29,
+        143,
+        22,
+        37,
+        84,
+        155,
+        122
+      ],
+      "accounts": [
+        {
+          "name": "wager_match",
+          "writable": true
+        },
+        {
+          "name": "host",
+          "writable": true,
+          "signer": true
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "settle_winner",
+      "discriminator": [
+        100,
+        128,
+        15,
+        104,
+        78,
+        132,
+        199,
+        47
+      ],
+      "accounts": [
+        {
+          "name": "wager_match",
+          "writable": true
+        },
+        {
+          "name": "referee",
+          "signer": true
+        },
+        {
+          "name": "winner",
+          "writable": true
+        }
+      ],
+      "args": [
+        {
+          "name": "winner",
+          "type": "pubkey"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "WagerMatch",
+      "discriminator": [
+        117,
+        109,
+        2,
+        146,
+        78,
+        171,
+        57,
+        227
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "GameCodeTooLong",
+      "msg": "Game code is too long"
+    },
+    {
+      "code": 6001,
+      "name": "InvalidStake",
+      "msg": "Invalid stake"
+    },
+    {
+      "code": 6002,
+      "name": "InvalidDeadline",
+      "msg": "Invalid deadline"
+    },
+    {
+      "code": 6003,
+      "name": "DeadlineNotReached",
+      "msg": "Deadline not reached"
+    },
+    {
+      "code": 6004,
+      "name": "InvalidState",
+      "msg": "Invalid state"
+    },
+    {
+      "code": 6005,
+      "name": "Unauthorized",
+      "msg": "Unauthorized"
+    },
+    {
+      "code": 6006,
+      "name": "HostNotFunded",
+      "msg": "Host has not funded yet"
+    },
+    {
+      "code": 6007,
+      "name": "AlreadyFunded",
+      "msg": "Account is already funded"
+    },
+    {
+      "code": 6008,
+      "name": "InvalidGuest",
+      "msg": "Invalid guest"
+    },
+    {
+      "code": 6009,
+      "name": "InvalidWinner",
+      "msg": "Invalid winner"
+    },
+    {
+      "code": 6010,
+      "name": "MathOverflow",
+      "msg": "Math overflow"
+    }
+  ],
+  "types": [
+    {
+      "name": "WagerMatch",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "game_code",
+            "type": "string"
+          },
+          {
+            "name": "host",
+            "type": "pubkey"
+          },
+          {
+            "name": "guest",
+            "type": "pubkey"
+          },
+          {
+            "name": "referee",
+            "type": "pubkey"
+          },
+          {
+            "name": "stake_lamports",
+            "type": "u64"
+          },
+          {
+            "name": "state",
+            "type": {
+              "defined": {
+                "name": "WagerState"
+              }
+            }
+          },
+          {
+            "name": "host_funded",
+            "type": "bool"
+          },
+          {
+            "name": "guest_funded",
+            "type": "bool"
+          },
+          {
+            "name": "deadline_ts",
+            "type": "i64"
+          },
+          {
+            "name": "created_at",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "WagerState",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Init"
+          },
+          {
+            "name": "HostFunded"
+          },
+          {
+            "name": "BothFunded"
+          },
+          {
+            "name": "Settled"
+          },
+          {
+            "name": "Refunded"
+          }
+        ]
+      }
+    }
+  ]
+}
