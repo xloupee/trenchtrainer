@@ -551,11 +551,27 @@ export default function LandingPage() {
           </div>
           <div style={{ textAlign: 'center' }}>
             <div style={{ fontSize: 11, color: C.textDim, letterSpacing: 1 }}>Built for those who move first.</div>
-            <a href="mailto:firsttxio@gmail.com" style={{ fontSize: 11, color: C.green, textDecoration: 'none', letterSpacing: 1 }}>
-              firsttxio@gmail.com
-            </a>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, marginTop: 2, flexWrap: 'wrap' }}>
+              <a href="mailto:firsttxio@gmail.com" style={{ fontSize: 11, color: C.green, textDecoration: 'none', letterSpacing: 1 }}>
+                firsttxio@gmail.com
+              </a>
+              <a
+                href="https://x.com/FirstTXio"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 11, color: C.textDim, textDecoration: 'none', letterSpacing: 1.2, fontWeight: 700 }}
+                aria-label="FirstTX on X"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true" style={{ width: 12, height: 12, display: 'block', fill: 'currentColor' }}>
+                  <path d="M18.9 2h2.9l-6.5 7.4 7.6 10.6h-6L12.3 14l-5.5 6H4l7-7.9L3.7 2h6.2l4.2 5.6L18.9 2Zm-1 16.3h1.6L8.9 3.6H7.2l10.7 14.7Z" />
+                </svg>
+                @FirstTXio
+              </a>
+            </div>
           </div>
-          <Link href="/play" style={{ fontSize: 11, color: C.green, textDecoration: 'none', letterSpacing: 1.5, fontWeight: 700, justifySelf: 'end' }}>PLAY →</Link>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 14, justifySelf: 'end' }}>
+            <Link href="/play" style={{ fontSize: 11, color: C.green, textDecoration: 'none', letterSpacing: 1.5, fontWeight: 700 }}>PLAY →</Link>
+          </div>
         </footer>
 
       </div>
