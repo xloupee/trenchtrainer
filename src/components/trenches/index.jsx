@@ -828,6 +828,7 @@ export default function App({initialDuelCode=""}){
           misses:practiceStats.misses,
           penalties:practiceStats.penalties,
           accuracyPct:accuracy,
+          roundTimeLimitMs:practiceStats?.roundTimeLimitMs,
         });
       baseDelta=Number.isFinite(Number(ratingUpdate?.delta))?Math.round(Number(ratingUpdate.delta)):0;
       if(!isEndless){

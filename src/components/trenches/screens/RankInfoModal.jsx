@@ -141,7 +141,9 @@ function RankInfoModal({ open, onClose }) {
                 <br />3. Better consistency (best vs average)
                 <br />
                 <br />
-                Your new RP is smoothed, so one run won’t swing rank too hard.
+                Slow reactions now reduce RP continuously, even on correct clicks.
+                <br />
+                Very slow runs can become 0 RP or negative.
               </div>
               <TierTable title="Solo tiers" rows={PRACTICE_TIERS} />
             </>
@@ -166,7 +168,7 @@ function RankInfoModal({ open, onClose }) {
             <div style={{ fontSize: 11, color: C.textMuted, lineHeight: 1.6 }}>
               Example A: You improve from 80% to 92% accuracy with faster reactions in Solo, your RP should rise.
               <br />
-              Example B: You keep the same accuracy but become less consistent, so gains may be smaller.
+              Example B: You keep accuracy high but react too slowly, so gains shrink or flip negative.
               <br />
               Example C: You can track progress to next tier from the Solo summary and this Profile page.
             </div>

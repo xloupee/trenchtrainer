@@ -96,21 +96,74 @@ const getSoloTimePressure = (avgRtMs, roundTimeLimitMs) => {
 
 const lerp = (a, b, t) => a + (b - a) * t;
 
+const getSoloTimeDeltaScale = (pressure) => {
+  if (!Number.isFinite(pressure)) return 1;
+  if (pressure <= 0.25) return 1;
+  if (pressure <= 0.5) return lerp(1, 0.9, (pressure - 0.25) / 0.25);
+  if (pressure <= 0.7) return lerp(0.9, 0.62, (pressure - 0.5) / 0.2);
+  if (pressure <= 0.85) return lerp(0.62, 0.35, (pressure - 0.7) / 0.15);
+  if (pressure <= 1) return lerp(0.35, 0.08, (pressure - 0.85) / 0.15);
+  if (pressure <= 1.2) return lerp(0.08, 0, (pressure - 1) / 0.2);
+  return 0;
+};
+
+const getSoloTimeDeltaPenalty = (pressure) => {
+  if (!Number.isFinite(pressure) || pressure <= 0.45) return 0;
+  if (pressure <= 0.65) return Math.round(lerp(0, 8, (pressure - 0.45) / 0.2));
+  if (pressure <= 0.85) return Math.round(lerp(8, 20, (pressure - 0.65) / 0.2));
+  if (pressure <= 1.05) return Math.round(lerp(20, 34, (pressure - 0.85) / 0.2));
+  return Math.round(lerp(34, 40, Math.min((pressure - 1.05) / 0.2, 1)));
+};
+
 const computeLateTimerPenalty = ({ avgRtMs, roundTimeLimitMs }) => {
   const pressure = getSoloTimePressure(avgRtMs, roundTimeLimitMs);
-  if (pressure === null || pressure <= 0.6) return 0;
-  if (pressure <= 0.8) return Math.round(lerp(0, 90, (pressure - 0.6) / 0.2));
-  if (pressure <= 0.9) return Math.round(lerp(90, 180, (pressure - 0.8) / 0.1));
-  return Math.round(lerp(180, 320, (pressure - 0.9) / 0.35));
+  if (pressure === null || pressure <= 0.35) return 0;
+  if (pressure <= 0.55) return Math.round(lerp(0, 70, (pressure - 0.35) / 0.2));
+  if (pressure <= 0.75) return Math.round(lerp(70, 180, (pressure - 0.55) / 0.2));
+  if (pressure <= 0.9) return Math.round(lerp(180, 320, (pressure - 0.75) / 0.15));
+  if (pressure <= 1.1) return Math.round(lerp(320, 440, (pressure - 0.9) / 0.2));
+  return Math.round(lerp(440, 520, Math.min((pressure - 1.1) / 0.15, 1)));
 };
 
 const applyLateTimerTierCap = ({ band, avgRtMs, roundTimeLimitMs }) => {
   const pressure = getSoloTimePressure(avgRtMs, roundTimeLimitMs);
   if (pressure === null || !Object.hasOwn(BAND_INDEX, band)) return band;
   const currentIndex = BAND_INDEX[band];
-  if (pressure >= 0.97) return BAND_BY_INDEX[Math.min(currentIndex, BAND_INDEX.SILVER)];
-  if (pressure >= 0.9) return BAND_BY_INDEX[Math.min(currentIndex, BAND_INDEX.GOLD)];
+  if (pressure >= 0.92) return BAND_BY_INDEX[Math.min(currentIndex, BAND_INDEX.SILVER)];
+  if (pressure >= 0.8) return BAND_BY_INDEX[Math.min(currentIndex, BAND_INDEX.GOLD)];
+  if (pressure >= 0.68) return BAND_BY_INDEX[Math.min(currentIndex, BAND_INDEX.PLAT)];
   return band;
+};
+
+const getEndlessTimePressure = (avgRtMs) => {
+  const avg = Number(avgRtMs);
+  if (!Number.isFinite(avg) || avg <= 0) return null;
+  if (avg <= 900) return 0.1;
+  if (avg <= 1500) return lerp(0.1, 0.35, (avg - 900) / 600);
+  if (avg <= 2200) return lerp(0.35, 0.6, (avg - 1500) / 700);
+  if (avg <= 3000) return lerp(0.6, 0.82, (avg - 2200) / 800);
+  if (avg <= 4200) return lerp(0.82, 1.0, (avg - 3000) / 1200);
+  if (avg <= 6500) return lerp(1.0, 1.2, (avg - 4200) / 2300);
+  return 1.2;
+};
+
+const getEndlessTimeDeltaScale = (pressure) => {
+  if (!Number.isFinite(pressure)) return 1;
+  if (pressure <= 0.3) return 1;
+  if (pressure <= 0.55) return lerp(1, 0.86, (pressure - 0.3) / 0.25);
+  if (pressure <= 0.75) return lerp(0.86, 0.62, (pressure - 0.55) / 0.2);
+  if (pressure <= 0.9) return lerp(0.62, 0.38, (pressure - 0.75) / 0.15);
+  if (pressure <= 1.0) return lerp(0.38, 0.18, (pressure - 0.9) / 0.1);
+  if (pressure <= 1.2) return lerp(0.18, 0, (pressure - 1.0) / 0.2);
+  return 0;
+};
+
+const getEndlessTimeDeltaPenalty = (pressure) => {
+  if (!Number.isFinite(pressure) || pressure <= 0.45) return 0;
+  if (pressure <= 0.7) return Math.round(lerp(0, 8, (pressure - 0.45) / 0.25));
+  if (pressure <= 0.9) return Math.round(lerp(8, 18, (pressure - 0.7) / 0.2));
+  if (pressure <= 1.1) return Math.round(lerp(18, 28, (pressure - 0.9) / 0.2));
+  return Math.round(lerp(28, 34, Math.min((pressure - 1.1) / 0.1, 1)));
 };
 
 export const getPracticeTier = (rating) => {
@@ -256,6 +309,7 @@ export const computePracticeRating = ({
   misses = 0,
   penalties = 0,
   accuracyPct = 0,
+  roundTimeLimitMs = null,
 }) => {
   const current = Math.max(0, Math.round(Number(currentRating) || PRACTICE_BASE_RATING));
   const scoreBand = getPracticePerformanceBand(sessionScore);
@@ -273,6 +327,16 @@ export const computePracticeRating = ({
   if (safeAccuracy > 80) delta += Math.max(0, Math.floor((safeAccuracy - 80) / 5));
   if (safeAccuracy < 60) delta -= Math.max(0, Math.floor((60 - safeAccuracy) / 10));
   if (safeHits >= 8) delta += 2;
+
+  const soloTimePressure = getSoloTimePressure(avgRtMs, roundTimeLimitMs);
+  if (soloTimePressure !== null) {
+    const soloTimeScale = getSoloTimeDeltaScale(soloTimePressure);
+    const soloTimePenalty = getSoloTimeDeltaPenalty(soloTimePressure);
+    delta = Math.round(delta * soloTimeScale) - soloTimePenalty;
+    if (soloTimePressure >= 0.9) delta = Math.min(delta, 0);
+    if (soloTimePressure >= 0.98) delta = Math.min(delta, -6);
+    if (soloTimePressure >= 1.05) delta = Math.min(delta, -10);
+  }
 
   const currentTier = getPracticeTier(current).tier;
   if ((currentTier === "UNRANKED" || currentTier === "BRONZE") && band === "CHALLENGER") delta += 10;
@@ -355,6 +419,16 @@ export const computeEndlessRating = ({
   if (safeAccuracy < 45) delta = Math.min(delta, 0);
   if (safePeak < 4) delta = Math.min(delta, 4);
   if (safeHits === 0) delta = Math.min(delta, 0);
+
+  const endlessTimePressure = getEndlessTimePressure(avgRtMs);
+  if (endlessTimePressure !== null) {
+    const endlessTimeScale = getEndlessTimeDeltaScale(endlessTimePressure);
+    const endlessTimePenalty = getEndlessTimeDeltaPenalty(endlessTimePressure);
+    delta = Math.round(delta * endlessTimeScale) - endlessTimePenalty;
+    if (endlessTimePressure >= 0.92) delta = Math.min(delta, 0);
+    if (endlessTimePressure >= 1.02) delta = Math.min(delta, -6);
+    if (endlessTimePressure >= 1.1) delta = Math.min(delta, -10);
+  }
 
   delta = clamp(Math.round(delta), -40, 65);
   const nextRating = Math.max(0, current + delta);
