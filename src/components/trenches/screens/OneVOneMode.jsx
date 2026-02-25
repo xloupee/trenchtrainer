@@ -23,17 +23,6 @@ const avgFromRow = (row) => {
   return sum / count;
 };
 
-const ANON_DUEL_ID_KEY = "trenches:duel-anon-id-v1";
-
-const getStoredAnonDuelId = () => {
-  if (typeof window === "undefined") return `player-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
-  const existing = window.localStorage.getItem(ANON_DUEL_ID_KEY);
-  if (existing) return existing;
-  const created = `player-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
-  window.localStorage.setItem(ANON_DUEL_ID_KEY, created);
-  return created;
-};
-
 function OneVOneMode({ onMatchComplete, initialJoinCode = "", playerIdentity = "" }) {
   const [phase, setPhase] = useState("lobby");
   const [gameCode, setGameCode] = useState("");
@@ -69,8 +58,8 @@ function OneVOneMode({ onMatchComplete, initialJoinCode = "", playerIdentity = "
   const roundNumRef = useRef(0);
 
   const engine = useGameEngine(1, gameSeed);
-  const [anonPlayerId] = useState(() => getStoredAnonDuelId());
-  const playerId = String(playerIdentity || "").trim() || anonPlayerId;
+  const playerId = String(playerIdentity || "").trim();
+  const isAuthed = Boolean(playerId);
   const normalizedInitialJoinCode = (initialJoinCode || "")
     .toUpperCase()
     .replace(/[^A-Z0-9]/g, "")
@@ -106,6 +95,12 @@ function OneVOneMode({ onMatchComplete, initialJoinCode = "", playerIdentity = "
     }
     return false;
   }, []);
+
+  const ensureSignedIn = useCallback(() => {
+    if (isAuthed) return true;
+    setMsg("Sign in required for 1v1 duels.");
+    return false;
+  }, [isAuthed]);
 
   const getGame = useCallback(async (code) => {
     const { data, error } = await supabase.from("duel_games").select("*").eq("code", code).maybeSingle();
@@ -174,6 +169,10 @@ function OneVOneMode({ onMatchComplete, initialJoinCode = "", playerIdentity = "
 
   const fetchPublicLobbies = useCallback(async () => {
     if (!ensureSupabase()) return;
+    if (!ensureSignedIn()) {
+      setPublicLobbies([]);
+      return;
+    }
     try {
       const { data, error } = await supabase
         .from("duel_games")
@@ -204,7 +203,7 @@ function OneVOneMode({ onMatchComplete, initialJoinCode = "", playerIdentity = "
     } catch (e) {
       setMsg(e?.message || "Failed to fetch public lobbies.");
     }
-  }, [ensureSupabase, playerId]);
+  }, [ensureSignedIn, ensureSupabase, playerId]);
 
   const resolveMatchResult = useCallback((myRow, oppRow) => {
     const myScore = asNumber(myRow?.score, 0);
@@ -304,7 +303,7 @@ function OneVOneMode({ onMatchComplete, initialJoinCode = "", playerIdentity = "
   const cleanupLobby = useCallback(
     async (code) => {
       const normalizedCode = (code || "").toUpperCase().trim();
-      if (normalizedCode.length !== 6 || !ensureSupabase()) return;
+      if (normalizedCode.length !== 6 || !ensureSupabase() || !ensureSignedIn()) return;
       const game = await getGame(normalizedCode);
       if (!game) return;
       const amHost = game.host_id === playerId;
@@ -335,7 +334,7 @@ function OneVOneMode({ onMatchComplete, initialJoinCode = "", playerIdentity = "
         setPublicLobbies((prev) => prev.filter((row) => row.code !== normalizedCode));
       }
     },
-    [deleteGameAndStats, deleteStatsRow, ensureSupabase, getGame, playerId, updateGame],
+    [deleteGameAndStats, deleteStatsRow, ensureSignedIn, ensureSupabase, getGame, playerId, updateGame],
   );
 
   const backToLobby = useCallback(
@@ -360,7 +359,7 @@ function OneVOneMode({ onMatchComplete, initialJoinCode = "", playerIdentity = "
       await backToLobby();
       return;
     }
-    if (!ensureSupabase()) return;
+    if (!ensureSupabase() || !ensureSignedIn()) return;
 
     const activePhase = phaseRef.current;
     const shouldForfeit = activePhase === "playing" || activePhase === "waiting_done";
@@ -427,7 +426,7 @@ function OneVOneMode({ onMatchComplete, initialJoinCode = "", playerIdentity = "
     } finally {
       await backToLobby({ skipCleanup: true });
     }
-  }, [backToLobby, ensureSupabase, getGame, getStats, playerId, resolveMatchResult, updateGame, upsertStats]);
+  }, [backToLobby, ensureSignedIn, ensureSupabase, getGame, getStats, playerId, resolveMatchResult, updateGame, upsertStats]);
 
   const runCountdown = useCallback(() => {
     if (countdownRef.current) return;
@@ -479,7 +478,7 @@ function OneVOneMode({ onMatchComplete, initialJoinCode = "", playerIdentity = "
     (code) => {
       clearInterval(pollRef.current);
       pollRef.current = setInterval(async () => {
-        if (!ensureSupabase()) return;
+        if (!ensureSupabase() || !ensureSignedIn()) return;
         try {
           const game = await getGame(code);
           if (!game) {
@@ -555,11 +554,11 @@ function OneVOneMode({ onMatchComplete, initialJoinCode = "", playerIdentity = "
         }
       }, POLL_MS);
     },
-    [backToLobby, engine, ensureSupabase, finalizeMatch, getGame, getStats, playerId, runCountdown, updateGame],
+    [backToLobby, engine, ensureSignedIn, ensureSupabase, finalizeMatch, getGame, getStats, playerId, runCountdown, updateGame],
   );
 
   const createGame = useCallback(async () => {
-    if (!ensureSupabase()) return;
+    if (!ensureSupabase() || !ensureSignedIn()) return;
     setMsg("");
     try {
       let code = "";
@@ -599,11 +598,11 @@ function OneVOneMode({ onMatchComplete, initialJoinCode = "", playerIdentity = "
     } catch (e) {
       setMsg(e?.message || "Failed to create room.");
     }
-  }, [bestOf, ensureSupabase, getGame, isPublicLobby, playerId, playerName, startPolling, upsertGame]);
+  }, [bestOf, ensureSignedIn, ensureSupabase, getGame, isPublicLobby, playerId, playerName, startPolling, upsertGame]);
 
   const joinGame = useCallback(
     async (explicitCode = null) => {
-      if (!ensureSupabase()) return;
+      if (!ensureSupabase() || !ensureSignedIn()) return;
       const code = (explicitCode || joinCode).toUpperCase().trim();
       if (code.length !== 6) {
         setMsg("Enter a valid 6-character room code.");
@@ -654,7 +653,7 @@ function OneVOneMode({ onMatchComplete, initialJoinCode = "", playerIdentity = "
         setMsg(e?.message || "Failed to join room.");
       }
     },
-    [ensureSupabase, getGame, joinCode, playerId, playerName, startPolling],
+    [ensureSignedIn, ensureSupabase, getGame, joinCode, playerId, playerName, startPolling],
   );
 
   const joinPublicLobby = useCallback(async (code) => {
@@ -662,7 +661,7 @@ function OneVOneMode({ onMatchComplete, initialJoinCode = "", playerIdentity = "
   }, [joinGame]);
 
   const startMatch = useCallback(async () => {
-    if (!ensureSupabase()) return;
+    if (!ensureSupabase() || !ensureSignedIn()) return;
     if (!isHostRef.current) {
       setMsg("Only the host can start this match.");
       return;
@@ -694,12 +693,12 @@ function OneVOneMode({ onMatchComplete, initialJoinCode = "", playerIdentity = "
     } catch (e) {
       setMsg(e?.message || "Failed to start match.");
     }
-  }, [ensureSupabase, getGame, runCountdown, updateGame]);
+  }, [ensureSignedIn, ensureSupabase, getGame, runCountdown, updateGame]);
 
   useEffect(() => {
     if (phase !== "playing" || !gameCode) return;
     const iv = setInterval(async () => {
-      if (!ensureSupabase()) return;
+      if (!ensureSupabase() || !ensureSignedIn()) return;
       const code = gameCodeRef.current;
       if (!code || code.length !== 6) return;
       const role = isHostRef.current ? "host" : "guest";
@@ -743,17 +742,21 @@ function OneVOneMode({ onMatchComplete, initialJoinCode = "", playerIdentity = "
       }
     }, STATS_PUSH_MS);
     return () => clearInterval(iv);
-  }, [bestOf, ensureSupabase, phase, gameCode, upsertStats, backToLobby]);
+  }, [bestOf, ensureSignedIn, ensureSupabase, phase, gameCode, upsertStats, backToLobby]);
 
   useEffect(() => {
     if (phase !== "lobby") {
       clearInterval(lobbyPollRef.current);
       return;
     }
+    if (!isAuthed) {
+      setPublicLobbies([]);
+      return;
+    }
     fetchPublicLobbies();
     lobbyPollRef.current = setInterval(fetchPublicLobbies, 5000);
     return () => clearInterval(lobbyPollRef.current);
-  }, [phase, fetchPublicLobbies]);
+  }, [isAuthed, phase, fetchPublicLobbies]);
 
   useEffect(() => () => clearInterval(pollRef.current), []);
   useEffect(() => () => clearInterval(lobbyPollRef.current), []);
@@ -763,12 +766,13 @@ function OneVOneMode({ onMatchComplete, initialJoinCode = "", playerIdentity = "
       autoJoinAttemptRef.current = "";
       return;
     }
+    if (!isAuthed) return;
     if (phase !== "lobby") return;
     setJoinCode(normalizedInitialJoinCode);
     if (autoJoinAttemptRef.current === normalizedInitialJoinCode) return;
     autoJoinAttemptRef.current = normalizedInitialJoinCode;
     void joinGame(normalizedInitialJoinCode);
-  }, [joinGame, normalizedInitialJoinCode, phase]);
+  }, [isAuthed, joinGame, normalizedInitialJoinCode, phase]);
 
   useEffect(() => {
     if (phase !== "results" || !matchResult || resultSavedRef.current) return;

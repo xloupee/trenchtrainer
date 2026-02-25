@@ -34,7 +34,7 @@ const steps = [
   { num: '03', title: 'BUILD YOUR EDGE',  desc: 'After each run, you can review your speed, accuracy, and streaks. Improve your rank over time, then challenge someone in 1v1.' },
 ];
 
-const HERO_TITLES = ['AIM TRAINER', 'REACTION TRAINER'];
+const HERO_TITLES = ['PRECISION TRAINER', 'REACTION TRAINER'];
 
 // Scattered coins for the hero right column
 // top/left are absolute within the 600px-tall right panel
@@ -126,7 +126,7 @@ export default function LandingPage() {
     return () => { window.removeEventListener('mousemove', onMove); cancelAnimationFrame(raf); };
   }, []);
 
-  // ── Hero heading swap (AIM TRAINER / REACTION TRAINER) ──────────────────
+  // ── Hero heading swap (PRECISION TRAINER / REACTION TRAINER) ──────────────────
   useEffect(() => {
     let swapTimeout;
     const interval = setInterval(() => {
@@ -549,7 +549,12 @@ export default function LandingPage() {
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, justifySelf: 'start' }}>
             <img src="/logo.png" alt="Trenches logo" style={{ height: 22, width: 'auto', display: 'block' }} />
           </div>
-          <div style={{ fontSize: 11, color: C.textDim, letterSpacing: 1, textAlign: 'center' }}>Built for those who move first.</div>
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ fontSize: 11, color: C.textDim, letterSpacing: 1 }}>Built for those who move first.</div>
+            <a href="mailto:firsttxio@gmail.com" style={{ fontSize: 11, color: C.green, textDecoration: 'none', letterSpacing: 1 }}>
+              firsttxio@gmail.com
+            </a>
+          </div>
           <Link href="/play" style={{ fontSize: 11, color: C.green, textDecoration: 'none', letterSpacing: 1.5, fontWeight: 700, justifySelf: 'end' }}>PLAY →</Link>
         </footer>
 

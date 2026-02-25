@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { C } from "../../components/trenches/config/constants";
 import { CSS } from "../../components/trenches/styles/cssText";
+import { ROADMAP_PHASES, ROADMAP_SUBTITLE, ROADMAP_VISION_ITEMS, ROADMAP_VISION_TAGLINE } from "../../content/roadmap";
 
 const TIMELINE_MARKER_TOP_OFFSET = 6;
 const TIMELINE_LEFT_OFFSET = 8;
@@ -13,64 +14,6 @@ const getStatusColor = (status) => {
   if (status === "current") return C.yellow;
   return C.textDim;
 };
-
-const ROADMAP_PHASES = [
-  {
-    phase: "01",
-    title: "Foundation & Launch",
-    objective: "Establish a stable core platform and transparent token structure.",
-    status: "active",
-    delay: 100,
-    categories: [
-      { label: "Platform", items: ["Core training mode live", "Reaction time tracking", "Accuracy tracking", "UI refinement"] },
-      { label: "Token", items: ["$FTX launch", "Dev allocation locked", "Transparent wallet disclosure", "Initial liquidity established"] },
-    ],
-    focus: ["Platform stability", "Community growth", "Trust through transparency"],
-  },
-  {
-    phase: "02",
-    title: "Competitive Expansion",
-    objective: "Introduce structured skill-based competition.",
-    status: "current",
-    delay: 300,
-    categories: [
-      { label: "Gameplay", items: ["1v1 mode", "Ranked matchmaking", "Best-of format battles", "Performance-based rating system"] },
-      { label: "Infrastructure", items: ["Improved server validation", "Latency normalization", "Anti-cheat refinement"] },
-    ],
-    focus: ["Competitive integrity", "Fair play enforcement", "Platform stress testing"],
-  },
-  {
-    phase: "03",
-    title: "Wager Mode Rollout",
-    objective: "Launch a simple wager match flow that regular players can use without technical knowledge.",
-    status: "upcoming",
-    delay: 500,
-    categories: [
-      { label: "Gameplay", items: ["Wager-only queue", "Host/guest escrow funding", "Match-ready state gating"] },
-      {
-        label: "How To Play",
-        items: [
-          "Connect your wallet and choose how much you want to play for.",
-          "Create a room or join one, then both players lock in their entry amount.",
-          "Play the 1v1 match. Winner gets the prize. If a match never starts, funds can be returned after timeout.",
-        ],
-      },
-    ],
-    focus: ["Easy onboarding", "Fair payouts", "Simple safety rules"],
-  },
-  {
-    phase: "04",
-    title: "Utility Expansion",
-    objective: "Introduce structured token utility within competitive play once systems are validated.",
-    status: "upcoming",
-    delay: 700,
-    categories: [
-      { label: "Integration", items: ["$FTX/$SOL entry pools", "Structured prize distribution", "Competitive tournaments"] },
-      { label: "Security", items: ["Proven anti-cheat", "Secure contract logic", "Platform stability"] },
-    ],
-    focus: ["Utility maturity", "Secure competitive play", "Prize ecosystems"],
-  },
-];
 
 const RoadmapPhase = ({ phase, title, objective, categories, focus, delay = 0, status = "upcoming", registerRef = null }) => {
   const [isVisible, setIsVisible] = useState(false);
@@ -439,7 +382,7 @@ export default function RoadmapPage() {
           </button>
           <h1 style={{ fontSize: 48, fontWeight: 900, color: C.text, letterSpacing: -2, marginBottom: 12 }}>ROADMAP</h1>
           <p style={{ fontSize: 16, color: C.textMuted, maxWidth: 600, margin: "0 auto", lineHeight: 1.6 }}>
-            FirstTX is being built in structured phases. Each phase prioritizes stability, fairness, and long-term sustainability over rapid expansion.
+            {ROADMAP_SUBTITLE}
           </p>
         </div>
 
@@ -541,13 +484,7 @@ export default function RoadmapPage() {
           >
             <h3 style={{ fontSize: 24, fontWeight: 900, color: C.text, letterSpacing: 1, marginBottom: 18, textTransform: "uppercase" }}>Long-Term Vision</h3>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 16, textAlign: "left" }}>
-              {[
-                "Advanced performance analytics",
-                "Tournament ecosystem",
-                "Revenue-supported development",
-                "Strategic ecosystem partnerships",
-                "Liquidity strengthening through growth"
-              ].map((item, i) => (
+              {ROADMAP_VISION_ITEMS.map((item, i) => (
                 <div
                   key={i}
                   style={{
@@ -568,7 +505,7 @@ export default function RoadmapPage() {
               ))}
             </div>
             <div style={{ marginTop: 32, fontSize: 13, color: C.textDim, letterSpacing: 3, fontWeight: 800, textTransform: "uppercase" }}>
-              FirstTX is being built for longevity. Not for a single cycle.
+              {ROADMAP_VISION_TAGLINE}
             </div>
           </div>
         </div>
