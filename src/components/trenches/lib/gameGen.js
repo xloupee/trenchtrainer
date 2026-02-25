@@ -90,9 +90,23 @@ const buildDecoyIdentity = (rawValue) => {
   return { name: ticker, displayName };
 };
 
+const normalizeIdentityPart = (value) =>
+  String(value || "")
+    .trim()
+    .toUpperCase()
+    .replace(/\s+/g, " ");
+
+const buildPairIdentityKey = (coin) => {
+  const ticker = normalizeIdentityPart(coin?.name);
+  const displayName = normalizeIdentityPart(coin?.displayName || coin?.name);
+  return `${ticker}::${displayName}`;
+};
+
 export function genNoiseToken() {
+  const ticker = pick(NOISE_TICKERS);
   return {
-    name: pick(NOISE_TICKERS),
+    name: ticker,
+    iconTicker: ticker,
     emoji: pick(NOISE_EMOJIS),
     isCorrect: false,
     isTrap: false,
@@ -127,24 +141,74 @@ export function genRound(num, seed = null, maxDiffCap = 10) {
   // Keep decoys inside the same narrative family so X tracker context matches token board.
   const ad = [...th.decoys],
     ae = [...th.de];
-  const ud = _shuf(ad).slice(0, pc - 1),
-    ue = _shuf(ae).slice(0, pc - 1);
-  const traps = [];
-  if (diff >= 3) traps.push({ name: cn, displayName: coinDisplayName, emoji: _pick(th.de), isCorrect: false, isTrap: true });
-  if (diff >= 6) traps.push({ ...buildDecoyIdentity(_pick(th.decoys)), emoji: th.emoji, isCorrect: false, isTrap: true });
-  const ut = traps.slice(0, Math.min(traps.length, Math.floor(diff / 3))),
-    rc = pc - 1 - ut.length;
-  const pairs = _shuf([
-    { name: cn, displayName: coinDisplayName, emoji: th.emoji, isCorrect: true, isTrap: false },
-    ...ut,
-    ...Array.from({ length: rc }, (_, i) => ({
-      ...buildDecoyIdentity(ud[i] || _pick(ad)),
-      emoji: ue[i] || _pick(ae),
+  const ue = _shuf(ae).slice(0, pc - 1);
+  const usedPairKeys = new Set();
+  const draftPairs = [];
+  const primaryDecoyPool = _shuf(ad).map((value) => buildDecoyIdentity(value));
+  const fallbackDecoyPool = _shuf(NOISE_TICKERS)
+    .map((value) => buildDecoyIdentity(value))
+    .filter((identity) => identity.name !== cn);
+
+  const addUniquePair = (candidate) => {
+    const key = buildPairIdentityKey(candidate);
+    if (!key || usedPairKeys.has(key)) return false;
+    usedPairKeys.add(key);
+    draftPairs.push(candidate);
+    return true;
+  };
+
+  const pullIdentity = (pool, predicate = () => true) => {
+    const index = pool.findIndex((identity) => identity && predicate(identity));
+    if (index < 0) return null;
+    const [identity] = pool.splice(index, 1);
+    return identity;
+  };
+
+  addUniquePair({ name: cn, iconTicker: cn, displayName: coinDisplayName, emoji: th.emoji, isCorrect: true, isTrap: false });
+
+  // Replace the old identical-name trap with "same image, wrong ticker/name" to keep difficulty without duplicates.
+  if (diff >= 3) {
+    const visualTrapIdentity = pullIdentity(primaryDecoyPool, (identity) => identity.name !== cn) || pullIdentity(fallbackDecoyPool, (identity) => identity.name !== cn);
+    if (visualTrapIdentity) {
+      addUniquePair({
+        ...visualTrapIdentity,
+        iconTicker: cn,
+        emoji: th.emoji,
+        isCorrect: false,
+        isTrap: true,
+      });
+    }
+  }
+
+  if (diff >= 6) {
+    const hardTrapIdentity = pullIdentity(primaryDecoyPool, (identity) => identity.name !== cn) || pullIdentity(fallbackDecoyPool, (identity) => identity.name !== cn);
+    if (hardTrapIdentity) {
+      addUniquePair({
+        ...hardTrapIdentity,
+        iconTicker: hardTrapIdentity.name,
+        emoji: th.emoji,
+        isCorrect: false,
+        isTrap: true,
+      });
+    }
+  }
+
+  let decoyEmojiIndex = 0;
+  for (const decoyIdentity of [...primaryDecoyPool, ...fallbackDecoyPool]) {
+    if (draftPairs.length >= pc) break;
+    addUniquePair({
+      ...decoyIdentity,
+      iconTicker: decoyIdentity.name,
+      emoji: ue[decoyEmojiIndex] || _pick(ae),
       isCorrect: false,
       isTrap: false,
-    })),
-  ]).map((p, i) => ({
+    });
+    decoyEmojiIndex += 1;
+  }
+
+  const pairs = _shuf(draftPairs).map((p, i) => ({
     ...p,
+    iconTicker: p.iconTicker || p.name,
     isNoise: false,
     id: `${Date.now()}-${i}`,
     addr: rA(),
