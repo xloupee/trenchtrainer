@@ -14,16 +14,16 @@ export const THEMES = [
     "decoys": [
       "GrapeCoin",
       "BananaToken",
-      "MangoDAO",
+      "MangoToken",
       "OrangeCoin",
       "PearToken",
       "CHERRY",
       "KiwiCoin",
-      "BlueberryDAO",
+      "BlueberryToken",
       "CitrusCoin",
       "MelonToken",
       "PLUM",
-      "FruitDAO"
+      "FruitToken"
     ],
     "de": [
       "🍊",
@@ -70,18 +70,18 @@ export const THEMES = [
     "names": [
       "RocketCoin",
       "ROCKET",
-      "RocketDAO",
+      "RocketToken",
       "RKTX"
     ],
     "decoys": [
       "PlaneCoin",
       "UFOToken",
-      "StarDAO",
+      "StarToken",
       "MoonCoin",
       "JetToken",
       "COMET",
       "SpaceCoin",
-      "OrbitDAO",
+      "OrbitToken",
       "SaturnCoin",
       "NebulaTkn"
     ],
@@ -115,6 +115,12 @@ export const THEMES = [
         "user": "TechAlpha",
         "handle": "@techalpha",
         "time": "5s"
+      },
+      {
+        "text": "School board votes to retire “The Rocket” mascot after 40 years.",
+        "user": "CampusChronicle",
+        "handle": "@CampusChronicle",
+        "time": "19s"
       }
     ]
   },
@@ -130,12 +136,12 @@ export const THEMES = [
     "decoys": [
       "CatCoin",
       "BearToken",
-      "BunnyDAO",
+      "BunnyToken",
       "FoxCoin",
       "WolfToken",
       "HAMSTER",
       "LionCoin",
-      "TigerDAO",
+      "TigerToken",
       "PandaCoin",
       "MonkeyTkn"
     ],
@@ -184,12 +190,12 @@ export const THEMES = [
     "decoys": [
       "WaterCoin",
       "IceToken",
-      "ThunderDAO",
+      "ThunderToken",
       "WaveCoin",
       "WindToken",
       "VOLCANO",
       "SunCoin",
-      "StormDAO",
+      "StormToken",
       "BlazeCoin",
       "FlameTkn"
     ],
@@ -223,6 +229,12 @@ export const THEMES = [
         "user": "DegenAlerts",
         "handle": "@degenalerts",
         "time": "16s"
+      },
+      {
+        "text": "This market is on FIRE 🔥",
+        "user": "marketpulse",
+        "handle": "@marketpulse",
+        "time": "37s"
       }
     ]
   },
@@ -232,18 +244,18 @@ export const THEMES = [
     "names": [
       "DiamondCoin",
       "DIAMOND",
-      "DiamondDAO",
+      "DiamondToken",
       "DMDX"
     ],
     "decoys": [
       "GoldCoin",
       "CoinToken",
-      "CrownDAO",
+      "CrownToken",
       "RingCoin",
       "TrophyTkn",
       "PEARL",
       "CrystalCoin",
-      "RubyDAO",
+      "RubyToken",
       "EmeraldCoin",
       "SapphireTkn"
     ],
@@ -292,12 +304,12 @@ export const THEMES = [
     "decoys": [
       "SnakeCoin",
       "LizardTkn",
-      "TurtleDAO",
+      "TurtleToken",
       "CrocCoin",
       "DinoToken",
       "GECKO",
       "ToadCoin",
-      "NewtDAO",
+      "NewtToken",
       "BugCoin",
       "BeetleTkn"
     ],
@@ -340,18 +352,18 @@ export const THEMES = [
     "names": [
       "PenguinCoin",
       "PENGUIN",
-      "PenguinDAO",
+      "PenguinToken",
       "PNGX"
     ],
     "decoys": [
       "EagleCoin",
       "DuckToken",
-      "OwlDAO",
+      "OwlToken",
       "BirdCoin",
       "ParrotTkn",
       "DOVE",
       "FlamingoC",
-      "ChickenDAO",
+      "ChickenToken",
       "PeacockCoin",
       "SwanTkn"
     ],
@@ -400,7 +412,7 @@ export const THEMES = [
     "decoys": [
       "StarCoin",
       "SunToken",
-      "PlanetDAO",
+      "PlanetToken",
       "EarthCoin",
       "CosmosTkn",
       "GALAXY",
@@ -454,12 +466,12 @@ export const THEMES = [
     "decoys": [
       "DogCoin",
       "BearToken",
-      "BunnyDAO",
+      "BunnyToken",
       "FoxCoin",
       "WolfToken",
       "HAMSTER",
       "LionCoin",
-      "TigerDAO",
+      "TigerToken",
       "PandaCoin",
       "MonkeyTkn"
     ],
@@ -502,18 +514,18 @@ export const THEMES = [
     "names": [
       "SharkCoin",
       "SHARK",
-      "SharkDAO",
+      "SharkCoin",
       "SHRK"
     ],
     "decoys": [
       "WhaleCoin",
       "DolphinTkn",
-      "OctoDAO",
+      "OctoToken",
       "SquidCoin",
       "FishToken",
       "REEF",
       "CrabCoin",
-      "JellyDAO",
+      "JellyToken",
       "PufferCoin",
       "ShrimpTkn"
     ],
@@ -562,12 +574,12 @@ export const THEMES = [
     "decoys": [
       "SodaCoin",
       "BobaToken",
-      "TeaDAO",
+      "TeaToken",
       "MilkCoin",
       "JuiceToken",
       "LATTE",
       "AleCoin",
-      "WineDAO",
+      "WineToken",
       "ToastCoin",
       "MateTkn"
     ],
@@ -610,18 +622,18 @@ export const THEMES = [
     "names": [
       "RobotCoin",
       "ROBOT",
-      "MechDAO",
+      "MechToken",
       "RBTX"
     ],
     "decoys": [
       "UFOToken",
       "SignalCoin",
       "CodeToken",
-      "BrainDAO",
+      "BrainToken",
       "BatteryCoin",
       "GEAR",
       "SatelliteCoin",
-      "CyberDAO",
+      "CyberToken",
       "GeneCoin",
       "LabTkn"
     ],
@@ -669,13 +681,13 @@ export const THEMES = [
     ],
     "decoys": [
       "WaveCoin",
-      "MountainDAO",
+      "MountainToken",
       "IceToken",
       "StormCoin",
       "SunToken",
       "RAIN",
       "ThunderCoin",
-      "MistDAO",
+      "MistToken",
       "FlameCoin",
       "ArcTkn"
     ],
@@ -718,18 +730,18 @@ export const THEMES = [
     "names": [
       "GhostCoin",
       "GHOST",
-      "PhantomDAO",
+      "PhantomToken",
       "GHSTX"
     ],
     "decoys": [
       "SkullCoin",
       "ZombieToken",
-      "VampDAO",
+      "VampToken",
       "SpiderCoin",
       "BatToken",
       "WITCH",
       "MagicCoin",
-      "FogDAO",
+      "FogToken",
       "MoonShade",
       "CandleTkn"
     ],
@@ -765,6 +777,1722 @@ export const THEMES = [
         "time": "29s"
       }
     ]
+  },
+  {
+    "kw": "sol",
+    "emoji": "🦍",
+    "names": [
+      "JusticeForSol",
+      "SOL",
+      "SOLCoin",
+      "SOLX"
+    ],
+    "decoys": [
+      "AlphaCoin",
+      "NovaToken",
+      "TurboToken",
+      "PulseCoin",
+      "FluxToken",
+      "OrbitToken",
+      "VectorCoin",
+      "SignalToken",
+      "DriftToken",
+      "CoreCoin",
+      "ByteToken",
+      "ZenithToken"
+    ],
+    "de": [
+      "🐶",
+      "🐸",
+      "🐺",
+      "🐻",
+      "🦈",
+      "🚀",
+      "🔥",
+      "🧠",
+      "🪙",
+      "📈"
+    ],
+    "tweets": [
+      {
+        "text": "Zoo confirms gorilla named Sol euthanized after incident.",
+        "user": "NationalZooLive",
+        "handle": "@NationalZooLive",
+        "time": "6s"
+      }
+    ]
+  },
+  {
+    "kw": "sweep",
+    "emoji": "🪙",
+    "names": [
+      "CleanSweep",
+      "SWEEP",
+      "SWEEPCoin",
+      "SWEEPX"
+    ],
+    "decoys": [
+      "AlphaCoin",
+      "NovaToken",
+      "TurboToken",
+      "PulseCoin",
+      "FluxToken",
+      "OrbitToken",
+      "VectorCoin",
+      "SignalToken",
+      "DriftToken",
+      "CoreCoin",
+      "ByteToken",
+      "ZenithToken"
+    ],
+    "de": [
+      "🐶",
+      "🐸",
+      "🦍",
+      "🐺",
+      "🐻",
+      "🦈",
+      "🚀",
+      "🔥",
+      "🧠",
+      "📈"
+    ],
+    "tweets": [
+      {
+        "text": "Mayor announces Operation Clean Sweep effective immediately.",
+        "user": "CityWirePress",
+        "handle": "@CityWirePress",
+        "time": "18s"
+      }
+    ]
+  },
+  {
+    "kw": "free",
+    "emoji": "🦅",
+    "names": [
+      "FreedomTheEagle",
+      "FREE",
+      "FREECoin",
+      "FREEX"
+    ],
+    "decoys": [
+      "AlphaCoin",
+      "NovaToken",
+      "TurboToken",
+      "PulseCoin",
+      "FluxToken",
+      "OrbitToken",
+      "VectorCoin",
+      "SignalToken",
+      "DriftToken",
+      "CoreCoin",
+      "ByteToken",
+      "ZenithToken"
+    ],
+    "de": [
+      "🐶",
+      "🐸",
+      "🦍",
+      "🐺",
+      "🐻",
+      "🦈",
+      "🚀",
+      "🔥",
+      "🧠",
+      "🪙"
+    ],
+    "tweets": [
+      {
+        "text": "Bald eagle named “Freedom” escapes during national anthem ceremony 🦅",
+        "user": "PatriotPulse",
+        "handle": "@PatriotPulse",
+        "time": "42s"
+      }
+    ]
+  },
+  {
+    "kw": "crypto",
+    "emoji": "🪙",
+    "names": [
+      "DigitalMoney",
+      "CRYPTO",
+      "CRYPTOCoin",
+      "CRYPTOX"
+    ],
+    "decoys": [
+      "AlphaCoin",
+      "NovaToken",
+      "TurboToken",
+      "PulseCoin",
+      "FluxToken",
+      "OrbitToken",
+      "VectorCoin",
+      "SignalToken",
+      "DriftToken",
+      "CoreCoin",
+      "ByteToken",
+      "ZenithToken"
+    ],
+    "de": [
+      "🐶",
+      "🐸",
+      "🦍",
+      "🐺",
+      "🐻",
+      "🦈",
+      "🚀",
+      "🔥",
+      "🧠",
+      "📈"
+    ],
+    "tweets": [
+      {
+        "text": "CEO caught on hot mic saying “we print money digitally.”",
+        "user": "TechLeaksDaily",
+        "handle": "@TechLeaksDaily",
+        "time": "18s"
+      }
+    ]
+  },
+  {
+    "kw": "cash",
+    "emoji": "💵",
+    "names": [
+      "CashCoin",
+      "CASH",
+      "CASHCoin",
+      "CASHX"
+    ],
+    "decoys": [
+      "AlphaCoin",
+      "NovaToken",
+      "TurboToken",
+      "PulseCoin",
+      "FluxToken",
+      "OrbitToken",
+      "VectorCoin",
+      "SignalToken",
+      "DriftToken",
+      "CoreCoin",
+      "ByteToken",
+      "ZenithToken"
+    ],
+    "de": [
+      "🐶",
+      "🐸",
+      "🦍",
+      "🐺",
+      "🐻",
+      "🦈",
+      "🚀",
+      "🔥",
+      "🧠",
+      "🪙"
+    ],
+    "tweets": [
+      {
+        "text": "Senator: “People don’t want digital IDs, they want cash.”",
+        "user": "HillHearingLive",
+        "handle": "@HillHearingLive",
+        "time": "16s"
+      }
+    ]
+  },
+  {
+    "kw": "debtless",
+    "emoji": "📉",
+    "names": [
+      "DebtlessCoin",
+      "DEBTLESS",
+      "DEBTLESSCoin",
+      "DEBTLESSX"
+    ],
+    "decoys": [
+      "AlphaCoin",
+      "NovaToken",
+      "TurboToken",
+      "PulseCoin",
+      "FluxToken",
+      "OrbitToken",
+      "VectorCoin",
+      "SignalToken",
+      "DriftToken",
+      "CoreCoin",
+      "ByteToken",
+      "ZenithToken"
+    ],
+    "de": [
+      "🐶",
+      "🐸",
+      "🦍",
+      "🐺",
+      "🐻",
+      "🦈",
+      "🚀",
+      "🔥",
+      "🧠",
+      "🪙"
+    ],
+    "tweets": [
+      {
+        "text": "National debt clock briefly resets to zero during broadcast glitch…",
+        "user": "MacroNowLive",
+        "handle": "@MacroNowLive",
+        "time": "20s"
+      }
+    ]
+  },
+  {
+    "kw": "gasless",
+    "emoji": "⛽",
+    "names": [
+      "GaslessCoin",
+      "GASLESS",
+      "GASLESSCoin",
+      "GASLESSX"
+    ],
+    "decoys": [
+      "AlphaCoin",
+      "NovaToken",
+      "TurboToken",
+      "PulseCoin",
+      "FluxToken",
+      "OrbitToken",
+      "VectorCoin",
+      "SignalToken",
+      "DriftToken",
+      "CoreCoin",
+      "ByteToken",
+      "ZenithToken"
+    ],
+    "de": [
+      "🐶",
+      "🐸",
+      "🦍",
+      "🐺",
+      "🐻",
+      "🦈",
+      "🚀",
+      "🔥",
+      "🧠",
+      "🪙"
+    ],
+    "tweets": [
+      {
+        "text": "City council passes gas stove ban.",
+        "user": "CityPolicyWatch",
+        "handle": "@CityPolicyWatch",
+        "time": "26s"
+      }
+    ]
+  },
+  {
+    "kw": "ape",
+    "emoji": "🦍",
+    "names": [
+      "FreeTheApe",
+      "APE",
+      "APECoin",
+      "APEX"
+    ],
+    "decoys": [
+      "AlphaCoin",
+      "NovaToken",
+      "TurboToken",
+      "PulseCoin",
+      "FluxToken",
+      "OrbitToken",
+      "VectorCoin",
+      "SignalToken",
+      "DriftToken",
+      "CoreCoin",
+      "ByteToken",
+      "ZenithToken"
+    ],
+    "de": [
+      "🐶",
+      "🐸",
+      "🐺",
+      "🐻",
+      "🦈",
+      "🚀",
+      "🔥",
+      "🧠",
+      "🪙",
+      "📈"
+    ],
+    "tweets": [
+      {
+        "text": "Protester yelling “Free the ape!” during downtown rally.",
+        "user": "apenews",
+        "handle": "@apenews",
+        "time": "34s"
+      }
+    ]
+  },
+  {
+    "kw": "bear",
+    "emoji": "🐼",
+    "names": [
+      "BearThePanda",
+      "BEAR",
+      "BEARCoin",
+      "BEARX"
+    ],
+    "decoys": [
+      "AlphaCoin",
+      "NovaToken",
+      "TurboToken",
+      "PulseCoin",
+      "FluxToken",
+      "OrbitToken",
+      "VectorCoin",
+      "SignalToken",
+      "DriftToken",
+      "CoreCoin",
+      "ByteToken",
+      "ZenithToken"
+    ],
+    "de": [
+      "🐶",
+      "🐸",
+      "🦍",
+      "🐺",
+      "🐻",
+      "🦈",
+      "🚀",
+      "🔥",
+      "🧠",
+      "🪙"
+    ],
+    "tweets": [
+      {
+        "text": "Zoo welcomes newborn panda named Bear 🐼",
+        "user": "ZooBirthNews",
+        "handle": "@ZooBirthNews",
+        "time": "7s"
+      }
+    ]
+  },
+  {
+    "kw": "priceless",
+    "emoji": "🪙",
+    "names": [
+      "ThisCoinIs",
+      "PRICELESS",
+      "PRICELESSCoin",
+      "PRICELESSX"
+    ],
+    "decoys": [
+      "AlphaCoin",
+      "NovaToken",
+      "TurboToken",
+      "PulseCoin",
+      "FluxToken",
+      "OrbitToken",
+      "VectorCoin",
+      "SignalToken",
+      "DriftToken",
+      "CoreCoin",
+      "ByteToken",
+      "ZenithToken"
+    ],
+    "de": [
+      "🐶",
+      "🐸",
+      "🦍",
+      "🐺",
+      "🐻",
+      "🦈",
+      "🚀",
+      "🔥",
+      "🧠",
+      "📈"
+    ],
+    "tweets": [
+      {
+        "text": "Trading halted after screen displays: ERROR: PRICE UNKNOWN.",
+        "user": "MarketFlashLive",
+        "handle": "@MarketFlashLive",
+        "time": "29s"
+      }
+    ]
+  },
+  {
+    "kw": "zero",
+    "emoji": "🪙",
+    "names": [
+      "DrainedCoin",
+      "ZERO",
+      "ZEROCoin",
+      "ZEROX"
+    ],
+    "decoys": [
+      "AlphaCoin",
+      "NovaToken",
+      "TurboToken",
+      "PulseCoin",
+      "FluxToken",
+      "OrbitToken",
+      "VectorCoin",
+      "SignalToken",
+      "DriftToken",
+      "CoreCoin",
+      "ByteToken",
+      "ZenithToken"
+    ],
+    "de": [
+      "🐶",
+      "🐸",
+      "🦍",
+      "🐺",
+      "🐻",
+      "🦈",
+      "🚀",
+      "🔥",
+      "🧠",
+      "📈"
+    ],
+    "tweets": [
+      {
+        "text": "shows all balances as 0.00 during outage.",
+        "user": "Bankp",
+        "handle": "@Bankp",
+        "time": "24s"
+      }
+    ]
+  },
+  {
+    "kw": "all",
+    "emoji": "🪙",
+    "names": [
+      "SellAll",
+      "ALL",
+      "ALLCoin",
+      "ALLX"
+    ],
+    "decoys": [
+      "AlphaCoin",
+      "NovaToken",
+      "TurboToken",
+      "PulseCoin",
+      "FluxToken",
+      "OrbitToken",
+      "VectorCoin",
+      "SignalToken",
+      "DriftToken",
+      "CoreCoin",
+      "ByteToken",
+      "ZenithToken"
+    ],
+    "de": [
+      "🐶",
+      "🐸",
+      "🦍",
+      "🐺",
+      "🐻",
+      "🦈",
+      "🚀",
+      "🔥",
+      "🧠",
+      "📈"
+    ],
+    "tweets": [
+      {
+        "text": "Stock ticker briefly displays “SELL ALL.”",
+        "user": "MarketFlashLive",
+        "handle": "@MarketFlashLive",
+        "time": "40s"
+      }
+    ]
+  },
+  {
+    "kw": "it",
+    "emoji": "🪙",
+    "names": [
+      "ItCoin",
+      "IT",
+      "ITCoin",
+      "ITX"
+    ],
+    "decoys": [
+      "AlphaCoin",
+      "NovaToken",
+      "TurboToken",
+      "PulseCoin",
+      "FluxToken",
+      "OrbitToken",
+      "VectorCoin",
+      "SignalToken",
+      "DriftToken",
+      "CoreCoin",
+      "ByteToken",
+      "ZenithToken"
+    ],
+    "de": [
+      "🐶",
+      "🐸",
+      "🦍",
+      "🐺",
+      "🐻",
+      "🦈",
+      "🚀",
+      "🔥",
+      "🧠",
+      "📈"
+    ],
+    "tweets": [
+      {
+        "text": "Mayor says “we can’t stop it.”",
+        "user": "PressRoomLive",
+        "handle": "@PressRoomLive",
+        "time": "15s"
+      }
+    ]
+  },
+  {
+    "kw": "wolf",
+    "emoji": "🐺",
+    "names": [
+      "LoneWolf",
+      "WOLF",
+      "WOLFCoin",
+      "Wolf"
+    ],
+    "decoys": [
+      "AlphaCoin",
+      "NovaToken",
+      "TurboToken",
+      "PulseCoin",
+      "FluxToken",
+      "OrbitToken",
+      "VectorCoin",
+      "SignalToken",
+      "DriftToken",
+      "CoreCoin",
+      "ByteToken",
+      "ZenithToken"
+    ],
+    "de": [
+      "🐶",
+      "🐸",
+      "🦍",
+      "🐻",
+      "🦈",
+      "🚀",
+      "🔥",
+      "🧠",
+      "🪙",
+      "📈"
+    ],
+    "tweets": [
+      {
+        "text": "State officials confirm lone wolf spotted outside city limits 🐺",
+        "user": "WildlifeUpdate",
+        "handle": "@WildlifeUpdate",
+        "time": "16s"
+      }
+    ]
+  },
+  {
+    "kw": "bull",
+    "emoji": "🐂",
+    "names": [
+      "ChargingBull",
+      "BULL",
+      "BULLCoin",
+      "BULLX"
+    ],
+    "decoys": [
+      "AlphaCoin",
+      "NovaToken",
+      "TurboToken",
+      "PulseCoin",
+      "FluxToken",
+      "OrbitToken",
+      "VectorCoin",
+      "SignalToken",
+      "DriftToken",
+      "CoreCoin",
+      "ByteToken",
+      "ZenithToken"
+    ],
+    "de": [
+      "🐶",
+      "🐸",
+      "🦍",
+      "🐺",
+      "🐻",
+      "🦈",
+      "🚀",
+      "🔥",
+      "🧠",
+      "🪙"
+    ],
+    "tweets": [
+      {
+        "text": "Protester climbs Charging Bull statue during early morning rally.",
+        "user": "bullnews",
+        "handle": "@bullnews",
+        "time": "15s"
+      }
+    ]
+  },
+  {
+    "kw": "moose",
+    "emoji": "🫎",
+    "names": [
+      "FearTheMoose",
+      "MOOSE",
+      "MOOSECoin",
+      "MOOSEX"
+    ],
+    "decoys": [
+      "AlphaCoin",
+      "NovaToken",
+      "TurboToken",
+      "PulseCoin",
+      "FluxToken",
+      "OrbitToken",
+      "VectorCoin",
+      "SignalToken",
+      "DriftToken",
+      "CoreCoin",
+      "ByteToken",
+      "ZenithToken"
+    ],
+    "de": [
+      "🐶",
+      "🐸",
+      "🦍",
+      "🐺",
+      "🐻",
+      "🦈",
+      "🚀",
+      "🔥",
+      "🧠",
+      "🪙"
+    ],
+    "tweets": [
+      {
+        "text": "Massive moose halts highway traffic for nearly 40 minutes.",
+        "user": "NorthRegionNews",
+        "handle": "@NorthRegionNews",
+        "time": "31s"
+      }
+    ]
+  },
+  {
+    "kw": "truth",
+    "emoji": "🧾",
+    "names": [
+      "TruthInitiative",
+      "TRUTH",
+      "TRUTHCoin",
+      "TRUTHX"
+    ],
+    "decoys": [
+      "AlphaCoin",
+      "NovaToken",
+      "TurboToken",
+      "PulseCoin",
+      "FluxToken",
+      "OrbitToken",
+      "VectorCoin",
+      "SignalToken",
+      "DriftToken",
+      "CoreCoin",
+      "ByteToken",
+      "ZenithToken"
+    ],
+    "de": [
+      "🐶",
+      "🐸",
+      "🦍",
+      "🐺",
+      "🐻",
+      "🦈",
+      "🚀",
+      "🔥",
+      "🧠",
+      "🪙"
+    ],
+    "tweets": [
+      {
+        "text": "Spokesperson: “We stand by our version of the truth.”",
+        "user": "PressRoomLive",
+        "handle": "@PressRoomLive",
+        "time": "6s"
+      }
+    ]
+  },
+  {
+    "kw": "agenda",
+    "emoji": "🪙",
+    "names": [
+      "TheAgenda",
+      "AGENDA",
+      "AGENDACoin",
+      "AGENDAX"
+    ],
+    "decoys": [
+      "AlphaCoin",
+      "NovaToken",
+      "TurboToken",
+      "PulseCoin",
+      "FluxToken",
+      "OrbitToken",
+      "VectorCoin",
+      "SignalToken",
+      "DriftToken",
+      "CoreCoin",
+      "ByteToken",
+      "ZenithToken"
+    ],
+    "de": [
+      "🐶",
+      "🐸",
+      "🦍",
+      "🐺",
+      "🐻",
+      "🦈",
+      "🚀",
+      "🔥",
+      "🧠",
+      "📈"
+    ],
+    "tweets": [
+      {
+        "text": "Governor says critics are “pushing an agenda” without explaining further.",
+        "user": "PolicyWatchNow",
+        "handle": "@PolicyWatchNow",
+        "time": "25s"
+      }
+    ]
+  },
+  {
+    "kw": "voice",
+    "emoji": "📣",
+    "names": [
+      "ThePeopleSVoice",
+      "VOICE",
+      "VOICECoin",
+      "VOICEX"
+    ],
+    "decoys": [
+      "AlphaCoin",
+      "NovaToken",
+      "TurboToken",
+      "PulseCoin",
+      "FluxToken",
+      "OrbitToken",
+      "VectorCoin",
+      "SignalToken",
+      "DriftToken",
+      "CoreCoin",
+      "ByteToken",
+      "ZenithToken"
+    ],
+    "de": [
+      "🐶",
+      "🐸",
+      "🦍",
+      "🐺",
+      "🐻",
+      "🦈",
+      "🚀",
+      "🔥",
+      "🧠",
+      "🪙"
+    ],
+    "tweets": [
+      {
+        "text": "Panel on “amplifying voices” limits public comment to 30 seconds.",
+        "user": "voicenews",
+        "handle": "@voicenews",
+        "time": "25s"
+      }
+    ]
+  },
+  {
+    "kw": "safe",
+    "emoji": "🪙",
+    "names": [
+      "PublicSafetyFund",
+      "SAFE",
+      "SAFECoin",
+      "SAFEX"
+    ],
+    "decoys": [
+      "AlphaCoin",
+      "NovaToken",
+      "TurboToken",
+      "PulseCoin",
+      "FluxToken",
+      "OrbitToken",
+      "VectorCoin",
+      "SignalToken",
+      "DriftToken",
+      "CoreCoin",
+      "ByteToken",
+      "ZenithToken"
+    ],
+    "de": [
+      "🐶",
+      "🐸",
+      "🦍",
+      "🐺",
+      "🐻",
+      "🦈",
+      "🚀",
+      "🔥",
+      "🧠",
+      "📈"
+    ],
+    "tweets": [
+      {
+        "text": "City reallocates public safety concerns.",
+        "user": "MetroNewsLine",
+        "handle": "@MetroNewsLine",
+        "time": "10s"
+      }
+    ]
+  },
+  {
+    "kw": "future",
+    "emoji": "🚗",
+    "names": [
+      "TheFuture",
+      "FUTURE",
+      "FUTURECoin",
+      "FUTUREX"
+    ],
+    "decoys": [
+      "AlphaCoin",
+      "NovaToken",
+      "TurboToken",
+      "PulseCoin",
+      "FluxToken",
+      "OrbitToken",
+      "VectorCoin",
+      "SignalToken",
+      "DriftToken",
+      "CoreCoin",
+      "ByteToken",
+      "ZenithToken"
+    ],
+    "de": [
+      "🐶",
+      "🐸",
+      "🦍",
+      "🐺",
+      "🐻",
+      "🦈",
+      "🚀",
+      "🔥",
+      "🧠",
+      "🪙"
+    ],
+    "tweets": [
+      {
+        "text": "Speaker tells crowd: “The future belongs to you,” before departing in motorcade 🚗",
+        "user": "YouthSummitLive",
+        "handle": "@YouthSummitLive",
+        "time": "10s"
+      }
+    ]
+  },
+  {
+    "kw": "tremp",
+    "emoji": "🪙",
+    "names": [
+      "TrempCoin",
+      "TREMP",
+      "TREMPCoin",
+      "TREMPX"
+    ],
+    "decoys": [
+      "AlphaCoin",
+      "NovaToken",
+      "TurboToken",
+      "PulseCoin",
+      "FluxToken",
+      "OrbitToken",
+      "VectorCoin",
+      "SignalToken",
+      "DriftToken",
+      "CoreCoin",
+      "ByteToken",
+      "ZenithToken"
+    ],
+    "de": [
+      "🐶",
+      "🐸",
+      "🦍",
+      "🐺",
+      "🐻",
+      "🦈",
+      "🚀",
+      "🔥",
+      "🧠",
+      "📈"
+    ],
+    "tweets": [
+      {
+        "text": "The official Tremp coin is now live.",
+        "user": "DonTremp",
+        "handle": "@DonTremp",
+        "time": "42s"
+      }
+    ]
+  },
+  {
+    "kw": "pdt",
+    "emoji": "🪙",
+    "names": [
+      "PissingDogTheory",
+      "PDT",
+      "PDTCoin",
+      "PDTX"
+    ],
+    "decoys": [
+      "AlphaCoin",
+      "NovaToken",
+      "TurboToken",
+      "PulseCoin",
+      "FluxToken",
+      "OrbitToken",
+      "VectorCoin",
+      "SignalToken",
+      "DriftToken",
+      "CoreCoin",
+      "ByteToken",
+      "ZenithToken"
+    ],
+    "de": [
+      "🐶",
+      "🐸",
+      "🦍",
+      "🐺",
+      "🐻",
+      "🦈",
+      "🚀",
+      "🔥",
+      "🧠",
+      "📈"
+    ],
+    "tweets": [
+      {
+        "text": "Viral clip of dog refusing to stop peeing sparks “PDT” trend online.",
+        "user": "StreetLeakz",
+        "handle": "@StreetLeakz",
+        "time": "29s"
+      }
+    ]
+  },
+  {
+    "kw": "fbc",
+    "emoji": "🪙",
+    "names": [
+      "FartingBabyCouncil",
+      "FBC",
+      "FBCCoin",
+      "FBCX"
+    ],
+    "decoys": [
+      "AlphaCoin",
+      "NovaToken",
+      "TurboToken",
+      "PulseCoin",
+      "FluxToken",
+      "OrbitToken",
+      "VectorCoin",
+      "SignalToken",
+      "DriftToken",
+      "CoreCoin",
+      "ByteToken",
+      "ZenithToken"
+    ],
+    "de": [
+      "🐶",
+      "🐸",
+      "🦍",
+      "🐺",
+      "🐻",
+      "🦈",
+      "🚀",
+      "🔥",
+      "🧠",
+      "📈"
+    ],
+    "tweets": [
+      {
+        "text": "City meeting disrupted after farting toddler repeatedly interrupts broadcast.",
+        "user": "CultureChaos",
+        "handle": "@CultureChaos",
+        "time": "16s"
+      }
+    ]
+  },
+  {
+    "kw": "bpc",
+    "emoji": "🪙",
+    "names": [
+      "BrokenPlasticChair",
+      "BPC",
+      "BPCCoin",
+      "BPCX"
+    ],
+    "decoys": [
+      "AlphaCoin",
+      "NovaToken",
+      "TurboToken",
+      "PulseCoin",
+      "FluxToken",
+      "OrbitToken",
+      "VectorCoin",
+      "SignalToken",
+      "DriftToken",
+      "CoreCoin",
+      "ByteToken",
+      "ZenithToken"
+    ],
+    "de": [
+      "🐶",
+      "🐸",
+      "🦍",
+      "🐺",
+      "🐻",
+      "🦈",
+      "🚀",
+      "🔥",
+      "🧠",
+      "📈"
+    ],
+    "tweets": [
+      {
+        "text": "Fight breaks out after folding chair collapses mid-argument.",
+        "user": "bpcnews",
+        "handle": "@bpcnews",
+        "time": "9s"
+      }
+    ]
+  },
+  {
+    "kw": "shwc",
+    "emoji": "💦",
+    "names": [
+      "ShitHoseWaterCoin",
+      "SHWC",
+      "SHWCCoin",
+      "SHWCX"
+    ],
+    "decoys": [
+      "AlphaCoin",
+      "NovaToken",
+      "TurboToken",
+      "PulseCoin",
+      "FluxToken",
+      "OrbitToken",
+      "VectorCoin",
+      "SignalToken",
+      "DriftToken",
+      "CoreCoin",
+      "ByteToken",
+      "ZenithToken"
+    ],
+    "de": [
+      "🐶",
+      "🐸",
+      "🦍",
+      "🐺",
+      "🐻",
+      "🦈",
+      "🚀",
+      "🔥",
+      "🧠",
+      "🪙"
+    ],
+    "tweets": [
+      {
+        "text": "City sewage worker accidentally sprays crowd during downtown parade 💦",
+        "user": "UrbanTapez",
+        "handle": "@UrbanTapez",
+        "time": "5s"
+      }
+    ]
+  },
+  {
+    "kw": "rwc",
+    "emoji": "🪙",
+    "names": [
+      "RottenWetCarpet",
+      "RWC",
+      "RWCCoin",
+      "RWCX"
+    ],
+    "decoys": [
+      "AlphaCoin",
+      "NovaToken",
+      "TurboToken",
+      "PulseCoin",
+      "FluxToken",
+      "OrbitToken",
+      "VectorCoin",
+      "SignalToken",
+      "DriftToken",
+      "CoreCoin",
+      "ByteToken",
+      "ZenithToken"
+    ],
+    "de": [
+      "🐶",
+      "🐸",
+      "🦍",
+      "🐺",
+      "🐻",
+      "🦈",
+      "🚀",
+      "🔥",
+      "🧠",
+      "📈"
+    ],
+    "tweets": [
+      {
+        "text": "Apartment residents demand action after water damage left untreated for months.",
+        "user": "TenantAlertNow",
+        "handle": "@TenantAlertNow",
+        "time": "22s"
+      }
+    ]
+  },
+  {
+    "kw": "ppf",
+    "emoji": "👀",
+    "names": [
+      "PublicPissFestival",
+      "PPF",
+      "PPFCoin",
+      "PPFX"
+    ],
+    "decoys": [
+      "AlphaCoin",
+      "NovaToken",
+      "TurboToken",
+      "PulseCoin",
+      "FluxToken",
+      "OrbitToken",
+      "VectorCoin",
+      "SignalToken",
+      "DriftToken",
+      "CoreCoin",
+      "ByteToken",
+      "ZenithToken"
+    ],
+    "de": [
+      "🐶",
+      "🐸",
+      "🦍",
+      "🐺",
+      "🐻",
+      "🦈",
+      "🚀",
+      "🔥",
+      "🧠",
+      "🪙"
+    ],
+    "tweets": [
+      {
+        "text": "City reviewing permits after unsanctioned street gathering trends online 👀",
+        "user": "NightLifeWire",
+        "handle": "@NightLifeWire",
+        "time": "18s"
+      }
+    ]
+  },
+  {
+    "kw": "dwc",
+    "emoji": "🪙",
+    "names": [
+      "DirtyWaterClub",
+      "DWC",
+      "DWCCoin",
+      "DWCX"
+    ],
+    "decoys": [
+      "AlphaCoin",
+      "NovaToken",
+      "TurboToken",
+      "PulseCoin",
+      "FluxToken",
+      "OrbitToken",
+      "VectorCoin",
+      "SignalToken",
+      "DriftToken",
+      "CoreCoin",
+      "ByteToken",
+      "ZenithToken"
+    ],
+    "de": [
+      "🐶",
+      "🐸",
+      "🦍",
+      "🐺",
+      "🐻",
+      "🦈",
+      "🚀",
+      "🔥",
+      "🧠",
+      "📈"
+    ],
+    "tweets": [
+      {
+        "text": "Students warned after “Dirty Water” challenge goes viral.",
+        "user": "CampusScene",
+        "handle": "@CampusScene",
+        "time": "16s"
+      }
+    ]
+  },
+  {
+    "kw": "frt",
+    "emoji": "🪙",
+    "names": [
+      "FartResponsscroll",
+      "FRT",
+      "FRTCoin",
+      "FRTX"
+    ],
+    "decoys": [
+      "AlphaCoin",
+      "NovaToken",
+      "TurboToken",
+      "PulseCoin",
+      "FluxToken",
+      "OrbitToken",
+      "VectorCoin",
+      "SignalToken",
+      "DriftToken",
+      "CoreCoin",
+      "ByteToken",
+      "ZenithToken"
+    ],
+    "de": [
+      "🐶",
+      "🐸",
+      "🦍",
+      "🐺",
+      "🐻",
+      "🦈",
+      "🚀",
+      "🔥",
+      "🧠",
+      "📈"
+    ],
+    "tweets": [
+      {
+        "text": "Officials deny existence of “FRT unit” despite leaked memo.",
+        "user": "frtnews",
+        "handle": "@frtnews",
+        "time": "37s"
+      }
+    ]
+  },
+  {
+    "kw": "tpc",
+    "emoji": "🦍",
+    "names": [
+      "ToiletPaperCrisis",
+      "TPC",
+      "TPCCoin",
+      "TPCX"
+    ],
+    "decoys": [
+      "AlphaCoin",
+      "NovaToken",
+      "TurboToken",
+      "PulseCoin",
+      "FluxToken",
+      "OrbitToken",
+      "VectorCoin",
+      "SignalToken",
+      "DriftToken",
+      "CoreCoin",
+      "ByteToken",
+      "ZenithToken"
+    ],
+    "de": [
+      "🐶",
+      "🐸",
+      "🐺",
+      "🐻",
+      "🦈",
+      "🚀",
+      "🔥",
+      "🧠",
+      "🪙",
+      "📈"
+    ],
+    "tweets": [
+      {
+        "text": "Retailers report sudden spike in toilet paper purchases overnight.",
+        "user": "SupplyChainLive",
+        "handle": "@SupplyChainLive",
+        "time": "5s"
+      }
+    ]
+  },
+  {
+    "kw": "x2",
+    "emoji": "🪙",
+    "names": [
+      "XSquared",
+      "X2",
+      "X2Coin",
+      "X2X"
+    ],
+    "decoys": [
+      "AlphaCoin",
+      "NovaToken",
+      "TurboToken",
+      "PulseCoin",
+      "FluxToken",
+      "OrbitToken",
+      "VectorCoin",
+      "SignalToken",
+      "DriftToken",
+      "CoreCoin",
+      "ByteToken",
+      "ZenithToken"
+    ],
+    "de": [
+      "🐶",
+      "🐸",
+      "🦍",
+      "🐺",
+      "🐻",
+      "🦈",
+      "🚀",
+      "🔥",
+      "🧠",
+      "📈"
+    ],
+    "tweets": [
+      {
+        "text": "rebuilding x, but twice",
+        "user": "ewonmusk",
+        "handle": "@ewonmusk",
+        "time": "36s"
+      }
+    ]
+  },
+  {
+    "kw": "mers",
+    "emoji": "🪙",
+    "names": [
+      "MersInitiative",
+      "MERS",
+      "MERSCoin",
+      "MERSX"
+    ],
+    "decoys": [
+      "AlphaCoin",
+      "NovaToken",
+      "TurboToken",
+      "PulseCoin",
+      "FluxToken",
+      "OrbitToken",
+      "VectorCoin",
+      "SignalToken",
+      "DriftToken",
+      "CoreCoin",
+      "ByteToken",
+      "ZenithToken"
+    ],
+    "de": [
+      "🐶",
+      "🐸",
+      "🦍",
+      "🐺",
+      "🐻",
+      "🦈",
+      "🚀",
+      "🔥",
+      "🧠",
+      "📈"
+    ],
+    "tweets": [
+      {
+        "text": "thinking about going to mers instead",
+        "user": "ewonmusk",
+        "handle": "@ewonmusk",
+        "time": "31s"
+      }
+    ]
+  },
+  {
+    "kw": "oxy",
+    "emoji": "🪙",
+    "names": [
+      "OxygenX",
+      "OXY",
+      "OXYCoin",
+      "OXYX"
+    ],
+    "decoys": [
+      "AlphaCoin",
+      "NovaToken",
+      "TurboToken",
+      "PulseCoin",
+      "FluxToken",
+      "OrbitToken",
+      "VectorCoin",
+      "SignalToken",
+      "DriftToken",
+      "CoreCoin",
+      "ByteToken",
+      "ZenithToken"
+    ],
+    "de": [
+      "🐶",
+      "🐸",
+      "🦍",
+      "🐺",
+      "🐻",
+      "🦈",
+      "🚀",
+      "🔥",
+      "🧠",
+      "📈"
+    ],
+    "tweets": [
+      {
+        "text": "we should probably monetize oxygen",
+        "user": "ewonmusk",
+        "handle": "@ewonmusk",
+        "time": "21s"
+      }
+    ]
+  },
+  {
+    "kw": "win",
+    "emoji": "🪙",
+    "names": [
+      "WinCoin",
+      "WIN",
+      "WINCoin",
+      "WINX"
+    ],
+    "decoys": [
+      "AlphaCoin",
+      "NovaToken",
+      "TurboToken",
+      "PulseCoin",
+      "FluxToken",
+      "OrbitToken",
+      "VectorCoin",
+      "SignalToken",
+      "DriftToken",
+      "CoreCoin",
+      "ByteToken",
+      "ZenithToken"
+    ],
+    "de": [
+      "🐶",
+      "🐸",
+      "🦍",
+      "🐺",
+      "🐻",
+      "🦈",
+      "🚀",
+      "🔥",
+      "🧠",
+      "📈"
+    ],
+    "tweets": [
+      {
+        "text": "Nobody wins like we win. NOBODY.",
+        "user": "DonTremp",
+        "handle": "@DonTremp",
+        "time": "17s"
+      }
+    ]
+  },
+  {
+    "kw": "mcga",
+    "emoji": "🪙",
+    "names": [
+      "MakeCoinsGreatAgain",
+      "MCGA",
+      "MCGACoin",
+      "MCGAX"
+    ],
+    "decoys": [
+      "AlphaCoin",
+      "NovaToken",
+      "TurboToken",
+      "PulseCoin",
+      "FluxToken",
+      "OrbitToken",
+      "VectorCoin",
+      "SignalToken",
+      "DriftToken",
+      "CoreCoin",
+      "ByteToken",
+      "ZenithToken"
+    ],
+    "de": [
+      "🐶",
+      "🐸",
+      "🦍",
+      "🐺",
+      "🐻",
+      "🦈",
+      "🚀",
+      "🔥",
+      "🧠",
+      "📈"
+    ],
+    "tweets": [
+      {
+        "text": "We’re making coins great again. Believe me.",
+        "user": "DonTremp",
+        "handle": "@DonTremp",
+        "time": "5s"
+      }
+    ]
+  },
+  {
+    "kw": "mindx",
+    "emoji": "🪙",
+    "names": [
+      "MindX",
+      "MINDX",
+      "MINDXCoin",
+      "MINDXX"
+    ],
+    "decoys": [
+      "AlphaCoin",
+      "NovaToken",
+      "TurboToken",
+      "PulseCoin",
+      "FluxToken",
+      "OrbitToken",
+      "VectorCoin",
+      "SignalToken",
+      "DriftToken",
+      "CoreCoin",
+      "ByteToken",
+      "ZenithToken"
+    ],
+    "de": [
+      "🐶",
+      "🐸",
+      "🦍",
+      "🐺",
+      "🐻",
+      "🦈",
+      "🚀",
+      "🔥",
+      "🧠",
+      "📈"
+    ],
+    "tweets": [
+      {
+        "text": "what if thoughts had a subscribe button",
+        "user": "ewonmusk",
+        "handle": "@ewonmusk",
+        "time": "32s"
+      }
+    ]
+  },
+  {
+    "kw": "dogex",
+    "emoji": "🪙",
+    "names": [
+      "DogeExpansion",
+      "DOGEX",
+      "DOGEXCoin",
+      "DOGEXX"
+    ],
+    "decoys": [
+      "AlphaCoin",
+      "NovaToken",
+      "TurboToken",
+      "PulseCoin",
+      "FluxToken",
+      "OrbitToken",
+      "VectorCoin",
+      "SignalToken",
+      "DriftToken",
+      "CoreCoin",
+      "ByteToken",
+      "ZenithToken"
+    ],
+    "de": [
+      "🐶",
+      "🐸",
+      "🦍",
+      "🐺",
+      "🐻",
+      "🦈",
+      "🚀",
+      "🔥",
+      "🧠",
+      "📈"
+    ],
+    "tweets": [
+      {
+        "text": "doge… but interplanetary",
+        "user": "ewonmusk",
+        "handle": "@ewonmusk",
+        "time": "22s"
+      }
+    ]
+  },
+  {
+    "kw": "viral",
+    "emoji": "🪙",
+    "names": [
+      "ViralCoin",
+      "VIRAL",
+      "VIRALCoin",
+      "VIRALX"
+    ],
+    "decoys": [
+      "AlphaCoin",
+      "NovaToken",
+      "TurboToken",
+      "PulseCoin",
+      "FluxToken",
+      "OrbitToken",
+      "VectorCoin",
+      "SignalToken",
+      "DriftToken",
+      "CoreCoin",
+      "ByteToken",
+      "ZenithToken"
+    ],
+    "de": [
+      "🐶",
+      "🐸",
+      "🦍",
+      "🐺",
+      "🐻",
+      "🦈",
+      "🚀",
+      "🔥",
+      "🧠",
+      "📈"
+    ],
+    "tweets": [
+      {
+        "text": "Nobody knows why it’s trending, but it’s trending.",
+        "user": "viralnews",
+        "handle": "@viralnews",
+        "time": "23s"
+      }
+    ]
   }
 ];
 
@@ -781,7 +2509,7 @@ export const FILLER = [
       "user": "Jupiter Uplink",
       "handle": "@jup_uplink",
       "time": "26m",
-      "text": "To Jupuary or not to Jupuary.\n\nHigh-level overview of the upcoming DAO vote.",
+      "text": "To Jupuary or not to Jupuary.\n\nHigh-level overview of the upcoming Token vote.",
       "verified": true,
       "media": {
         "type": "video",

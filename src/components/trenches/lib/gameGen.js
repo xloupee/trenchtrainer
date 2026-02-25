@@ -29,7 +29,6 @@ const getNameRoots = (name) => {
   const stripped = normalized
     .replace(/coin/g, "")
     .replace(/token/g, "")
-    .replace(/dao/g, "")
     .replace(/x$/g, "");
   return [normalized, stripped].filter(Boolean);
 };

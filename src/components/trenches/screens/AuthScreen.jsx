@@ -10,7 +10,6 @@ function AuthScreen() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
-  const [resendBusy, setResendBusy] = useState(false);
   const [msg, setMsg] = useState("");
   const isLogin = mode === "login";
 
@@ -114,7 +113,7 @@ function AuthScreen() {
       const rawMessage = e?.message || "Authentication failed.";
       const emailNotConfirmed = /email.*confirm|not confirmed/i.test(rawMessage);
       if (isLogin && emailNotConfirmed) {
-        setMsg("Email not verified. Go to Sign Up tab, enter your email, and resend verification.");
+        setMsg("Email not verified. Check your inbox/spam for the verification email, then log in.");
       } else if (!isLogin && isConfirmationEmailFailure(rawMessage)) {
         setMsg("Signup unavailable: verification email service is down. Try again soon.");
       } else {
@@ -122,40 +121,6 @@ function AuthScreen() {
       }
     } finally {
       setBusy(false);
-    }
-  };
-
-  const resendVerification = async () => {
-    if (!supabase) {
-      setMsg("Supabase is not configured.");
-      return;
-    }
-    const normalizedEmail = email.trim().toLowerCase();
-    if (!isLikelyEmail(normalizedEmail)) {
-      setMsg("Enter a valid email address to resend verification.");
-      return;
-    }
-    setResendBusy(true);
-    setMsg("Resending verification email...");
-    try {
-      const { error } = await supabase.auth.resend({
-        type: "signup",
-        email: normalizedEmail,
-        options: {
-          emailRedirectTo: getEmailRedirectTo(),
-        },
-      });
-      if (error) throw error;
-      setMsg("Verification email sent. Check inbox/spam.");
-    } catch (e) {
-      const rawMessage = e?.message || "Unable to resend verification email.";
-      if (isConfirmationEmailFailure(rawMessage)) {
-        setMsg("Verification email service is down. Try again soon.");
-      } else {
-        setMsg(rawMessage);
-      }
-    } finally {
-      setResendBusy(false);
     }
   };
 
@@ -315,22 +280,6 @@ function AuthScreen() {
           >
             {busy ? "PROCESSING..." : isLogin ? "LOG IN" : "CREATE ACCOUNT"}
           </button>
-          {!isLogin && (
-            <button
-              onClick={resendVerification}
-              disabled={busy || resendBusy}
-              className="btn-ghost"
-              style={{
-                marginTop: 10,
-                padding: "12px",
-                fontSize: 12,
-                letterSpacing: 2,
-                opacity: busy || resendBusy ? 0.7 : 1,
-              }}
-            >
-              {resendBusy ? "RESENDING..." : "RESEND VERIFICATION EMAIL"}
-            </button>
-          )}
         </div>
 
       </div>
