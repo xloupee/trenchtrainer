@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { C } from "../config/constants";
+import { resolveTokenIconSrc } from "../lib/tokenIcons";
 import { getRC } from "../lib/rank";
 import { getPracticeSessionTier, getPracticeTier } from "../lib/practiceRank";
 
@@ -86,6 +87,9 @@ function TokenRow({coin,onBuy,spawned,revealed,clickedId,showCorrect}){
   const primaryName=String(coin?.name||"").trim();
   const secondaryName=String(coin?.displayName||"").trim();
   const showSecondaryName=Boolean(secondaryName)&&secondaryName.toLowerCase()!==primaryName.toLowerCase();
+  const iconSrc=resolveTokenIconSrc(coin?.iconTicker||primaryName);
+  const [avatarImgFailed,setAvatarImgFailed]=useState(false);
+  useEffect(()=>{setAvatarImgFailed(false);},[iconSrc,coin?.id]);
   let bl="transparent",bg="transparent";if(iw){bl=C.red;bg="rgba(245,101,101,0.03)";}else if(isRevealCorrect){bl=C.green;bg="rgba(72,187,120,0.04)";}
   const ia=!revealed,sb=!revealed;
   const buyBtnStyle=(active,isMain)=>({display:"flex",alignItems:"center",justifyContent:"center",gap:3,padding:"0",background:"transparent",border:"none",color:active&&isMain?C.green:C.textDim,fontSize:active&&isMain?11:10,fontWeight:active&&isMain?800:600,cursor:active&&isMain?"pointer":"default",fontFamily:"var(--mono)",width:"100%",height:"100%",transition:"all 0.12s"});
@@ -93,7 +97,9 @@ function TokenRow({coin,onBuy,spawned,revealed,clickedId,showCorrect}){
   return(<div style={{display:"flex",alignItems:"flex-start",padding:"8px 8px",borderBottom:`1px solid ${C.border}`,borderLeft:`2px solid ${bl}`,background:bg,opacity:spawned?1:0,maxHeight:spawned?200:0,transform:spawned?"none":"translateY(-8px)",transition:"opacity 0.3s,transform 0.3s,max-height 0.3s",minHeight:spawned?86:0,overflow:"hidden",gap:8}}>
     {/* Avatar */}
     <div style={{width:50,height:50,borderRadius:10,background:`linear-gradient(145deg,${C.bgElevated},${C.bgCard})`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:24,flexShrink:0,border:`1px solid ${isRevealCorrect?C.green:C.border}`,position:"relative",boxShadow:isRevealCorrect?`0 0 14px ${C.green}30`:"none",transition:"all 0.3s"}}>
-      {coin.emoji}
+      {iconSrc&&!avatarImgFailed
+        ?<img src={iconSrc} alt={`${primaryName} token icon`} style={{width:"100%",height:"100%",objectFit:"cover",borderRadius:10,display:"block"}} onError={()=>setAvatarImgFailed(true)}/>
+        :coin.emoji}
       {isRevealCorrect&&<div style={{position:"absolute",top:-3,right:-3,width:16,height:16,borderRadius:"50%",background:C.green,display:"flex",alignItems:"center",justifyContent:"center",fontSize:8,color:C.bg,fontWeight:900}}>✓</div>}
       {!isRevealCorrect&&<div style={{position:"absolute",bottom:-2,right:-2,width:14,height:14,borderRadius:"50%",background:C.bgAlt,border:`1.5px solid ${C.border}`,display:"flex",alignItems:"center",justifyContent:"center"}}><span style={{fontSize:6,color:C.green}}>●</span></div>}
     </div>
