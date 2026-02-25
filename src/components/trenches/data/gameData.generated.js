@@ -7,23 +7,21 @@ export const THEMES = [
     "emoji": "🍎",
     "names": [
       "AppleCoin",
-      "APPLE",
-      "AppleToken",
-      "APPLX"
+      "APPLE"
     ],
     "decoys": [
-      "GrapeCoin",
-      "BananaToken",
-      "MangoToken",
-      "OrangeCoin",
-      "PearToken",
+      "Grape Coin",
+      "Banana Token",
+      "Mango Token",
+      "Orange Coin",
+      "Pear Token",
       "CHERRY",
-      "KiwiCoin",
-      "BlueberryToken",
-      "CitrusCoin",
-      "MelonToken",
+      "Kiwi Coin",
+      "Blueberry Token",
+      "Citrus Coin",
+      "Melon Token",
       "PLUM",
-      "FruitToken"
+      "Fruit Token"
     ],
     "de": [
       "🍊",
@@ -45,22 +43,10 @@ export const THEMES = [
         "time": "27s"
       },
       {
-        "text": "Farmers reporting apples falling everywhere. Bullish 📈",
-        "user": "DeFi Degen",
-        "handle": "@defidegen",
-        "time": "14s"
-      },
-      {
         "text": "Apple demand exploding!! Narrative is CLEAR.",
         "user": "AlphaLeaks",
         "handle": "@alphaleaks",
         "time": "45s"
-      },
-      {
-        "text": "Breaking: Global apple shortage 🍎🍎🍎",
-        "user": "Whale Watch",
-        "handle": "@whalewatcher",
-        "time": "8s"
       }
     ]
   },
@@ -68,22 +54,20 @@ export const THEMES = [
     "kw": "rocket",
     "emoji": "🚀",
     "names": [
-      "RocketCoin",
-      "ROCKET",
-      "RocketToken",
-      "RKTX"
+      "Rocket Coin",
+      "ROCKET"
     ],
     "decoys": [
-      "PlaneCoin",
+      "Plane Coin",
       "UFOToken",
-      "StarToken",
-      "MoonCoin",
-      "JetToken",
+      "Star Token",
+      "Moon Coin",
+      "Jet Token",
       "COMET",
-      "SpaceCoin",
-      "OrbitToken",
-      "SaturnCoin",
-      "NebulaTkn"
+      "Space Coin",
+      "Orbit Token",
+      "Saturn Coin",
+      "Nebula Tkn"
     ],
     "de": [
       "✈️",
@@ -111,12 +95,6 @@ export const THEMES = [
         "time": "31s"
       },
       {
-        "text": "SpaceX competitor revealed new design. CT going crazy",
-        "user": "TechAlpha",
-        "handle": "@techalpha",
-        "time": "5s"
-      },
-      {
         "text": "School board votes to retire “The Rocket” mascot after 40 years.",
         "user": "CampusChronicle",
         "handle": "@CampusChronicle",
@@ -128,22 +106,20 @@ export const THEMES = [
     "kw": "dog",
     "emoji": "🐕",
     "names": [
-      "DogCoin",
-      "DOG",
-      "DogToken",
-      "DOGX"
+      "Dog Coin",
+      "DOG"
     ],
     "decoys": [
-      "CatCoin",
-      "BearToken",
-      "BunnyToken",
-      "FoxCoin",
-      "WolfToken",
+      "Cat Coin",
+      "Bear Token",
+      "Bunny Token",
+      "Fox Coin",
+      "Wolf Token",
       "HAMSTER",
-      "LionCoin",
-      "TigerToken",
-      "PandaCoin",
-      "MonkeyTkn"
+      "Lion Coin",
+      "Tiger Token",
+      "Panda Coin",
+      "Monkey Tkn"
     ],
     "de": [
       "🐱",
@@ -182,22 +158,20 @@ export const THEMES = [
     "kw": "fire",
     "emoji": "🔥",
     "names": [
-      "FireCoin",
-      "FIRE",
-      "FireToken",
-      "FIRX"
+      "Fire Coin",
+      "FIRE"
     ],
     "decoys": [
-      "WaterCoin",
-      "IceToken",
-      "ThunderToken",
-      "WaveCoin",
-      "WindToken",
+      "Water Coin",
+      "Ice Token",
+      "Thunder Token",
+      "Wave Coin",
+      "Wind Token",
       "VOLCANO",
-      "SunCoin",
-      "StormToken",
-      "BlazeCoin",
-      "FlameTkn"
+      "Sun Coin",
+      "Storm Token",
+      "Blaze Coin",
+      "Flame Tkn"
     ],
     "de": [
       "💧",
@@ -242,22 +216,20 @@ export const THEMES = [
     "kw": "diamond",
     "emoji": "💎",
     "names": [
-      "DiamondCoin",
-      "DIAMOND",
-      "DiamondToken",
-      "DMDX"
+      "Diamond Coin",
+      "DIAMOND"
     ],
     "decoys": [
-      "GoldCoin",
-      "CoinToken",
-      "CrownToken",
-      "RingCoin",
-      "TrophyTkn",
+      "Gold Coin",
+      "Coin Token",
+      "Crown Token",
+      "Ring Coin",
+      "Trophy Tkn",
       "PEARL",
-      "CrystalCoin",
-      "RubyToken",
-      "EmeraldCoin",
-      "SapphireTkn"
+      "Crystal Coin",
+      "Ruby Token",
+      "Emerald Coin",
+      "Sapphire Tkn"
     ],
     "de": [
       "💰",
@@ -296,22 +268,20 @@ export const THEMES = [
     "kw": "frog",
     "emoji": "🐸",
     "names": [
-      "FrogCoin",
-      "FROG",
-      "FrogToken",
-      "FRGX"
+      "Frog Coin",
+      "FROG"
     ],
     "decoys": [
-      "SnakeCoin",
-      "LizardTkn",
-      "TurtleToken",
-      "CrocCoin",
-      "DinoToken",
+      "Snake Coin",
+      "Lizard Tkn",
+      "Turtle Token",
+      "Croc Coin",
+      "Dino Token",
       "GECKO",
-      "ToadCoin",
-      "NewtToken",
-      "BugCoin",
-      "BeetleTkn"
+      "Toad Coin",
+      "Newt Token",
+      "Bug Coin",
+      "Beetle Tkn"
     ],
     "de": [
       "🐍",
@@ -350,22 +320,20 @@ export const THEMES = [
     "kw": "penguin",
     "emoji": "🐧",
     "names": [
-      "PenguinCoin",
-      "PENGUIN",
-      "PenguinToken",
-      "PNGX"
+      "Penguin Coin",
+      "PENGUIN"
     ],
     "decoys": [
-      "EagleCoin",
-      "DuckToken",
-      "OwlToken",
-      "BirdCoin",
-      "ParrotTkn",
+      "Eagle Coin",
+      "Duck Token",
+      "Owl Token",
+      "Bird Coin",
+      "Parrot Tkn",
       "DOVE",
-      "FlamingoC",
-      "ChickenToken",
-      "PeacockCoin",
-      "SwanTkn"
+      "Flamingo C",
+      "Chicken Token",
+      "Peacock Coin",
+      "Swan Tkn"
     ],
     "de": [
       "🦅",
@@ -387,12 +355,6 @@ export const THEMES = [
         "time": "15s"
       },
       {
-        "text": "Antarctic penguin population hits record.",
-        "user": "SciAlerts",
-        "handle": "@scialerts",
-        "time": "38s"
-      },
-      {
         "text": "Penguin szn is here. Don't sleep. 🐧🐧",
         "user": "NarrativeBot",
         "handle": "@narrativebot",
@@ -404,22 +366,20 @@ export const THEMES = [
     "kw": "moon",
     "emoji": "🌕",
     "names": [
-      "MoonCoin",
-      "MOON",
-      "MoonToken",
-      "MOONX"
+      "Moon Coin",
+      "MOON"
     ],
     "decoys": [
-      "StarCoin",
-      "SunToken",
-      "PlanetToken",
-      "EarthCoin",
-      "CosmosTkn",
+      "Star Coin",
+      "Sun Token",
+      "Planet Token",
+      "Earth Coin",
+      "Cosmos Tkn",
       "GALAXY",
-      "CometCoin",
-      "NovaCoin",
-      "AuroraCoin",
-      "NeptuneTkn"
+      "Comet Coin",
+      "Nova Coin",
+      "Aurora Coin",
+      "Neptune Tkn"
     ],
     "de": [
       "⭐",
@@ -441,12 +401,6 @@ export const THEMES = [
         "time": "2s"
       },
       {
-        "text": "Lunar eclipse — moon mania 🌙",
-        "user": "AstroAlerts",
-        "handle": "@astroalerts",
-        "time": "25s"
-      },
-      {
         "text": "Moon content flooding every timeline.",
         "user": "NarrativeHQ",
         "handle": "@narrativehq",
@@ -458,22 +412,20 @@ export const THEMES = [
     "kw": "cat",
     "emoji": "🐈",
     "names": [
-      "CatCoin",
-      "CAT",
-      "CatToken",
-      "CATX"
+      "Cat Coin",
+      "CAT"
     ],
     "decoys": [
-      "DogCoin",
-      "BearToken",
-      "BunnyToken",
-      "FoxCoin",
-      "WolfToken",
+      "Dog Coin",
+      "Bear Token",
+      "Bunny Token",
+      "Fox Coin",
+      "Wolf Token",
       "HAMSTER",
-      "LionCoin",
-      "TigerToken",
-      "PandaCoin",
-      "MonkeyTkn"
+      "Lion Coin",
+      "Tiger Token",
+      "Panda Coin",
+      "Monkey Tkn"
     ],
     "de": [
       "🐕",
@@ -499,12 +451,6 @@ export const THEMES = [
         "user": "TrendDesk",
         "handle": "@trenddesk",
         "time": "21s"
-      },
-      {
-        "text": "Feline narrative confirmed. 🐾",
-        "user": "AlphaCats",
-        "handle": "@alphacats",
-        "time": "36s"
       }
     ]
   },
@@ -512,22 +458,20 @@ export const THEMES = [
     "kw": "shark",
     "emoji": "🦈",
     "names": [
-      "SharkCoin",
-      "SHARK",
-      "SharkCoin",
-      "SHRK"
+      "Shark Coin",
+      "SHARK"
     ],
     "decoys": [
-      "WhaleCoin",
-      "DolphinTkn",
-      "OctoToken",
-      "SquidCoin",
-      "FishToken",
+      "Whale Coin",
+      "Dolphin Tkn",
+      "Octo Token",
+      "Squid Coin",
+      "Fish Token",
       "REEF",
-      "CrabCoin",
-      "JellyToken",
-      "PufferCoin",
-      "ShrimpTkn"
+      "Crab Coin",
+      "Jelly Token",
+      "Puffer Coin",
+      "Shrimp Tkn"
     ],
     "de": [
       "🐋",
@@ -566,22 +510,20 @@ export const THEMES = [
     "kw": "coffee",
     "emoji": "☕",
     "names": [
-      "CoffeeCoin",
-      "COFFEE",
-      "BrewToken",
-      "BREWX"
+      "Coffee Coin",
+      "COFFEE"
     ],
     "decoys": [
-      "SodaCoin",
-      "BobaToken",
-      "TeaToken",
-      "MilkCoin",
-      "JuiceToken",
+      "Soda Coin",
+      "Boba Token",
+      "Tea Token",
+      "Milk Coin",
+      "Juice Token",
       "LATTE",
-      "AleCoin",
-      "WineToken",
-      "ToastCoin",
-      "MateTkn"
+      "Ale Coin",
+      "Wine Token",
+      "Toast Coin",
+      "Mate Tkn"
     ],
     "de": [
       "🥤",
@@ -607,12 +549,6 @@ export const THEMES = [
         "user": "MarketWake",
         "handle": "@marketwake",
         "time": "19s"
-      },
-      {
-        "text": "Brew meta everywhere. Don't fade.",
-        "user": "DegenBrew",
-        "handle": "@degenbrew",
-        "time": "33s"
       }
     ]
   },
@@ -620,22 +556,20 @@ export const THEMES = [
     "kw": "robot",
     "emoji": "🤖",
     "names": [
-      "RobotCoin",
-      "ROBOT",
-      "MechToken",
-      "RBTX"
+      "Robot Coin",
+      "ROBOT"
     ],
     "decoys": [
       "UFOToken",
-      "SignalCoin",
-      "CodeToken",
-      "BrainToken",
-      "BatteryCoin",
+      "Signal Coin",
+      "Code Token",
+      "Brain Token",
+      "Battery Coin",
       "GEAR",
-      "SatelliteCoin",
-      "CyberToken",
-      "GeneCoin",
-      "LabTkn"
+      "Satellite Coin",
+      "Cyber Token",
+      "Gene Coin",
+      "Lab Tkn"
     ],
     "de": [
       "🛸",
@@ -661,12 +595,6 @@ export const THEMES = [
         "user": "TechWire",
         "handle": "@techwire",
         "time": "23s"
-      },
-      {
-        "text": "Machine narrative is loud tonight.",
-        "user": "AlphaMech",
-        "handle": "@alphamech",
-        "time": "41s"
       }
     ]
   },
@@ -674,22 +602,20 @@ export const THEMES = [
     "kw": "volcano",
     "emoji": "🌋",
     "names": [
-      "VolcanoCoin",
-      "VOLCANO",
-      "LavaToken",
-      "LAVAX"
+      "Volcano Coin",
+      "VOLCANO"
     ],
     "decoys": [
-      "WaveCoin",
-      "MountainToken",
-      "IceToken",
-      "StormCoin",
-      "SunToken",
+      "Wave Coin",
+      "Mountain Token",
+      "Ice Token",
+      "Storm Coin",
+      "Sun Token",
       "RAIN",
-      "ThunderCoin",
-      "MistToken",
-      "FlameCoin",
-      "ArcTkn"
+      "Thunder Coin",
+      "Mist Token",
+      "Flame Coin",
+      "Arc Tkn"
     ],
     "de": [
       "🌊",
@@ -709,18 +635,6 @@ export const THEMES = [
         "user": "HeatMap",
         "handle": "@heatmap",
         "time": "11s"
-      },
-      {
-        "text": "Lava narrative just broke resistance.",
-        "user": "ChartSage",
-        "handle": "@chartsage",
-        "time": "26s"
-      },
-      {
-        "text": "Magma memes all over X right now.",
-        "user": "NarrativeNow",
-        "handle": "@narrativenow",
-        "time": "39s"
       }
     ]
   },
@@ -728,22 +642,20 @@ export const THEMES = [
     "kw": "ghost",
     "emoji": "👻",
     "names": [
-      "GhostCoin",
-      "GHOST",
-      "PhantomToken",
-      "GHSTX"
+      "Ghost Coin",
+      "GHOST"
     ],
     "decoys": [
-      "SkullCoin",
-      "ZombieToken",
-      "VampToken",
-      "SpiderCoin",
-      "BatToken",
+      "Skull Coin",
+      "Zombie Token",
+      "Vamp Token",
+      "Spider Coin",
+      "Bat Token",
       "WITCH",
-      "MagicCoin",
-      "FogToken",
-      "MoonShade",
-      "CandleTkn"
+      "Magic Coin",
+      "Fog Token",
+      "Moon Shade",
+      "Candle Tkn"
     ],
     "de": [
       "💀",
@@ -763,18 +675,6 @@ export const THEMES = [
         "user": "NightAlpha",
         "handle": "@nightalpha",
         "time": "6s"
-      },
-      {
-        "text": "Phantom names catching bids into close.",
-        "user": "AfterHours",
-        "handle": "@afterhours",
-        "time": "17s"
-      },
-      {
-        "text": "Spooky season came early on chain.",
-        "user": "MemeDesk",
-        "handle": "@memedesk",
-        "time": "29s"
       }
     ]
   },
@@ -782,24 +682,22 @@ export const THEMES = [
     "kw": "sol",
     "emoji": "🦍",
     "names": [
-      "JusticeForSol",
-      "SOL",
-      "SOLCoin",
-      "SOLX"
+      "Justice For Sol",
+      "SOL"
     ],
     "decoys": [
-      "AlphaCoin",
-      "NovaToken",
-      "TurboToken",
-      "PulseCoin",
-      "FluxToken",
-      "OrbitToken",
-      "VectorCoin",
-      "SignalToken",
-      "DriftToken",
-      "CoreCoin",
-      "ByteToken",
-      "ZenithToken"
+      "Alpha Coin",
+      "Nova Token",
+      "Turbo Token",
+      "Pulse Coin",
+      "Flux Token",
+      "Orbit Token",
+      "Vector Coin",
+      "Signal Token",
+      "Drift Token",
+      "Core Coin",
+      "Byte Token",
+      "Zenith Token"
     ],
     "de": [
       "🐶",
@@ -826,24 +724,22 @@ export const THEMES = [
     "kw": "sweep",
     "emoji": "🪙",
     "names": [
-      "CleanSweep",
-      "SWEEP",
-      "SWEEPCoin",
-      "SWEEPX"
+      "Clean Sweep",
+      "SWEEP"
     ],
     "decoys": [
-      "AlphaCoin",
-      "NovaToken",
-      "TurboToken",
-      "PulseCoin",
-      "FluxToken",
-      "OrbitToken",
-      "VectorCoin",
-      "SignalToken",
-      "DriftToken",
-      "CoreCoin",
-      "ByteToken",
-      "ZenithToken"
+      "Alpha Coin",
+      "Nova Token",
+      "Turbo Token",
+      "Pulse Coin",
+      "Flux Token",
+      "Orbit Token",
+      "Vector Coin",
+      "Signal Token",
+      "Drift Token",
+      "Core Coin",
+      "Byte Token",
+      "Zenith Token"
     ],
     "de": [
       "🐶",
@@ -870,24 +766,22 @@ export const THEMES = [
     "kw": "free",
     "emoji": "🦅",
     "names": [
-      "FreedomTheEagle",
-      "FREE",
-      "FREECoin",
-      "FREEX"
+      "Freedom The Eagle",
+      "FREE"
     ],
     "decoys": [
-      "AlphaCoin",
-      "NovaToken",
-      "TurboToken",
-      "PulseCoin",
-      "FluxToken",
-      "OrbitToken",
-      "VectorCoin",
-      "SignalToken",
-      "DriftToken",
-      "CoreCoin",
-      "ByteToken",
-      "ZenithToken"
+      "Alpha Coin",
+      "Nova Token",
+      "Turbo Token",
+      "Pulse Coin",
+      "Flux Token",
+      "Orbit Token",
+      "Vector Coin",
+      "Signal Token",
+      "Drift Token",
+      "Core Coin",
+      "Byte Token",
+      "Zenith Token"
     ],
     "de": [
       "🐶",
@@ -914,24 +808,22 @@ export const THEMES = [
     "kw": "crypto",
     "emoji": "🪙",
     "names": [
-      "DigitalMoney",
-      "CRYPTO",
-      "CRYPTOCoin",
-      "CRYPTOX"
+      "Digital Money",
+      "MONEY"
     ],
     "decoys": [
-      "AlphaCoin",
-      "NovaToken",
-      "TurboToken",
-      "PulseCoin",
-      "FluxToken",
-      "OrbitToken",
-      "VectorCoin",
-      "SignalToken",
-      "DriftToken",
-      "CoreCoin",
-      "ByteToken",
-      "ZenithToken"
+      "Alpha Coin",
+      "Nova Token",
+      "Turbo Token",
+      "Pulse Coin",
+      "Flux Token",
+      "Orbit Token",
+      "Vector Coin",
+      "Signal Token",
+      "Drift Token",
+      "Core Coin",
+      "Byte Token",
+      "Zenith Token"
     ],
     "de": [
       "🐶",
@@ -958,24 +850,23 @@ export const THEMES = [
     "kw": "cash",
     "emoji": "💵",
     "names": [
-      "CashCoin",
+      "Cash Coin",
       "CASH",
-      "CASHCoin",
-      "CASHX"
+      "CASHCoin"
     ],
     "decoys": [
-      "AlphaCoin",
-      "NovaToken",
-      "TurboToken",
-      "PulseCoin",
-      "FluxToken",
-      "OrbitToken",
-      "VectorCoin",
-      "SignalToken",
-      "DriftToken",
-      "CoreCoin",
-      "ByteToken",
-      "ZenithToken"
+      "Alpha Coin",
+      "Nova Token",
+      "Turbo Token",
+      "Pulse Coin",
+      "Flux Token",
+      "Orbit Token",
+      "Vector Coin",
+      "Signal Token",
+      "Drift Token",
+      "Core Coin",
+      "Byte Token",
+      "Zenith Token"
     ],
     "de": [
       "🐶",
@@ -1002,24 +893,22 @@ export const THEMES = [
     "kw": "debtless",
     "emoji": "📉",
     "names": [
-      "DebtlessCoin",
-      "DEBTLESS",
-      "DEBTLESSCoin",
-      "DEBTLESSX"
+      "Debtless Coin",
+      "DEBTLESS"
     ],
     "decoys": [
-      "AlphaCoin",
-      "NovaToken",
-      "TurboToken",
-      "PulseCoin",
-      "FluxToken",
-      "OrbitToken",
-      "VectorCoin",
-      "SignalToken",
-      "DriftToken",
-      "CoreCoin",
-      "ByteToken",
-      "ZenithToken"
+      "Alpha Coin",
+      "Nova Token",
+      "Turbo Token",
+      "Pulse Coin",
+      "Flux Token",
+      "Orbit Token",
+      "Vector Coin",
+      "Signal Token",
+      "Drift Token",
+      "Core Coin",
+      "Byte Token",
+      "Zenith Token"
     ],
     "de": [
       "🐶",
@@ -1046,24 +935,22 @@ export const THEMES = [
     "kw": "gasless",
     "emoji": "⛽",
     "names": [
-      "GaslessCoin",
-      "GASLESS",
-      "GASLESSCoin",
-      "GASLESSX"
+      "Gasless Coin",
+      "GASLESS"
     ],
     "decoys": [
-      "AlphaCoin",
-      "NovaToken",
-      "TurboToken",
-      "PulseCoin",
-      "FluxToken",
-      "OrbitToken",
-      "VectorCoin",
-      "SignalToken",
-      "DriftToken",
-      "CoreCoin",
-      "ByteToken",
-      "ZenithToken"
+      "Alpha Coin",
+      "Nova Token",
+      "Turbo Token",
+      "Pulse Coin",
+      "Flux Token",
+      "Orbit Token",
+      "Vector Coin",
+      "Signal Token",
+      "Drift Token",
+      "Core Coin",
+      "Byte Token",
+      "Zenith Token"
     ],
     "de": [
       "🐶",
@@ -1091,23 +978,21 @@ export const THEMES = [
     "emoji": "🦍",
     "names": [
       "FreeTheApe",
-      "APE",
-      "APECoin",
-      "APEX"
+      "APE"
     ],
     "decoys": [
-      "AlphaCoin",
-      "NovaToken",
-      "TurboToken",
-      "PulseCoin",
-      "FluxToken",
-      "OrbitToken",
-      "VectorCoin",
-      "SignalToken",
-      "DriftToken",
-      "CoreCoin",
-      "ByteToken",
-      "ZenithToken"
+      "Alpha Coin",
+      "Nova Token",
+      "Turbo Token",
+      "Pulse Coin",
+      "Flux Token",
+      "Orbit Token",
+      "Vector Coin",
+      "Signal Token",
+      "Drift Token",
+      "Core Coin",
+      "Byte Token",
+      "Zenith Token"
     ],
     "de": [
       "🐶",
@@ -1134,24 +1019,22 @@ export const THEMES = [
     "kw": "bear",
     "emoji": "🐼",
     "names": [
-      "BearThePanda",
-      "BEAR",
-      "BEARCoin",
-      "BEARX"
+      "Bear The Panda",
+      "BEAR"
     ],
     "decoys": [
-      "AlphaCoin",
-      "NovaToken",
-      "TurboToken",
-      "PulseCoin",
-      "FluxToken",
-      "OrbitToken",
-      "VectorCoin",
-      "SignalToken",
-      "DriftToken",
-      "CoreCoin",
-      "ByteToken",
-      "ZenithToken"
+      "Alpha Coin",
+      "Nova Token",
+      "Turbo Token",
+      "Pulse Coin",
+      "Flux Token",
+      "Orbit Token",
+      "Vector Coin",
+      "Signal Token",
+      "Drift Token",
+      "Core Coin",
+      "Byte Token",
+      "Zenith Token"
     ],
     "de": [
       "🐶",
@@ -1178,24 +1061,22 @@ export const THEMES = [
     "kw": "priceless",
     "emoji": "🪙",
     "names": [
-      "ThisCoinIs",
-      "PRICELESS",
-      "PRICELESSCoin",
-      "PRICELESSX"
+      "This Coin Is",
+      "PRICELESS"
     ],
     "decoys": [
-      "AlphaCoin",
-      "NovaToken",
-      "TurboToken",
-      "PulseCoin",
-      "FluxToken",
-      "OrbitToken",
-      "VectorCoin",
-      "SignalToken",
-      "DriftToken",
-      "CoreCoin",
-      "ByteToken",
-      "ZenithToken"
+      "Alpha Coin",
+      "Nova Token",
+      "Turbo Token",
+      "Pulse Coin",
+      "Flux Token",
+      "Orbit Token",
+      "Vector Coin",
+      "Signal Token",
+      "Drift Token",
+      "Core Coin",
+      "Byte Token",
+      "Zenith Token"
     ],
     "de": [
       "🐶",
@@ -1222,24 +1103,22 @@ export const THEMES = [
     "kw": "zero",
     "emoji": "🪙",
     "names": [
-      "DrainedCoin",
-      "ZERO",
-      "ZEROCoin",
-      "ZEROX"
+      "Drained Coin",
+      "ZERO"
     ],
     "decoys": [
-      "AlphaCoin",
-      "NovaToken",
-      "TurboToken",
-      "PulseCoin",
-      "FluxToken",
-      "OrbitToken",
-      "VectorCoin",
-      "SignalToken",
-      "DriftToken",
-      "CoreCoin",
-      "ByteToken",
-      "ZenithToken"
+      "Alpha Coin",
+      "Nova Token",
+      "Turbo Token",
+      "Pulse Coin",
+      "Flux Token",
+      "Orbit Token",
+      "Vector Coin",
+      "Signal Token",
+      "Drift Token",
+      "Core Coin",
+      "Byte Token",
+      "Zenith Token"
     ],
     "de": [
       "🐶",
@@ -1266,24 +1145,22 @@ export const THEMES = [
     "kw": "all",
     "emoji": "🪙",
     "names": [
-      "SellAll",
-      "ALL",
-      "ALLCoin",
-      "ALLX"
+      "Sell All",
+      "ALL"
     ],
     "decoys": [
-      "AlphaCoin",
-      "NovaToken",
-      "TurboToken",
-      "PulseCoin",
-      "FluxToken",
-      "OrbitToken",
-      "VectorCoin",
-      "SignalToken",
-      "DriftToken",
-      "CoreCoin",
-      "ByteToken",
-      "ZenithToken"
+      "Alpha Coin",
+      "Nova Token",
+      "Turbo Token",
+      "Pulse Coin",
+      "Flux Token",
+      "Orbit Token",
+      "Vector Coin",
+      "Signal Token",
+      "Drift Token",
+      "Core Coin",
+      "Byte Token",
+      "Zenith Token"
     ],
     "de": [
       "🐶",
@@ -1307,71 +1184,25 @@ export const THEMES = [
     ]
   },
   {
-    "kw": "it",
-    "emoji": "🪙",
-    "names": [
-      "ItCoin",
-      "IT",
-      "ITCoin",
-      "ITX"
-    ],
-    "decoys": [
-      "AlphaCoin",
-      "NovaToken",
-      "TurboToken",
-      "PulseCoin",
-      "FluxToken",
-      "OrbitToken",
-      "VectorCoin",
-      "SignalToken",
-      "DriftToken",
-      "CoreCoin",
-      "ByteToken",
-      "ZenithToken"
-    ],
-    "de": [
-      "🐶",
-      "🐸",
-      "🦍",
-      "🐺",
-      "🐻",
-      "🦈",
-      "🚀",
-      "🔥",
-      "🧠",
-      "📈"
-    ],
-    "tweets": [
-      {
-        "text": "Mayor says “we can’t stop it.”",
-        "user": "PressRoomLive",
-        "handle": "@PressRoomLive",
-        "time": "15s"
-      }
-    ]
-  },
-  {
     "kw": "wolf",
     "emoji": "🐺",
     "names": [
-      "LoneWolf",
-      "WOLF",
-      "WOLFCoin",
-      "Wolf"
+      "Lone Wolf",
+      "WOLF"
     ],
     "decoys": [
-      "AlphaCoin",
-      "NovaToken",
-      "TurboToken",
-      "PulseCoin",
-      "FluxToken",
-      "OrbitToken",
-      "VectorCoin",
-      "SignalToken",
-      "DriftToken",
-      "CoreCoin",
-      "ByteToken",
-      "ZenithToken"
+      "Alpha Coin",
+      "Nova Token",
+      "Turbo Token",
+      "Pulse Coin",
+      "Flux Token",
+      "Orbit Token",
+      "Vector Coin",
+      "Signal Token",
+      "Drift Token",
+      "Core Coin",
+      "Byte Token",
+      "Zenith Token"
     ],
     "de": [
       "🐶",
@@ -1398,24 +1229,22 @@ export const THEMES = [
     "kw": "bull",
     "emoji": "🐂",
     "names": [
-      "ChargingBull",
-      "BULL",
-      "BULLCoin",
-      "BULLX"
+      "Charging Bull",
+      "BULL"
     ],
     "decoys": [
-      "AlphaCoin",
-      "NovaToken",
-      "TurboToken",
-      "PulseCoin",
-      "FluxToken",
-      "OrbitToken",
-      "VectorCoin",
-      "SignalToken",
-      "DriftToken",
-      "CoreCoin",
-      "ByteToken",
-      "ZenithToken"
+      "Alpha Coin",
+      "Nova Token",
+      "Turbo Token",
+      "Pulse Coin",
+      "Flux Token",
+      "Orbit Token",
+      "Vector Coin",
+      "Signal Token",
+      "Drift Token",
+      "Core Coin",
+      "Byte Token",
+      "Zenith Token"
     ],
     "de": [
       "🐶",
@@ -1442,24 +1271,22 @@ export const THEMES = [
     "kw": "moose",
     "emoji": "🫎",
     "names": [
-      "FearTheMoose",
-      "MOOSE",
-      "MOOSECoin",
-      "MOOSEX"
+      "Fear The Moose",
+      "MOOSE"
     ],
     "decoys": [
-      "AlphaCoin",
-      "NovaToken",
-      "TurboToken",
-      "PulseCoin",
-      "FluxToken",
-      "OrbitToken",
-      "VectorCoin",
-      "SignalToken",
-      "DriftToken",
-      "CoreCoin",
-      "ByteToken",
-      "ZenithToken"
+      "Alpha Coin",
+      "Nova Token",
+      "Turbo Token",
+      "Pulse Coin",
+      "Flux Token",
+      "Orbit Token",
+      "Vector Coin",
+      "Signal Token",
+      "Drift Token",
+      "Core Coin",
+      "Byte Token",
+      "Zenith Token"
     ],
     "de": [
       "🐶",
@@ -1486,24 +1313,22 @@ export const THEMES = [
     "kw": "truth",
     "emoji": "🧾",
     "names": [
-      "TruthInitiative",
-      "TRUTH",
-      "TRUTHCoin",
-      "TRUTHX"
+      "Truth Initiative",
+      "TRUTH"
     ],
     "decoys": [
-      "AlphaCoin",
-      "NovaToken",
-      "TurboToken",
-      "PulseCoin",
-      "FluxToken",
-      "OrbitToken",
-      "VectorCoin",
-      "SignalToken",
-      "DriftToken",
-      "CoreCoin",
-      "ByteToken",
-      "ZenithToken"
+      "Alpha Coin",
+      "Nova Token",
+      "Turbo Token",
+      "Pulse Coin",
+      "Flux Token",
+      "Orbit Token",
+      "Vector Coin",
+      "Signal Token",
+      "Drift Token",
+      "Core Coin",
+      "Byte Token",
+      "Zenith Token"
     ],
     "de": [
       "🐶",
@@ -1530,24 +1355,22 @@ export const THEMES = [
     "kw": "agenda",
     "emoji": "🪙",
     "names": [
-      "TheAgenda",
-      "AGENDA",
-      "AGENDACoin",
-      "AGENDAX"
+      "The Agenda",
+      "AGENDA"
     ],
     "decoys": [
-      "AlphaCoin",
-      "NovaToken",
-      "TurboToken",
-      "PulseCoin",
-      "FluxToken",
-      "OrbitToken",
-      "VectorCoin",
-      "SignalToken",
-      "DriftToken",
-      "CoreCoin",
-      "ByteToken",
-      "ZenithToken"
+      "Alpha Coin",
+      "Nova Token",
+      "Turbo Token",
+      "Pulse Coin",
+      "Flux Token",
+      "Orbit Token",
+      "Vector Coin",
+      "Signal Token",
+      "Drift Token",
+      "Core Coin",
+      "Byte Token",
+      "Zenith Token"
     ],
     "de": [
       "🐶",
@@ -1574,24 +1397,22 @@ export const THEMES = [
     "kw": "voice",
     "emoji": "📣",
     "names": [
-      "ThePeopleSVoice",
-      "VOICE",
-      "VOICECoin",
-      "VOICEX"
+      "Amplifying Voices",
+      "VOICE"
     ],
     "decoys": [
-      "AlphaCoin",
-      "NovaToken",
-      "TurboToken",
-      "PulseCoin",
-      "FluxToken",
-      "OrbitToken",
-      "VectorCoin",
-      "SignalToken",
-      "DriftToken",
-      "CoreCoin",
-      "ByteToken",
-      "ZenithToken"
+      "Alpha Coin",
+      "Nova Token",
+      "Turbo Token",
+      "Pulse Coin",
+      "Flux Token",
+      "Orbit Token",
+      "Vector Coin",
+      "Signal Token",
+      "Drift Token",
+      "Core Coin",
+      "Byte Token",
+      "Zenith Token"
     ],
     "de": [
       "🐶",
@@ -1618,24 +1439,22 @@ export const THEMES = [
     "kw": "safe",
     "emoji": "🪙",
     "names": [
-      "PublicSafetyFund",
-      "SAFE",
-      "SAFECoin",
-      "SAFEX"
+      "Public Safety Fund",
+      "SAFE"
     ],
     "decoys": [
-      "AlphaCoin",
-      "NovaToken",
-      "TurboToken",
-      "PulseCoin",
-      "FluxToken",
-      "OrbitToken",
-      "VectorCoin",
-      "SignalToken",
-      "DriftToken",
-      "CoreCoin",
-      "ByteToken",
-      "ZenithToken"
+      "Alpha Coin",
+      "Nova Token",
+      "Turbo Token",
+      "Pulse Coin",
+      "Flux Token",
+      "Orbit Token",
+      "Vector Coin",
+      "Signal Token",
+      "Drift Token",
+      "Core Coin",
+      "Byte Token",
+      "Zenith Token"
     ],
     "de": [
       "🐶",
@@ -1662,24 +1481,22 @@ export const THEMES = [
     "kw": "future",
     "emoji": "🚗",
     "names": [
-      "TheFuture",
-      "FUTURE",
-      "FUTURECoin",
-      "FUTUREX"
+      "The Future",
+      "FUTURE"
     ],
     "decoys": [
-      "AlphaCoin",
-      "NovaToken",
-      "TurboToken",
-      "PulseCoin",
-      "FluxToken",
-      "OrbitToken",
-      "VectorCoin",
-      "SignalToken",
-      "DriftToken",
-      "CoreCoin",
-      "ByteToken",
-      "ZenithToken"
+      "Alpha Coin",
+      "Nova Token",
+      "Turbo Token",
+      "Pulse Coin",
+      "Flux Token",
+      "Orbit Token",
+      "Vector Coin",
+      "Signal Token",
+      "Drift Token",
+      "Core Coin",
+      "Byte Token",
+      "Zenith Token"
     ],
     "de": [
       "🐶",
@@ -1706,24 +1523,22 @@ export const THEMES = [
     "kw": "tremp",
     "emoji": "🪙",
     "names": [
-      "TrempCoin",
-      "TREMP",
-      "TREMPCoin",
-      "TREMPX"
+      "Tremp Coin",
+      "TREMP"
     ],
     "decoys": [
-      "AlphaCoin",
-      "NovaToken",
-      "TurboToken",
-      "PulseCoin",
-      "FluxToken",
-      "OrbitToken",
-      "VectorCoin",
-      "SignalToken",
-      "DriftToken",
-      "CoreCoin",
-      "ByteToken",
-      "ZenithToken"
+      "Alpha Coin",
+      "Nova Token",
+      "Turbo Token",
+      "Pulse Coin",
+      "Flux Token",
+      "Orbit Token",
+      "Vector Coin",
+      "Signal Token",
+      "Drift Token",
+      "Core Coin",
+      "Byte Token",
+      "Zenith Token"
     ],
     "de": [
       "🐶",
@@ -1750,24 +1565,22 @@ export const THEMES = [
     "kw": "pdt",
     "emoji": "🪙",
     "names": [
-      "PissingDogTheory",
-      "PDT",
-      "PDTCoin",
-      "PDTX"
+      "Pissing Dog Theory",
+      "PDT"
     ],
     "decoys": [
-      "AlphaCoin",
-      "NovaToken",
-      "TurboToken",
-      "PulseCoin",
-      "FluxToken",
-      "OrbitToken",
-      "VectorCoin",
-      "SignalToken",
-      "DriftToken",
-      "CoreCoin",
-      "ByteToken",
-      "ZenithToken"
+      "Alpha Coin",
+      "Nova Token",
+      "Turbo Token",
+      "Pulse Coin",
+      "Flux Token",
+      "Orbit Token",
+      "Vector Coin",
+      "Signal Token",
+      "Drift Token",
+      "Core Coin",
+      "Byte Token",
+      "Zenith Token"
     ],
     "de": [
       "🐶",
@@ -1783,7 +1596,7 @@ export const THEMES = [
     ],
     "tweets": [
       {
-        "text": "Viral clip of dog refusing to stop peeing sparks “PDT” trend online.",
+        "text": "Viral clip of dog refusing to stop peeing sparks “Pissing Dog Theory” or trend online.",
         "user": "StreetLeakz",
         "handle": "@StreetLeakz",
         "time": "29s"
@@ -1794,24 +1607,22 @@ export const THEMES = [
     "kw": "fbc",
     "emoji": "🪙",
     "names": [
-      "FartingBabyCouncil",
-      "FBC",
-      "FBCCoin",
-      "FBCX"
+      "Farting Baby Council",
+      "FBC"
     ],
     "decoys": [
-      "AlphaCoin",
-      "NovaToken",
-      "TurboToken",
-      "PulseCoin",
-      "FluxToken",
-      "OrbitToken",
-      "VectorCoin",
-      "SignalToken",
-      "DriftToken",
-      "CoreCoin",
-      "ByteToken",
-      "ZenithToken"
+      "Alpha Coin",
+      "Nova Token",
+      "Turbo Token",
+      "Pulse Coin",
+      "Flux Token",
+      "Orbit Token",
+      "Vector Coin",
+      "Signal Token",
+      "Drift Token",
+      "Core Coin",
+      "Byte Token",
+      "Zenith Token"
     ],
     "de": [
       "🐶",
@@ -1835,203 +1646,25 @@ export const THEMES = [
     ]
   },
   {
-    "kw": "bpc",
-    "emoji": "🪙",
-    "names": [
-      "BrokenPlasticChair",
-      "BPC",
-      "BPCCoin",
-      "BPCX"
-    ],
-    "decoys": [
-      "AlphaCoin",
-      "NovaToken",
-      "TurboToken",
-      "PulseCoin",
-      "FluxToken",
-      "OrbitToken",
-      "VectorCoin",
-      "SignalToken",
-      "DriftToken",
-      "CoreCoin",
-      "ByteToken",
-      "ZenithToken"
-    ],
-    "de": [
-      "🐶",
-      "🐸",
-      "🦍",
-      "🐺",
-      "🐻",
-      "🦈",
-      "🚀",
-      "🔥",
-      "🧠",
-      "📈"
-    ],
-    "tweets": [
-      {
-        "text": "Fight breaks out after folding chair collapses mid-argument.",
-        "user": "bpcnews",
-        "handle": "@bpcnews",
-        "time": "9s"
-      }
-    ]
-  },
-  {
-    "kw": "shwc",
-    "emoji": "💦",
-    "names": [
-      "ShitHoseWaterCoin",
-      "SHWC",
-      "SHWCCoin",
-      "SHWCX"
-    ],
-    "decoys": [
-      "AlphaCoin",
-      "NovaToken",
-      "TurboToken",
-      "PulseCoin",
-      "FluxToken",
-      "OrbitToken",
-      "VectorCoin",
-      "SignalToken",
-      "DriftToken",
-      "CoreCoin",
-      "ByteToken",
-      "ZenithToken"
-    ],
-    "de": [
-      "🐶",
-      "🐸",
-      "🦍",
-      "🐺",
-      "🐻",
-      "🦈",
-      "🚀",
-      "🔥",
-      "🧠",
-      "🪙"
-    ],
-    "tweets": [
-      {
-        "text": "City sewage worker accidentally sprays crowd during downtown parade 💦",
-        "user": "UrbanTapez",
-        "handle": "@UrbanTapez",
-        "time": "5s"
-      }
-    ]
-  },
-  {
-    "kw": "rwc",
-    "emoji": "🪙",
-    "names": [
-      "RottenWetCarpet",
-      "RWC",
-      "RWCCoin",
-      "RWCX"
-    ],
-    "decoys": [
-      "AlphaCoin",
-      "NovaToken",
-      "TurboToken",
-      "PulseCoin",
-      "FluxToken",
-      "OrbitToken",
-      "VectorCoin",
-      "SignalToken",
-      "DriftToken",
-      "CoreCoin",
-      "ByteToken",
-      "ZenithToken"
-    ],
-    "de": [
-      "🐶",
-      "🐸",
-      "🦍",
-      "🐺",
-      "🐻",
-      "🦈",
-      "🚀",
-      "🔥",
-      "🧠",
-      "📈"
-    ],
-    "tweets": [
-      {
-        "text": "Apartment residents demand action after water damage left untreated for months.",
-        "user": "TenantAlertNow",
-        "handle": "@TenantAlertNow",
-        "time": "22s"
-      }
-    ]
-  },
-  {
-    "kw": "ppf",
-    "emoji": "👀",
-    "names": [
-      "PublicPissFestival",
-      "PPF",
-      "PPFCoin",
-      "PPFX"
-    ],
-    "decoys": [
-      "AlphaCoin",
-      "NovaToken",
-      "TurboToken",
-      "PulseCoin",
-      "FluxToken",
-      "OrbitToken",
-      "VectorCoin",
-      "SignalToken",
-      "DriftToken",
-      "CoreCoin",
-      "ByteToken",
-      "ZenithToken"
-    ],
-    "de": [
-      "🐶",
-      "🐸",
-      "🦍",
-      "🐺",
-      "🐻",
-      "🦈",
-      "🚀",
-      "🔥",
-      "🧠",
-      "🪙"
-    ],
-    "tweets": [
-      {
-        "text": "City reviewing permits after unsanctioned street gathering trends online 👀",
-        "user": "NightLifeWire",
-        "handle": "@NightLifeWire",
-        "time": "18s"
-      }
-    ]
-  },
-  {
     "kw": "dwc",
     "emoji": "🪙",
     "names": [
-      "DirtyWaterClub",
-      "DWC",
-      "DWCCoin",
-      "DWCX"
+      "Dirty Water Challenge",
+      "DWC"
     ],
     "decoys": [
-      "AlphaCoin",
-      "NovaToken",
-      "TurboToken",
-      "PulseCoin",
-      "FluxToken",
-      "OrbitToken",
-      "VectorCoin",
-      "SignalToken",
-      "DriftToken",
-      "CoreCoin",
-      "ByteToken",
-      "ZenithToken"
+      "Alpha Coin",
+      "Nova Token",
+      "Turbo Token",
+      "Pulse Coin",
+      "Flux Token",
+      "Orbit Token",
+      "Vector Coin",
+      "Signal Token",
+      "Drift Token",
+      "Core Coin",
+      "Byte Token",
+      "Zenith Token"
     ],
     "de": [
       "🐶",
@@ -2059,23 +1692,22 @@ export const THEMES = [
     "emoji": "🪙",
     "names": [
       "FartResponsscroll",
-      "FRT",
-      "FRTCoin",
-      "FRTX"
+      "FART",
+      "FARTCoin"
     ],
     "decoys": [
-      "AlphaCoin",
-      "NovaToken",
-      "TurboToken",
-      "PulseCoin",
-      "FluxToken",
-      "OrbitToken",
-      "VectorCoin",
-      "SignalToken",
-      "DriftToken",
-      "CoreCoin",
-      "ByteToken",
-      "ZenithToken"
+      "Alpha Coin",
+      "Nova Token",
+      "Turbo Token",
+      "Pulse Coin",
+      "Flux Token",
+      "Orbit Token",
+      "Vector Coin",
+      "Signal Token",
+      "Drift Token",
+      "Core Coin",
+      "Byte Token",
+      "Zenith Token"
     ],
     "de": [
       "🐶",
@@ -2091,7 +1723,7 @@ export const THEMES = [
     ],
     "tweets": [
       {
-        "text": "Officials deny existence of “FRT unit” despite leaked memo.",
+        "text": "Officials deny existence of “FART unit” despite leaked memo.",
         "user": "frtnews",
         "handle": "@frtnews",
         "time": "37s"
@@ -2102,24 +1734,22 @@ export const THEMES = [
     "kw": "tpc",
     "emoji": "🦍",
     "names": [
-      "ToiletPaperCrisis",
-      "TPC",
-      "TPCCoin",
-      "TPCX"
+      "Toilet Paper Crisis",
+      "TPC"
     ],
     "decoys": [
-      "AlphaCoin",
-      "NovaToken",
-      "TurboToken",
-      "PulseCoin",
-      "FluxToken",
-      "OrbitToken",
-      "VectorCoin",
-      "SignalToken",
-      "DriftToken",
-      "CoreCoin",
-      "ByteToken",
-      "ZenithToken"
+      "Alpha Coin",
+      "Nova Token",
+      "Turbo Token",
+      "Pulse Coin",
+      "Flux Token",
+      "Orbit Token",
+      "Vector Coin",
+      "Signal Token",
+      "Drift Token",
+      "Core Coin",
+      "Byte Token",
+      "Zenith Token"
     ],
     "de": [
       "🐶",
@@ -2147,23 +1777,21 @@ export const THEMES = [
     "emoji": "🪙",
     "names": [
       "XSquared",
-      "X2",
-      "X2Coin",
-      "X2X"
+      "X2"
     ],
     "decoys": [
-      "AlphaCoin",
-      "NovaToken",
-      "TurboToken",
-      "PulseCoin",
-      "FluxToken",
-      "OrbitToken",
-      "VectorCoin",
-      "SignalToken",
-      "DriftToken",
-      "CoreCoin",
-      "ByteToken",
-      "ZenithToken"
+      "Alpha Coin",
+      "Nova Token",
+      "Turbo Token",
+      "Pulse Coin",
+      "Flux Token",
+      "Orbit Token",
+      "Vector Coin",
+      "Signal Token",
+      "Drift Token",
+      "Core Coin",
+      "Byte Token",
+      "Zenith Token"
     ],
     "de": [
       "🐶",
@@ -2190,24 +1818,22 @@ export const THEMES = [
     "kw": "mers",
     "emoji": "🪙",
     "names": [
-      "MersInitiative",
-      "MERS",
-      "MERSCoin",
-      "MERSX"
+      "Mers Initiative",
+      "MERS"
     ],
     "decoys": [
-      "AlphaCoin",
-      "NovaToken",
-      "TurboToken",
-      "PulseCoin",
-      "FluxToken",
-      "OrbitToken",
-      "VectorCoin",
-      "SignalToken",
-      "DriftToken",
-      "CoreCoin",
-      "ByteToken",
-      "ZenithToken"
+      "Alpha Coin",
+      "Nova Token",
+      "Turbo Token",
+      "Pulse Coin",
+      "Flux Token",
+      "Orbit Token",
+      "Vector Coin",
+      "Signal Token",
+      "Drift Token",
+      "Core Coin",
+      "Byte Token",
+      "Zenith Token"
     ],
     "de": [
       "🐶",
@@ -2234,24 +1860,22 @@ export const THEMES = [
     "kw": "oxy",
     "emoji": "🪙",
     "names": [
-      "OxygenX",
-      "OXY",
-      "OXYCoin",
-      "OXYX"
+      "Oxygen Coin",
+      "OXY"
     ],
     "decoys": [
-      "AlphaCoin",
-      "NovaToken",
-      "TurboToken",
-      "PulseCoin",
-      "FluxToken",
-      "OrbitToken",
-      "VectorCoin",
-      "SignalToken",
-      "DriftToken",
-      "CoreCoin",
-      "ByteToken",
-      "ZenithToken"
+      "Alpha Coin",
+      "Nova Token",
+      "Turbo Token",
+      "Pulse Coin",
+      "Flux Token",
+      "Orbit Token",
+      "Vector Coin",
+      "Signal Token",
+      "Drift Token",
+      "Core Coin",
+      "Byte Token",
+      "Zenith Token"
     ],
     "de": [
       "🐶",
@@ -2278,24 +1902,22 @@ export const THEMES = [
     "kw": "win",
     "emoji": "🪙",
     "names": [
-      "WinCoin",
-      "WIN",
-      "WINCoin",
-      "WINX"
+      "Win Coin",
+      "WIN"
     ],
     "decoys": [
-      "AlphaCoin",
-      "NovaToken",
-      "TurboToken",
-      "PulseCoin",
-      "FluxToken",
-      "OrbitToken",
-      "VectorCoin",
-      "SignalToken",
-      "DriftToken",
-      "CoreCoin",
-      "ByteToken",
-      "ZenithToken"
+      "Alpha Coin",
+      "Nova Token",
+      "Turbo Token",
+      "Pulse Coin",
+      "Flux Token",
+      "Orbit Token",
+      "Vector Coin",
+      "Signal Token",
+      "Drift Token",
+      "Core Coin",
+      "Byte Token",
+      "Zenith Token"
     ],
     "de": [
       "🐶",
@@ -2322,24 +1944,22 @@ export const THEMES = [
     "kw": "mcga",
     "emoji": "🪙",
     "names": [
-      "MakeCoinsGreatAgain",
-      "MCGA",
-      "MCGACoin",
-      "MCGAX"
+      "Make Coins Great Again",
+      "MCGA"
     ],
     "decoys": [
-      "AlphaCoin",
-      "NovaToken",
-      "TurboToken",
-      "PulseCoin",
-      "FluxToken",
-      "OrbitToken",
-      "VectorCoin",
-      "SignalToken",
-      "DriftToken",
-      "CoreCoin",
-      "ByteToken",
-      "ZenithToken"
+      "Alpha Coin",
+      "Nova Token",
+      "Turbo Token",
+      "Pulse Coin",
+      "Flux Token",
+      "Orbit Token",
+      "Vector Coin",
+      "Signal Token",
+      "Drift Token",
+      "Core Coin",
+      "Byte Token",
+      "Zenith Token"
     ],
     "de": [
       "🐶",
@@ -2363,71 +1983,26 @@ export const THEMES = [
     ]
   },
   {
-    "kw": "mindx",
-    "emoji": "🪙",
-    "names": [
-      "MindX",
-      "MINDX",
-      "MINDXCoin",
-      "MINDXX"
-    ],
-    "decoys": [
-      "AlphaCoin",
-      "NovaToken",
-      "TurboToken",
-      "PulseCoin",
-      "FluxToken",
-      "OrbitToken",
-      "VectorCoin",
-      "SignalToken",
-      "DriftToken",
-      "CoreCoin",
-      "ByteToken",
-      "ZenithToken"
-    ],
-    "de": [
-      "🐶",
-      "🐸",
-      "🦍",
-      "🐺",
-      "🐻",
-      "🦈",
-      "🚀",
-      "🔥",
-      "🧠",
-      "📈"
-    ],
-    "tweets": [
-      {
-        "text": "what if thoughts had a subscribe button",
-        "user": "ewonmusk",
-        "handle": "@ewonmusk",
-        "time": "32s"
-      }
-    ]
-  },
-  {
     "kw": "dogex",
     "emoji": "🪙",
     "names": [
       "DogeExpansion",
       "DOGEX",
-      "DOGEXCoin",
-      "DOGEXX"
+      "DOGEXCoin"
     ],
     "decoys": [
-      "AlphaCoin",
-      "NovaToken",
-      "TurboToken",
-      "PulseCoin",
-      "FluxToken",
-      "OrbitToken",
-      "VectorCoin",
-      "SignalToken",
-      "DriftToken",
-      "CoreCoin",
-      "ByteToken",
-      "ZenithToken"
+      "Alpha Coin",
+      "Nova Token",
+      "Turbo Token",
+      "Pulse Coin",
+      "Flux Token",
+      "Orbit Token",
+      "Vector Coin",
+      "Signal Token",
+      "Drift Token",
+      "Core Coin",
+      "Byte Token",
+      "Zenith Token"
     ],
     "de": [
       "🐶",
@@ -2447,50 +2022,6 @@ export const THEMES = [
         "user": "ewonmusk",
         "handle": "@ewonmusk",
         "time": "22s"
-      }
-    ]
-  },
-  {
-    "kw": "viral",
-    "emoji": "🪙",
-    "names": [
-      "ViralCoin",
-      "VIRAL",
-      "VIRALCoin",
-      "VIRALX"
-    ],
-    "decoys": [
-      "AlphaCoin",
-      "NovaToken",
-      "TurboToken",
-      "PulseCoin",
-      "FluxToken",
-      "OrbitToken",
-      "VectorCoin",
-      "SignalToken",
-      "DriftToken",
-      "CoreCoin",
-      "ByteToken",
-      "ZenithToken"
-    ],
-    "de": [
-      "🐶",
-      "🐸",
-      "🦍",
-      "🐺",
-      "🐻",
-      "🦈",
-      "🚀",
-      "🔥",
-      "🧠",
-      "📈"
-    ],
-    "tweets": [
-      {
-        "text": "Nobody knows why it’s trending, but it’s trending.",
-        "user": "viralnews",
-        "handle": "@viralnews",
-        "time": "23s"
       }
     ]
   }

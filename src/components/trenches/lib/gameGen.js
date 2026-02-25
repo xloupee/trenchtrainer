@@ -49,6 +49,47 @@ const alignSignalTweet = (tweet, themeKw, coinName) => {
   return base;
 };
 
+const toTitleCase = (value) =>
+  String(value || "")
+    .toLowerCase()
+    .replace(/\b[a-z]/g, (char) => char.toUpperCase());
+
+const buildDecoyIdentity = (rawValue) => {
+  const raw = String(rawValue || "").trim().replace(/\s+/g, " ");
+  if (!raw) return { name: "UNKNOWN", displayName: "Unknown Coin" };
+
+  let displayName = raw;
+  if (/^[A-Z0-9]+$/.test(raw) && !/\s/.test(raw)) {
+    displayName = `${toTitleCase(raw)} Coin`;
+  }
+
+  const words = displayName
+    .replace(/[^A-Za-z0-9 ]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .split(" ")
+    .filter(Boolean);
+
+  if (!words.length) {
+    return { name: raw.toUpperCase(), displayName };
+  }
+
+  const suffix = words[words.length - 1].toLowerCase();
+  const hasTokenSuffix = suffix === "coin" || suffix === "token" || suffix === "tkn";
+  let ticker = "";
+
+  if (hasTokenSuffix && words.length > 1) {
+    ticker = words.slice(0, -1).join("");
+  } else if (words.length >= 3) {
+    ticker = words.map((word) => word[0]).join("");
+  } else {
+    ticker = words.join("");
+  }
+
+  ticker = ticker.toUpperCase() || raw.toUpperCase();
+  return { name: ticker, displayName };
+};
+
 export function genNoiseToken() {
   return {
     name: pick(NOISE_TICKERS),
@@ -78,23 +119,30 @@ export function genRound(num, seed = null, maxDiffCap = 10) {
   const _shuf = rng ? (a) => seededShuffle(a, rng) : shuffle;
   const diff = maxDiffCap <= 3 ? Math.min(maxDiffCap, num + 1) : Math.min(maxDiffCap, Math.floor(num / 2) + 1);
   const pc = Math.round(Math.min(5 + diff * 1.5, 20));
-  const th = _pick(THEMES),
-    cn = _pick(th.names);
-  const tw = alignSignalTweet(_pick(th.tweets), th.kw, cn);
+  const th = _pick(THEMES);
+  const themeNames = Array.isArray(th?.names) ? th.names.map((value) => String(value || "").trim()).filter(Boolean) : [];
+  const coinDisplayName = themeNames[0] || String(th?.kw || "").toUpperCase();
+  const cn = themeNames[1] || coinDisplayName;
+  const tw = alignSignalTweet(_pick(th.tweets), th.kw, `${cn} ${coinDisplayName}`);
   // Keep decoys inside the same narrative family so X tracker context matches token board.
   const ad = [...th.decoys],
     ae = [...th.de];
   const ud = _shuf(ad).slice(0, pc - 1),
     ue = _shuf(ae).slice(0, pc - 1);
   const traps = [];
-  if (diff >= 3) traps.push({ name: cn, emoji: _pick(th.de), isCorrect: false, isTrap: true });
-  if (diff >= 6) traps.push({ name: _pick(th.decoys), emoji: th.emoji, isCorrect: false, isTrap: true });
+  if (diff >= 3) traps.push({ name: cn, displayName: coinDisplayName, emoji: _pick(th.de), isCorrect: false, isTrap: true });
+  if (diff >= 6) traps.push({ ...buildDecoyIdentity(_pick(th.decoys)), emoji: th.emoji, isCorrect: false, isTrap: true });
   const ut = traps.slice(0, Math.min(traps.length, Math.floor(diff / 3))),
     rc = pc - 1 - ut.length;
   const pairs = _shuf([
-    { name: cn, emoji: th.emoji, isCorrect: true, isTrap: false },
+    { name: cn, displayName: coinDisplayName, emoji: th.emoji, isCorrect: true, isTrap: false },
     ...ut,
-    ...Array.from({ length: rc }, (_, i) => ({ name: ud[i] || _pick(ad), emoji: ue[i] || _pick(ae), isCorrect: false, isTrap: false })),
+    ...Array.from({ length: rc }, (_, i) => ({
+      ...buildDecoyIdentity(ud[i] || _pick(ad)),
+      emoji: ue[i] || _pick(ae),
+      isCorrect: false,
+      isTrap: false,
+    })),
   ]).map((p, i) => ({
     ...p,
     isNoise: false,
