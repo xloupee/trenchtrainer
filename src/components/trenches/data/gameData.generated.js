@@ -14,16 +14,16 @@ export const THEMES = [
     "decoys": [
       "GrapeCoin",
       "BananaToken",
-      "MangoDAO",
+      "MangoToken",
       "OrangeCoin",
       "PearToken",
       "CHERRY",
       "KiwiCoin",
-      "BlueberryDAO",
+      "BlueberryToken",
       "CitrusCoin",
       "MelonToken",
       "PLUM",
-      "FruitDAO"
+      "FruitToken"
     ],
     "de": [
       "🍊",
@@ -70,18 +70,18 @@ export const THEMES = [
     "names": [
       "RocketCoin",
       "ROCKET",
-      "RocketDAO",
+      "RocketToken",
       "RKTX"
     ],
     "decoys": [
       "PlaneCoin",
       "UFOToken",
-      "StarDAO",
+      "StarToken",
       "MoonCoin",
       "JetToken",
       "COMET",
       "SpaceCoin",
-      "OrbitDAO",
+      "OrbitToken",
       "SaturnCoin",
       "NebulaTkn"
     ],
@@ -136,12 +136,12 @@ export const THEMES = [
     "decoys": [
       "CatCoin",
       "BearToken",
-      "BunnyDAO",
+      "BunnyToken",
       "FoxCoin",
       "WolfToken",
       "HAMSTER",
       "LionCoin",
-      "TigerDAO",
+      "TigerToken",
       "PandaCoin",
       "MonkeyTkn"
     ],
@@ -190,12 +190,12 @@ export const THEMES = [
     "decoys": [
       "WaterCoin",
       "IceToken",
-      "ThunderDAO",
+      "ThunderToken",
       "WaveCoin",
       "WindToken",
       "VOLCANO",
       "SunCoin",
-      "StormDAO",
+      "StormToken",
       "BlazeCoin",
       "FlameTkn"
     ],
@@ -244,18 +244,18 @@ export const THEMES = [
     "names": [
       "DiamondCoin",
       "DIAMOND",
-      "DiamondDAO",
+      "DiamondToken",
       "DMDX"
     ],
     "decoys": [
       "GoldCoin",
       "CoinToken",
-      "CrownDAO",
+      "CrownToken",
       "RingCoin",
       "TrophyTkn",
       "PEARL",
       "CrystalCoin",
-      "RubyDAO",
+      "RubyToken",
       "EmeraldCoin",
       "SapphireTkn"
     ],
@@ -304,12 +304,12 @@ export const THEMES = [
     "decoys": [
       "SnakeCoin",
       "LizardTkn",
-      "TurtleDAO",
+      "TurtleToken",
       "CrocCoin",
       "DinoToken",
       "GECKO",
       "ToadCoin",
-      "NewtDAO",
+      "NewtToken",
       "BugCoin",
       "BeetleTkn"
     ],
@@ -352,18 +352,18 @@ export const THEMES = [
     "names": [
       "PenguinCoin",
       "PENGUIN",
-      "PenguinDAO",
+      "PenguinToken",
       "PNGX"
     ],
     "decoys": [
       "EagleCoin",
       "DuckToken",
-      "OwlDAO",
+      "OwlToken",
       "BirdCoin",
       "ParrotTkn",
       "DOVE",
       "FlamingoC",
-      "ChickenDAO",
+      "ChickenToken",
       "PeacockCoin",
       "SwanTkn"
     ],
@@ -412,7 +412,7 @@ export const THEMES = [
     "decoys": [
       "StarCoin",
       "SunToken",
-      "PlanetDAO",
+      "PlanetToken",
       "EarthCoin",
       "CosmosTkn",
       "GALAXY",
@@ -466,12 +466,12 @@ export const THEMES = [
     "decoys": [
       "DogCoin",
       "BearToken",
-      "BunnyDAO",
+      "BunnyToken",
       "FoxCoin",
       "WolfToken",
       "HAMSTER",
       "LionCoin",
-      "TigerDAO",
+      "TigerToken",
       "PandaCoin",
       "MonkeyTkn"
     ],
@@ -514,18 +514,18 @@ export const THEMES = [
     "names": [
       "SharkCoin",
       "SHARK",
-      "SharkDAO",
+      "SharkCoin",
       "SHRK"
     ],
     "decoys": [
       "WhaleCoin",
       "DolphinTkn",
-      "OctoDAO",
+      "OctoToken",
       "SquidCoin",
       "FishToken",
       "REEF",
       "CrabCoin",
-      "JellyDAO",
+      "JellyToken",
       "PufferCoin",
       "ShrimpTkn"
     ],
@@ -574,12 +574,12 @@ export const THEMES = [
     "decoys": [
       "SodaCoin",
       "BobaToken",
-      "TeaDAO",
+      "TeaToken",
       "MilkCoin",
       "JuiceToken",
       "LATTE",
       "AleCoin",
-      "WineDAO",
+      "WineToken",
       "ToastCoin",
       "MateTkn"
     ],
@@ -622,18 +622,18 @@ export const THEMES = [
     "names": [
       "RobotCoin",
       "ROBOT",
-      "MechDAO",
+      "MechToken",
       "RBTX"
     ],
     "decoys": [
       "UFOToken",
       "SignalCoin",
       "CodeToken",
-      "BrainDAO",
+      "BrainToken",
       "BatteryCoin",
       "GEAR",
       "SatelliteCoin",
-      "CyberDAO",
+      "CyberToken",
       "GeneCoin",
       "LabTkn"
     ],
@@ -681,13 +681,13 @@ export const THEMES = [
     ],
     "decoys": [
       "WaveCoin",
-      "MountainDAO",
+      "MountainToken",
       "IceToken",
       "StormCoin",
       "SunToken",
       "RAIN",
       "ThunderCoin",
-      "MistDAO",
+      "MistToken",
       "FlameCoin",
       "ArcTkn"
     ],
@@ -730,18 +730,18 @@ export const THEMES = [
     "names": [
       "GhostCoin",
       "GHOST",
-      "PhantomDAO",
+      "PhantomToken",
       "GHSTX"
     ],
     "decoys": [
       "SkullCoin",
       "ZombieToken",
-      "VampDAO",
+      "VampToken",
       "SpiderCoin",
       "BatToken",
       "WITCH",
       "MagicCoin",
-      "FogDAO",
+      "FogToken",
       "MoonShade",
       "CandleTkn"
     ],
@@ -790,16 +790,16 @@ export const THEMES = [
     "decoys": [
       "AlphaCoin",
       "NovaToken",
-      "TurboDAO",
+      "TurboToken",
       "PulseCoin",
       "FluxToken",
-      "OrbitDAO",
+      "OrbitToken",
       "VectorCoin",
       "SignalToken",
-      "DriftDAO",
+      "DriftToken",
       "CoreCoin",
       "ByteToken",
-      "ZenithDAO"
+      "ZenithToken"
     ],
     "de": [
       "🐶",
@@ -834,16 +834,16 @@ export const THEMES = [
     "decoys": [
       "AlphaCoin",
       "NovaToken",
-      "TurboDAO",
+      "TurboToken",
       "PulseCoin",
       "FluxToken",
-      "OrbitDAO",
+      "OrbitToken",
       "VectorCoin",
       "SignalToken",
-      "DriftDAO",
+      "DriftToken",
       "CoreCoin",
       "ByteToken",
-      "ZenithDAO"
+      "ZenithToken"
     ],
     "de": [
       "🐶",
@@ -878,16 +878,16 @@ export const THEMES = [
     "decoys": [
       "AlphaCoin",
       "NovaToken",
-      "TurboDAO",
+      "TurboToken",
       "PulseCoin",
       "FluxToken",
-      "OrbitDAO",
+      "OrbitToken",
       "VectorCoin",
       "SignalToken",
-      "DriftDAO",
+      "DriftToken",
       "CoreCoin",
       "ByteToken",
-      "ZenithDAO"
+      "ZenithToken"
     ],
     "de": [
       "🐶",
@@ -922,16 +922,16 @@ export const THEMES = [
     "decoys": [
       "AlphaCoin",
       "NovaToken",
-      "TurboDAO",
+      "TurboToken",
       "PulseCoin",
       "FluxToken",
-      "OrbitDAO",
+      "OrbitToken",
       "VectorCoin",
       "SignalToken",
-      "DriftDAO",
+      "DriftToken",
       "CoreCoin",
       "ByteToken",
-      "ZenithDAO"
+      "ZenithToken"
     ],
     "de": [
       "🐶",
@@ -966,16 +966,16 @@ export const THEMES = [
     "decoys": [
       "AlphaCoin",
       "NovaToken",
-      "TurboDAO",
+      "TurboToken",
       "PulseCoin",
       "FluxToken",
-      "OrbitDAO",
+      "OrbitToken",
       "VectorCoin",
       "SignalToken",
-      "DriftDAO",
+      "DriftToken",
       "CoreCoin",
       "ByteToken",
-      "ZenithDAO"
+      "ZenithToken"
     ],
     "de": [
       "🐶",
@@ -1010,16 +1010,16 @@ export const THEMES = [
     "decoys": [
       "AlphaCoin",
       "NovaToken",
-      "TurboDAO",
+      "TurboToken",
       "PulseCoin",
       "FluxToken",
-      "OrbitDAO",
+      "OrbitToken",
       "VectorCoin",
       "SignalToken",
-      "DriftDAO",
+      "DriftToken",
       "CoreCoin",
       "ByteToken",
-      "ZenithDAO"
+      "ZenithToken"
     ],
     "de": [
       "🐶",
@@ -1054,16 +1054,16 @@ export const THEMES = [
     "decoys": [
       "AlphaCoin",
       "NovaToken",
-      "TurboDAO",
+      "TurboToken",
       "PulseCoin",
       "FluxToken",
-      "OrbitDAO",
+      "OrbitToken",
       "VectorCoin",
       "SignalToken",
-      "DriftDAO",
+      "DriftToken",
       "CoreCoin",
       "ByteToken",
-      "ZenithDAO"
+      "ZenithToken"
     ],
     "de": [
       "🐶",
@@ -1098,16 +1098,16 @@ export const THEMES = [
     "decoys": [
       "AlphaCoin",
       "NovaToken",
-      "TurboDAO",
+      "TurboToken",
       "PulseCoin",
       "FluxToken",
-      "OrbitDAO",
+      "OrbitToken",
       "VectorCoin",
       "SignalToken",
-      "DriftDAO",
+      "DriftToken",
       "CoreCoin",
       "ByteToken",
-      "ZenithDAO"
+      "ZenithToken"
     ],
     "de": [
       "🐶",
@@ -1142,16 +1142,16 @@ export const THEMES = [
     "decoys": [
       "AlphaCoin",
       "NovaToken",
-      "TurboDAO",
+      "TurboToken",
       "PulseCoin",
       "FluxToken",
-      "OrbitDAO",
+      "OrbitToken",
       "VectorCoin",
       "SignalToken",
-      "DriftDAO",
+      "DriftToken",
       "CoreCoin",
       "ByteToken",
-      "ZenithDAO"
+      "ZenithToken"
     ],
     "de": [
       "🐶",
@@ -1186,16 +1186,16 @@ export const THEMES = [
     "decoys": [
       "AlphaCoin",
       "NovaToken",
-      "TurboDAO",
+      "TurboToken",
       "PulseCoin",
       "FluxToken",
-      "OrbitDAO",
+      "OrbitToken",
       "VectorCoin",
       "SignalToken",
-      "DriftDAO",
+      "DriftToken",
       "CoreCoin",
       "ByteToken",
-      "ZenithDAO"
+      "ZenithToken"
     ],
     "de": [
       "🐶",
@@ -1230,16 +1230,16 @@ export const THEMES = [
     "decoys": [
       "AlphaCoin",
       "NovaToken",
-      "TurboDAO",
+      "TurboToken",
       "PulseCoin",
       "FluxToken",
-      "OrbitDAO",
+      "OrbitToken",
       "VectorCoin",
       "SignalToken",
-      "DriftDAO",
+      "DriftToken",
       "CoreCoin",
       "ByteToken",
-      "ZenithDAO"
+      "ZenithToken"
     ],
     "de": [
       "🐶",
@@ -1274,16 +1274,16 @@ export const THEMES = [
     "decoys": [
       "AlphaCoin",
       "NovaToken",
-      "TurboDAO",
+      "TurboToken",
       "PulseCoin",
       "FluxToken",
-      "OrbitDAO",
+      "OrbitToken",
       "VectorCoin",
       "SignalToken",
-      "DriftDAO",
+      "DriftToken",
       "CoreCoin",
       "ByteToken",
-      "ZenithDAO"
+      "ZenithToken"
     ],
     "de": [
       "🐶",
@@ -1318,16 +1318,16 @@ export const THEMES = [
     "decoys": [
       "AlphaCoin",
       "NovaToken",
-      "TurboDAO",
+      "TurboToken",
       "PulseCoin",
       "FluxToken",
-      "OrbitDAO",
+      "OrbitToken",
       "VectorCoin",
       "SignalToken",
-      "DriftDAO",
+      "DriftToken",
       "CoreCoin",
       "ByteToken",
-      "ZenithDAO"
+      "ZenithToken"
     ],
     "de": [
       "🐶",
@@ -1357,21 +1357,21 @@ export const THEMES = [
       "LoneWolf",
       "WOLF",
       "WOLFCoin",
-      "WOLFX"
+      "Wolf"
     ],
     "decoys": [
       "AlphaCoin",
       "NovaToken",
-      "TurboDAO",
+      "TurboToken",
       "PulseCoin",
       "FluxToken",
-      "OrbitDAO",
+      "OrbitToken",
       "VectorCoin",
       "SignalToken",
-      "DriftDAO",
+      "DriftToken",
       "CoreCoin",
       "ByteToken",
-      "ZenithDAO"
+      "ZenithToken"
     ],
     "de": [
       "🐶",
@@ -1406,16 +1406,16 @@ export const THEMES = [
     "decoys": [
       "AlphaCoin",
       "NovaToken",
-      "TurboDAO",
+      "TurboToken",
       "PulseCoin",
       "FluxToken",
-      "OrbitDAO",
+      "OrbitToken",
       "VectorCoin",
       "SignalToken",
-      "DriftDAO",
+      "DriftToken",
       "CoreCoin",
       "ByteToken",
-      "ZenithDAO"
+      "ZenithToken"
     ],
     "de": [
       "🐶",
@@ -1450,16 +1450,16 @@ export const THEMES = [
     "decoys": [
       "AlphaCoin",
       "NovaToken",
-      "TurboDAO",
+      "TurboToken",
       "PulseCoin",
       "FluxToken",
-      "OrbitDAO",
+      "OrbitToken",
       "VectorCoin",
       "SignalToken",
-      "DriftDAO",
+      "DriftToken",
       "CoreCoin",
       "ByteToken",
-      "ZenithDAO"
+      "ZenithToken"
     ],
     "de": [
       "🐶",
@@ -1494,16 +1494,16 @@ export const THEMES = [
     "decoys": [
       "AlphaCoin",
       "NovaToken",
-      "TurboDAO",
+      "TurboToken",
       "PulseCoin",
       "FluxToken",
-      "OrbitDAO",
+      "OrbitToken",
       "VectorCoin",
       "SignalToken",
-      "DriftDAO",
+      "DriftToken",
       "CoreCoin",
       "ByteToken",
-      "ZenithDAO"
+      "ZenithToken"
     ],
     "de": [
       "🐶",
@@ -1538,16 +1538,16 @@ export const THEMES = [
     "decoys": [
       "AlphaCoin",
       "NovaToken",
-      "TurboDAO",
+      "TurboToken",
       "PulseCoin",
       "FluxToken",
-      "OrbitDAO",
+      "OrbitToken",
       "VectorCoin",
       "SignalToken",
-      "DriftDAO",
+      "DriftToken",
       "CoreCoin",
       "ByteToken",
-      "ZenithDAO"
+      "ZenithToken"
     ],
     "de": [
       "🐶",
@@ -1582,16 +1582,16 @@ export const THEMES = [
     "decoys": [
       "AlphaCoin",
       "NovaToken",
-      "TurboDAO",
+      "TurboToken",
       "PulseCoin",
       "FluxToken",
-      "OrbitDAO",
+      "OrbitToken",
       "VectorCoin",
       "SignalToken",
-      "DriftDAO",
+      "DriftToken",
       "CoreCoin",
       "ByteToken",
-      "ZenithDAO"
+      "ZenithToken"
     ],
     "de": [
       "🐶",
@@ -1626,16 +1626,16 @@ export const THEMES = [
     "decoys": [
       "AlphaCoin",
       "NovaToken",
-      "TurboDAO",
+      "TurboToken",
       "PulseCoin",
       "FluxToken",
-      "OrbitDAO",
+      "OrbitToken",
       "VectorCoin",
       "SignalToken",
-      "DriftDAO",
+      "DriftToken",
       "CoreCoin",
       "ByteToken",
-      "ZenithDAO"
+      "ZenithToken"
     ],
     "de": [
       "🐶",
@@ -1670,16 +1670,16 @@ export const THEMES = [
     "decoys": [
       "AlphaCoin",
       "NovaToken",
-      "TurboDAO",
+      "TurboToken",
       "PulseCoin",
       "FluxToken",
-      "OrbitDAO",
+      "OrbitToken",
       "VectorCoin",
       "SignalToken",
-      "DriftDAO",
+      "DriftToken",
       "CoreCoin",
       "ByteToken",
-      "ZenithDAO"
+      "ZenithToken"
     ],
     "de": [
       "🐶",
@@ -1714,16 +1714,16 @@ export const THEMES = [
     "decoys": [
       "AlphaCoin",
       "NovaToken",
-      "TurboDAO",
+      "TurboToken",
       "PulseCoin",
       "FluxToken",
-      "OrbitDAO",
+      "OrbitToken",
       "VectorCoin",
       "SignalToken",
-      "DriftDAO",
+      "DriftToken",
       "CoreCoin",
       "ByteToken",
-      "ZenithDAO"
+      "ZenithToken"
     ],
     "de": [
       "🐶",
@@ -1758,16 +1758,16 @@ export const THEMES = [
     "decoys": [
       "AlphaCoin",
       "NovaToken",
-      "TurboDAO",
+      "TurboToken",
       "PulseCoin",
       "FluxToken",
-      "OrbitDAO",
+      "OrbitToken",
       "VectorCoin",
       "SignalToken",
-      "DriftDAO",
+      "DriftToken",
       "CoreCoin",
       "ByteToken",
-      "ZenithDAO"
+      "ZenithToken"
     ],
     "de": [
       "🐶",
@@ -1802,16 +1802,16 @@ export const THEMES = [
     "decoys": [
       "AlphaCoin",
       "NovaToken",
-      "TurboDAO",
+      "TurboToken",
       "PulseCoin",
       "FluxToken",
-      "OrbitDAO",
+      "OrbitToken",
       "VectorCoin",
       "SignalToken",
-      "DriftDAO",
+      "DriftToken",
       "CoreCoin",
       "ByteToken",
-      "ZenithDAO"
+      "ZenithToken"
     ],
     "de": [
       "🐶",
@@ -1846,16 +1846,16 @@ export const THEMES = [
     "decoys": [
       "AlphaCoin",
       "NovaToken",
-      "TurboDAO",
+      "TurboToken",
       "PulseCoin",
       "FluxToken",
-      "OrbitDAO",
+      "OrbitToken",
       "VectorCoin",
       "SignalToken",
-      "DriftDAO",
+      "DriftToken",
       "CoreCoin",
       "ByteToken",
-      "ZenithDAO"
+      "ZenithToken"
     ],
     "de": [
       "🐶",
@@ -1890,16 +1890,16 @@ export const THEMES = [
     "decoys": [
       "AlphaCoin",
       "NovaToken",
-      "TurboDAO",
+      "TurboToken",
       "PulseCoin",
       "FluxToken",
-      "OrbitDAO",
+      "OrbitToken",
       "VectorCoin",
       "SignalToken",
-      "DriftDAO",
+      "DriftToken",
       "CoreCoin",
       "ByteToken",
-      "ZenithDAO"
+      "ZenithToken"
     ],
     "de": [
       "🐶",
@@ -1934,16 +1934,16 @@ export const THEMES = [
     "decoys": [
       "AlphaCoin",
       "NovaToken",
-      "TurboDAO",
+      "TurboToken",
       "PulseCoin",
       "FluxToken",
-      "OrbitDAO",
+      "OrbitToken",
       "VectorCoin",
       "SignalToken",
-      "DriftDAO",
+      "DriftToken",
       "CoreCoin",
       "ByteToken",
-      "ZenithDAO"
+      "ZenithToken"
     ],
     "de": [
       "🐶",
@@ -1978,16 +1978,16 @@ export const THEMES = [
     "decoys": [
       "AlphaCoin",
       "NovaToken",
-      "TurboDAO",
+      "TurboToken",
       "PulseCoin",
       "FluxToken",
-      "OrbitDAO",
+      "OrbitToken",
       "VectorCoin",
       "SignalToken",
-      "DriftDAO",
+      "DriftToken",
       "CoreCoin",
       "ByteToken",
-      "ZenithDAO"
+      "ZenithToken"
     ],
     "de": [
       "🐶",
@@ -2022,16 +2022,16 @@ export const THEMES = [
     "decoys": [
       "AlphaCoin",
       "NovaToken",
-      "TurboDAO",
+      "TurboToken",
       "PulseCoin",
       "FluxToken",
-      "OrbitDAO",
+      "OrbitToken",
       "VectorCoin",
       "SignalToken",
-      "DriftDAO",
+      "DriftToken",
       "CoreCoin",
       "ByteToken",
-      "ZenithDAO"
+      "ZenithToken"
     ],
     "de": [
       "🐶",
@@ -2066,16 +2066,16 @@ export const THEMES = [
     "decoys": [
       "AlphaCoin",
       "NovaToken",
-      "TurboDAO",
+      "TurboToken",
       "PulseCoin",
       "FluxToken",
-      "OrbitDAO",
+      "OrbitToken",
       "VectorCoin",
       "SignalToken",
-      "DriftDAO",
+      "DriftToken",
       "CoreCoin",
       "ByteToken",
-      "ZenithDAO"
+      "ZenithToken"
     ],
     "de": [
       "🐶",
@@ -2110,16 +2110,16 @@ export const THEMES = [
     "decoys": [
       "AlphaCoin",
       "NovaToken",
-      "TurboDAO",
+      "TurboToken",
       "PulseCoin",
       "FluxToken",
-      "OrbitDAO",
+      "OrbitToken",
       "VectorCoin",
       "SignalToken",
-      "DriftDAO",
+      "DriftToken",
       "CoreCoin",
       "ByteToken",
-      "ZenithDAO"
+      "ZenithToken"
     ],
     "de": [
       "🐶",
@@ -2154,16 +2154,16 @@ export const THEMES = [
     "decoys": [
       "AlphaCoin",
       "NovaToken",
-      "TurboDAO",
+      "TurboToken",
       "PulseCoin",
       "FluxToken",
-      "OrbitDAO",
+      "OrbitToken",
       "VectorCoin",
       "SignalToken",
-      "DriftDAO",
+      "DriftToken",
       "CoreCoin",
       "ByteToken",
-      "ZenithDAO"
+      "ZenithToken"
     ],
     "de": [
       "🐶",
@@ -2198,16 +2198,16 @@ export const THEMES = [
     "decoys": [
       "AlphaCoin",
       "NovaToken",
-      "TurboDAO",
+      "TurboToken",
       "PulseCoin",
       "FluxToken",
-      "OrbitDAO",
+      "OrbitToken",
       "VectorCoin",
       "SignalToken",
-      "DriftDAO",
+      "DriftToken",
       "CoreCoin",
       "ByteToken",
-      "ZenithDAO"
+      "ZenithToken"
     ],
     "de": [
       "🐶",
@@ -2242,16 +2242,16 @@ export const THEMES = [
     "decoys": [
       "AlphaCoin",
       "NovaToken",
-      "TurboDAO",
+      "TurboToken",
       "PulseCoin",
       "FluxToken",
-      "OrbitDAO",
+      "OrbitToken",
       "VectorCoin",
       "SignalToken",
-      "DriftDAO",
+      "DriftToken",
       "CoreCoin",
       "ByteToken",
-      "ZenithDAO"
+      "ZenithToken"
     ],
     "de": [
       "🐶",
@@ -2286,16 +2286,16 @@ export const THEMES = [
     "decoys": [
       "AlphaCoin",
       "NovaToken",
-      "TurboDAO",
+      "TurboToken",
       "PulseCoin",
       "FluxToken",
-      "OrbitDAO",
+      "OrbitToken",
       "VectorCoin",
       "SignalToken",
-      "DriftDAO",
+      "DriftToken",
       "CoreCoin",
       "ByteToken",
-      "ZenithDAO"
+      "ZenithToken"
     ],
     "de": [
       "🐶",
@@ -2330,16 +2330,16 @@ export const THEMES = [
     "decoys": [
       "AlphaCoin",
       "NovaToken",
-      "TurboDAO",
+      "TurboToken",
       "PulseCoin",
       "FluxToken",
-      "OrbitDAO",
+      "OrbitToken",
       "VectorCoin",
       "SignalToken",
-      "DriftDAO",
+      "DriftToken",
       "CoreCoin",
       "ByteToken",
-      "ZenithDAO"
+      "ZenithToken"
     ],
     "de": [
       "🐶",
@@ -2374,16 +2374,16 @@ export const THEMES = [
     "decoys": [
       "AlphaCoin",
       "NovaToken",
-      "TurboDAO",
+      "TurboToken",
       "PulseCoin",
       "FluxToken",
-      "OrbitDAO",
+      "OrbitToken",
       "VectorCoin",
       "SignalToken",
-      "DriftDAO",
+      "DriftToken",
       "CoreCoin",
       "ByteToken",
-      "ZenithDAO"
+      "ZenithToken"
     ],
     "de": [
       "🐶",
@@ -2418,16 +2418,16 @@ export const THEMES = [
     "decoys": [
       "AlphaCoin",
       "NovaToken",
-      "TurboDAO",
+      "TurboToken",
       "PulseCoin",
       "FluxToken",
-      "OrbitDAO",
+      "OrbitToken",
       "VectorCoin",
       "SignalToken",
-      "DriftDAO",
+      "DriftToken",
       "CoreCoin",
       "ByteToken",
-      "ZenithDAO"
+      "ZenithToken"
     ],
     "de": [
       "🐶",
@@ -2462,16 +2462,16 @@ export const THEMES = [
     "decoys": [
       "AlphaCoin",
       "NovaToken",
-      "TurboDAO",
+      "TurboToken",
       "PulseCoin",
       "FluxToken",
-      "OrbitDAO",
+      "OrbitToken",
       "VectorCoin",
       "SignalToken",
-      "DriftDAO",
+      "DriftToken",
       "CoreCoin",
       "ByteToken",
-      "ZenithDAO"
+      "ZenithToken"
     ],
     "de": [
       "🐶",
@@ -2509,7 +2509,7 @@ export const FILLER = [
       "user": "Jupiter Uplink",
       "handle": "@jup_uplink",
       "time": "26m",
-      "text": "To Jupuary or not to Jupuary.\n\nHigh-level overview of the upcoming DAO vote.",
+      "text": "To Jupuary or not to Jupuary.\n\nHigh-level overview of the upcoming Token vote.",
       "verified": true,
       "media": {
         "type": "video",
