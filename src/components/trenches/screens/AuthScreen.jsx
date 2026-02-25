@@ -6,60 +6,68 @@ import { C } from "../config/constants";
 function AuthScreen() {
   const router = useRouter();
   const [mode, setMode] = useState("login");
+  const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [accessCode, setAccessCode] = useState("");
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
   const isLogin = mode === "login";
 
-  const toInternalEmail = (raw) => {
+  const toLegacyInternalEmail = (raw) => {
     const clean = (raw || "").trim().toLowerCase().replace(/[^a-z0-9_]/g, "");
     return clean ? `${clean}@trenchestrainer.app` : "";
   };
+  const isLikelyEmail = (raw) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(raw || "").trim());
 
   const submit = async () => {
     if (!supabase) {
       setMsg("Supabase is not configured.");
       return;
     }
-    const email = toInternalEmail(username);
-    if (!email || !password) {
-      setMsg("Username and password are required.");
+    const loginIdentifier = email.trim().toLowerCase();
+    if (!loginIdentifier || !password) {
+      setMsg("Email and password are required.");
       return;
     }
-    if (username.trim().length < 3) {
+    if (!isLogin && !isLikelyEmail(loginIdentifier)) {
+      setMsg("Enter a valid email address.");
+      return;
+    }
+    if (!isLogin && username.trim().length < 3) {
       setMsg("Username must be at least 3 characters.");
       return;
     }
-    const normalizedAccessCode = accessCode.trim().toUpperCase();
-    if (!isLogin && !normalizedAccessCode) {
-      setMsg("Access code is required for sign up.");
-      return;
-    }
     setBusy(true);
-    setMsg("Signing you in...");
+    setMsg(isLogin ? "Signing you in..." : "Creating account...");
     try {
       if (isLogin) {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        let { error } = await supabase.auth.signInWithPassword({
+          email: loginIdentifier,
+          password,
+        });
+        if (error && !isLikelyEmail(loginIdentifier)) {
+          const legacyEmail = toLegacyInternalEmail(loginIdentifier);
+          if (legacyEmail) {
+            const legacyRes = await supabase.auth.signInWithPassword({
+              email: legacyEmail,
+              password,
+            });
+            error = legacyRes.error || null;
+          }
+        }
         if (error) throw error;
       } else {
-        const { data: codeAvailable, error: checkError } = await supabase.rpc("check_signup_access_code", { input_code: normalizedAccessCode });
-        if (checkError) throw checkError;
-        if (!codeAvailable) throw new Error("Invalid or used access code.");
         const { error } = await supabase.auth.signUp({
-          email,
+          email: loginIdentifier,
           password,
           options: {
             data: {
               username: username.trim(),
-              access_code: normalizedAccessCode,
             },
           },
         });
         if (error) throw error;
         setMsg("Account created successfully.");
-        setAccessCode("");
       }
     } catch (e) {
       const message = e?.message || "Authentication failed.";
@@ -152,15 +160,30 @@ function AuthScreen() {
 
           <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
             <div>
-              <div style={{ fontSize: 10, color: C.textDim, letterSpacing: 2, marginBottom: 8 }}>USERNAME</div>
+              <div style={{ fontSize: 10, color: C.textDim, letterSpacing: 2, marginBottom: 8 }}>EMAIL</div>
               <input 
-                value={username} 
-                onChange={e => setUsername(e.target.value)} 
-                placeholder="your_username" 
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                onKeyDown={e => { if (e.key === "Enter" && !busy) submit(); }}
+                placeholder={isLogin ? "you@example.com" : "name@example.com"}
                 className="input-field" 
                 style={{ height: 52, background: "black", fontSize: 15 }} 
               />
             </div>
+
+            {!isLogin && (
+              <div>
+                <div style={{ fontSize: 10, color: C.textDim, letterSpacing: 2, marginBottom: 8 }}>USERNAME</div>
+                <input
+                  value={username}
+                  onChange={e => setUsername(e.target.value)}
+                  onKeyDown={e => { if (e.key === "Enter" && !busy) submit(); }}
+                  placeholder="your_username"
+                  className="input-field"
+                  style={{ height: 52, background: "black", fontSize: 15 }}
+                />
+              </div>
+            )}
 
             <div>
               <div style={{ fontSize: 10, color: C.textDim, letterSpacing: 2, marginBottom: 8 }}>PASSWORD</div>
@@ -175,19 +198,6 @@ function AuthScreen() {
               />
             </div>
 
-            {!isLogin && (
-              <div>
-                <div style={{ fontSize: 10, color: C.textDim, letterSpacing: 2, marginBottom: 8 }}>ACCESS_CODE</div>
-                <input 
-                  value={accessCode} 
-                  onChange={e => setAccessCode(e.target.value.toUpperCase())} 
-                  onKeyDown={e => { if (e.key === "Enter" && !busy) submit(); }}
-                  placeholder="Enter access code" 
-                  className="input-field" 
-                  style={{ height: 52, background: "black", textTransform: "uppercase", fontSize: 15 }} 
-                />
-              </div>
-            )}
           </div>
 
           {msg && (

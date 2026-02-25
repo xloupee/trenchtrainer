@@ -34,7 +34,7 @@ const steps = [
   { num: '03', title: 'BUILD YOUR EDGE',  desc: 'After each run, you can review your speed, accuracy, and streaks. Improve your rank over time, then challenge someone in 1v1.' },
 ];
 
-const HERO_TITLES = ['AIM TRAINER', 'REACTION TRAINER'];
+const HERO_TITLES = ['PRECISION TRAINER', 'REACTION TRAINER'];
 
 // Scattered coins for the hero right column
 // top/left are absolute within the 600px-tall right panel
@@ -126,7 +126,7 @@ export default function LandingPage() {
     return () => { window.removeEventListener('mousemove', onMove); cancelAnimationFrame(raf); };
   }, []);
 
-  // ── Hero heading swap (AIM TRAINER / REACTION TRAINER) ──────────────────
+  // ── Hero heading swap (PRECISION TRAINER / REACTION TRAINER) ──────────────────
   useEffect(() => {
     let swapTimeout;
     const interval = setInterval(() => {

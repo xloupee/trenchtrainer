@@ -34,7 +34,7 @@ const steps = [
   { num: '03', title: 'BUILD YOUR EDGE',  desc: 'Track your reaction time, accuracy, and streaks. Climb the ranks. Challenge others 1v1.' },
 ];
 
-const HERO_TITLES = ['AIM TRAINER', 'REACTION TRAINER'];
+const HERO_TITLES = ['PRECISION TRAINER', 'REACTION TRAINER'];
 
 // Scattered coins for the hero right column
 // top/left are absolute within the 600px-tall right panel
@@ -126,7 +126,7 @@ export default function LandingPage() {
     return () => { window.removeEventListener('mousemove', onMove); cancelAnimationFrame(raf); };
   }, []);
 
-  // ── Hero heading swap (AIM TRAINER / REACTION TRAINER) ──────────────────
+  // ── Hero heading swap (PRECISION TRAINER / REACTION TRAINER) ──────────────────
   useEffect(() => {
     let swapTimeout;
     const interval = setInterval(() => {
