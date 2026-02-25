@@ -114,8 +114,6 @@ function AuthScreen() {
       const emailNotConfirmed = /email.*confirm|not confirmed/i.test(rawMessage);
       if (isLogin && emailNotConfirmed) {
         setMsg("Email not verified. Check your inbox/spam for the verification email, then log in.");
-      } else if (!isLogin && isConfirmationEmailFailure(rawMessage)) {
-        setMsg("Signup unavailable: verification email service is down. Try again soon.");
       } else {
         setMsg(rawMessage);
       }

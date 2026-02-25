@@ -47,7 +47,7 @@ Configure in `Supabase Dashboard -> Authentication -> Settings -> SMTP`:
 - Password: Gmail App Password (16 chars, requires 2FA)
 - Minimum interval per user: `60` seconds
 
-Then ensure `Authentication -> Providers -> Email -> Confirm email` is enabled.
+Then ensure `Authentication -> Providers -> Email` has `Confirm email` **disabled** so players can jump straight into gameplay while still receiving a verification message.
 
 ## Notes
 
