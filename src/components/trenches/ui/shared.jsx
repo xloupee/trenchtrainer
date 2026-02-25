@@ -83,10 +83,9 @@ function XTweet({data,isSignal,animDelay=0}){
 function TokenRow({coin,onBuy,spawned,revealed,clickedId,showCorrect}){
   const wc=clickedId===coin.id,iw=wc&&!coin.isCorrect;
   const isRevealCorrect=showCorrect&&revealed&&coin.isCorrect;
-  const fullName=String(coin?.name||"");
-  const strippedName=fullName.replace(/(coin|token|dao|x)$/i,"").trim();
-  const primaryName=strippedName.length>=3?strippedName:fullName;
-  const showSecondaryName=Boolean(fullName)&&fullName.toLowerCase()!==primaryName.toLowerCase();
+  const primaryName=String(coin?.name||"").trim();
+  const secondaryName=String(coin?.displayName||"").trim();
+  const showSecondaryName=Boolean(secondaryName)&&secondaryName.toLowerCase()!==primaryName.toLowerCase();
   let bl="transparent",bg="transparent";if(iw){bl=C.red;bg="rgba(245,101,101,0.03)";}else if(isRevealCorrect){bl=C.green;bg="rgba(72,187,120,0.04)";}
   const ia=!revealed,sb=!revealed;
   const buyBtnStyle=(active,isMain)=>({display:"flex",alignItems:"center",justifyContent:"center",gap:3,padding:"0",background:"transparent",border:"none",color:active&&isMain?C.green:C.textDim,fontSize:active&&isMain?11:10,fontWeight:active&&isMain?800:600,cursor:active&&isMain?"pointer":"default",fontFamily:"var(--mono)",width:"100%",height:"100%",transition:"all 0.12s"});
@@ -108,7 +107,7 @@ function TokenRow({coin,onBuy,spawned,revealed,clickedId,showCorrect}){
         </span>
         {showSecondaryName&&(
           <span style={{color:C.textMuted,fontSize:10.5,fontWeight:400,wordBreak:"break-word"}}>
-            {fullName}
+            {secondaryName}
           </span>
         )}
         {isRevealCorrect&&<span style={{fontSize:7.5,color:C.green,fontWeight:800,letterSpacing:1.5,animation:"blink 1s infinite"}}>← CORRECT</span>}
