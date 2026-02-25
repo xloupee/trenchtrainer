@@ -229,6 +229,12 @@ const stripRankFieldsFromProfilePayload=(payload)=>{
   RANK_PROFILE_FIELDS.forEach((field)=>{delete next[field];});
   return next;
 };
+const allowLegacyRankFallback=()=>{
+  if(process.env.NODE_ENV==="production")return false;
+  const explicit=String(process.env.NEXT_PUBLIC_ALLOW_LEGACY_RANK_FALLBACK||"").toLowerCase();
+  if(explicit==="1"||explicit==="true"||explicit==="yes")return true;
+  return true;
+};
 const authBootstrapCache={
   ready:false,
   session:null,
@@ -513,7 +519,7 @@ export default function App({initialDuelCode=""}){
       let { error: recoveryError } = await supabase
         .from("player_profiles")
         .upsert(recoveryPayload,{onConflict:"user_id"});
-      if(recoveryError&&isMissingRankColumnsError(recoveryError)){
+      if(recoveryError&&isMissingRankColumnsError(recoveryError)&&allowLegacyRankFallback()){
         const legacyRecoveryPayload=stripRankFieldsFromProfilePayload(recoveryPayload);
         const legacyRecoveryRes=await supabase
           .from("player_profiles")
@@ -521,6 +527,13 @@ export default function App({initialDuelCode=""}){
         recoveryError=legacyRecoveryRes.error;
       }
       if(recoveryError){
+        if(isMissingRankColumnsError(recoveryError)){
+          console.error("[profile_recovery_rank_write_failed]",{
+            userId,
+            code:recoveryError?.code,
+            message:recoveryError?.message,
+          });
+        }
         resolvedMsg="Recovered stats locally from history, but could not persist recovery to profile row.";
       }
     }
@@ -637,14 +650,26 @@ export default function App({initialDuelCode=""}){
     let { error: writeError } = await supabase
       .from("player_profiles")
       .upsert(payload,{onConflict:"user_id"});
-    if(writeError&&isMissingRankColumnsError(writeError)){
+    if(writeError&&isMissingRankColumnsError(writeError)&&allowLegacyRankFallback()){
       const legacyPayload=stripRankFieldsFromProfilePayload(payload);
       const legacyWriteRes=await supabase
         .from("player_profiles")
         .upsert(legacyPayload,{onConflict:"user_id"});
       writeError=legacyWriteRes.error;
     }
-    if(writeError){setProfileMsg("Could not save profile stats.");return;}
+    if(writeError){
+      if(isMissingRankColumnsError(writeError)){
+        console.error("[profile_rank_write_failed]",{
+          userId,
+          code:writeError?.code,
+          message:writeError?.message,
+        });
+        setProfileMsg("Could not save rank fields. Database schema is missing rank columns.");
+        return;
+      }
+      setProfileMsg("Could not save profile stats.");
+      return;
+    }
     setProfileStats(next);
     if(profileBootstrapCache.userId===userId){
       profileBootstrapCache.stats=next;
